@@ -1,0 +1,104 @@
+#!/bin/sh -e
+
+################### shell file helpers
+
+ifdumptool="hacks/ifdump"
+
+. /etc/net/scripts/functions
+
+shell_add_or_subst()
+{
+	local name="$1" && shift
+	local value="$1" && shift
+	local file="$1" && shift
+
+	[ -f "$file" ] || touch "$file"
+	if grep -qs "^$name" "$file"; then
+		/bin/sed -r -i "s,^$name.*,$name$value," -- "$file"
+		return 0
+	fi
+	printf %s\\n "$name$value" >> "$file"
+}
+
+shell_get()
+{
+	local name="$1" && shift
+	local file="$1" && shift
+
+	[ -f "$file" ] &&
+	grep -qs "^$name=" "$file" &&
+	grep "^$name=" "$file"|sed "s,^$name=,,"
+}
+
+################### interface modificators
+
+list_iface()
+{
+	echo "("
+	for i in /etc/net/ifaces/*;do
+		local name="${i##*/}"
+		[ "$name" != "lo" ] && [ "$name" != "unknown" ] && [ "$name" != "default" ] || continue
+		printf '("%s")\n' "$name"
+	done
+	echo ")"
+}
+
+read_iface()
+{
+	echo "("
+	local name="$1" && shift
+	printf 'ipv4address "%s"\n' \
+		$(grep '^[0-9]' "/etc/net/ifaces/$name/ipv4address" | head -n1 || echo "")
+	printf 'default "%s"\n' \
+		$(grep '^default' "/etc/net/ifaces/$name/ipv4route" | sed -r 's,default[[:space:]]+via[[:space:]],,' || echo "")
+
+	(eval $("$ifdumptool" "$name")
+		[ "$BOOTPROTO" = "dhcp" ] && echo "dhcp #t" || echo "dhcp #f"
+		is_yes "$DISABLED" && echo "state #f" || echo "state #t")
+		
+	echo ")"
+}
+
+write_iface()
+{
+	local name="$1" && shift
+	[ -n "$in_ipv4address" ] &&
+		printf '%s\n' "$in_ipv4address" >"/etc/net/ifaces/$name/ipv4address"
+	[ -n "$in_default" ] &&
+		printf 'default via %s\n' "$in_default" >"/etc/net/ifaces/$name/ipv4route"
+	tmpfile=$(mktemp "/etc/net/ifaces/$name/options.XXXXXX")
+	cat "/etc/net/ifaces/$name/options" >"$tmpfile" 
+	[ -n "$in_dhcp" ] &&
+		shell_add_or_subst "BOOTPROTO=" \
+			$([ "$in_dhcp" = "#t" ] && echo "dhcp" || echo "static")\
+			"$tmpfile"
+	[ -n "$in_state" ] &&
+		shell_add_or_subst "DISABLED=" \
+			$([ "$in_state" = "#t" ] && echo "no" || echo "yes") \
+			"$tmpfile"
+	/sbin/service network stop >&2 &&
+	mv -f "$tmpfile" "/etc/net/ifaces/$name/options" &&
+	/sbin/service network start >&2
+}
+
+
+. /usr/share/alterator/build/backend3.sh
+
+on_message()
+{
+	case "$in_action" in
+		list)
+			list_iface
+			;;
+		read) 
+			read_iface "$in__objects"
+			;;
+		write)
+			write_iface "$in__objects"
+			echo "()"
+			;;
+	esac
+}
+
+message_loop
+
