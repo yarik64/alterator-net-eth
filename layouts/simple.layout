@@ -1,0 +1,14 @@
+(use-modules (alterator transport server-socket)
+             (alterator transport pipe-channel)
+	     (alterator transport std-channel))
+
+(telegraph
+  (pipe-in "/usr/bin/qtbrowser")
+;  (server-socket)
+;  (std-in)
+  (lookout)
+  (ensign))
+
+(with-atlas (load-atlas "simple.smap")
+	    (go))
+
