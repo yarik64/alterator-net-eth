@@ -1,3 +1,4 @@
 (include "*.map")
 
+(/net-tcp/netmask file "ui/netmask.scm")
 (/ file "ui/net-tcp.scm")

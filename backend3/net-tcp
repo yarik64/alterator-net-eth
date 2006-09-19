@@ -47,8 +47,10 @@ read_iface()
 {
 	echo "("
 	local name="$1" && shift
-	printf 'ipv4address "%s"\n' \
-		$(grep '^[0-9]' "/etc/net/ifaces/$name/ipv4address" | head -n1 || echo "")
+	addr=$(grep '^[0-9]' "/etc/net/ifaces/$name/ipv4address" | head -n1 || echo "")
+	ip="${addr%%/*}"
+	mask="${addr#$ip}"; mask="${mask#/}"
+	printf 'ip "%s" mask "%s"\n' "$ip" "$mask"
 	printf 'default "%s"\n' \
 		$(grep '^default' "/etc/net/ifaces/$name/ipv4route" | sed -r 's,default[[:space:]]+via[[:space:]],,' || echo "")
 
@@ -62,8 +64,8 @@ read_iface()
 write_iface()
 {
 	local name="$1" && shift
-	[ -n "$in_ipv4address" ] &&
-		printf '%s\n' "$in_ipv4address" >"/etc/net/ifaces/$name/ipv4address"
+	[ -n "$in_mask" ] && [ -n "$in_ip" ] && \
+		printf '%s/%s\n' "$in_ip" "$in_mask" >"/etc/net/ifaces/$name/ipv4address"
 	[ -n "$in_default" ] &&
 		printf 'default via %s\n' "$in_default" >"/etc/net/ifaces/$name/ipv4route"
 	tmpfile=$(mktemp "/etc/net/ifaces/$name/options.XXXXXX")
