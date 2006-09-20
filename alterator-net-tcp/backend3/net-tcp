@@ -2,7 +2,7 @@
 
 ################### shell file helpers
 
-ifdumptool="hacks/ifdump"
+ifdumptool="/etc/net/scripts/contrib/ifdump"
 
 . /etc/net/scripts/functions
 
