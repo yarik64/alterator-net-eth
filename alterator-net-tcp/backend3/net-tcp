@@ -35,11 +35,10 @@ shell_get()
 list_iface()
 {
 	echo "("
-	for i in /etc/net/ifaces/*;do
-		local name="${i##*/}"
-		[ "$name" != "lo" ] && [ "$name" != "unknown" ] && [ "$name" != "default" ] || continue
-		printf '("%s")\n' "$name"
-	done
+	/sbin/ip link|egrep '^[[:digit:]]+'|
+		sed -r 's,^[[:digit:]]+\:[[:space:]]+([^:]+).*,\1,'|
+		grep -v '^lo'|
+                sed 's,.*,("&"),'
 	echo ")"
 }
 
@@ -64,6 +63,7 @@ read_iface()
 write_iface()
 {
 	local name="$1" && shift
+	[ -d "/etc/net/ifaces/$name" ] || mkdir "/etc/net/ifaces/$name"
 	[ -n "$in_mask" ] && [ -n "$in_ip" ] && \
 		printf '%s/%s\n' "$in_ip" "$in_mask" >"/etc/net/ifaces/$name/ipv4address"
 	[ -n "$in_default" ] &&
