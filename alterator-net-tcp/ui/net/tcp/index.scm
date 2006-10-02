@@ -1,7 +1,7 @@
 (document:surround "/std/base")
 (document:insert "/std/functions")
 
-(document:envelop with-container-presentations ((netmask '/net-tcp/netmask text)) )
+(document:envelop with-container-presentations ((netmask '/net/mask text)) )
 
 width 600
 height 400
