@@ -3,8 +3,8 @@
 	     (alterator transport std-channel))
 
 (telegraph
-  (pipe-in "/usr/bin/qtbrowser")
-;  (server-socket)
+;  (pipe-in "/usr/bin/qtbrowser")
+  (server-socket)
 ;  (std-in)
   (lookout)
   (ensign))
