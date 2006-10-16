@@ -48,10 +48,10 @@ margin 10
   (and (not-empty-string? name)
        (let ((cmd (woo-read-first (string-append "/net-tcp" "/" name))))
          
-         (iface-enabled state (cond-cdr (command-arg-ref cmd 'state))
+         (iface-enabled state (woo-get-option cmd 'state #f)
                         toggled)
          
-         (iface-dhcp state (cond-cdr (command-arg-ref cmd 'dhcp))
+         (iface-dhcp state (woo-get-option cmd 'dhcp #f)
                      toggled)
          
          (iface-ip text (woo-get-option cmd 'ip))
