@@ -37,7 +37,7 @@ list_iface()
 	echo "("
 	/sbin/ip link|egrep '^[[:digit:]]+'|
 		sed -r 's,^[[:digit:]]+\:[[:space:]]+([^:]+).*,\1,'|
-		grep -v '^lo'|
+		grep 'eth0'|
                 sed 's,.*,("&"),'
 	echo ")"
 }
