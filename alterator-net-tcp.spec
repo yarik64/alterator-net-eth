@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.2
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -49,6 +49,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Wed Nov 01 2006 Stanislav Ievlev <inger@altlinux.org> 0.2-alt2
+- minor bugfixes
+
 * Mon Oct 16 2006 Stanislav Ievlev <inger@altlinux.org> 0.2-alt1
 - replace command-arg-ref with modern woo-get-option
 
