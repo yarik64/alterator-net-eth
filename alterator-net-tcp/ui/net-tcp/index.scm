@@ -61,12 +61,14 @@ margin 10
 
 (define (commit-interface name)
   (and (not-empty-string? name)
-       (woo-write (string-append "/net-tcp" "/" name)
-                  'state (iface-enabled state)
-                  'dhcp  (iface-dhcp state)
-                  'ip    (iface-ip text)
-                  'mask  (iface-mask text)
-                  'default (iface-gw text))))
+       (woo-catch/message
+        (thunk
+         (woo-write/constraints (string-append "/net-tcp" "/" name)
+                                'state (iface-enabled state)
+                                'dhcp  (iface-dhcp state)
+                                'ip    (iface-ip text)
+                                'mask  (iface-mask text)
+                                'default (iface-gw text))))))
 
 (ifaces header (vector"Network interfaces")
         rows (woo-list-names "/net-tcp")

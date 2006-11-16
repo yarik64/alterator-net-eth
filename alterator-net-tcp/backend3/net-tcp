@@ -89,6 +89,12 @@ write_iface()
 on_message()
 {
 	case "$in_action" in
+		constraints)
+			echo '('
+			echo 'ip (required #t ipv4-address #t)'
+			echo 'default (ipv4-address #t)'
+			echo ')'
+			;;
 		list)
 			list_iface
 			;;
