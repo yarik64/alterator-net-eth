@@ -82,10 +82,13 @@ margin 10
 (q-button (when clicked (document:end)))
 
 
-(iface-enabled (when toggled ((widgets iface-dhcp
-                                       iface-ip
-                                       iface-mask
-                                       iface-gw) activity (iface-enabled state))))
+(iface-enabled (when toggled
+                 ((widgets iface-dhcp
+                           iface-ip
+                           iface-mask
+                           iface-gw) activity (iface-enabled state))
+                 (and (iface-dhcp state) (iface-dhcp toggled))))
+
 (iface-dhcp (when toggled ((widgets iface-ip
                                     iface-mask
                                     iface-gw) activity (not (iface-dhcp state)))))
