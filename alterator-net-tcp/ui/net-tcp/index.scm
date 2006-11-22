@@ -48,11 +48,14 @@ margin 10
   (and (not-empty-string? name)
        (let ((cmd (woo-read-first (string-append "/net-tcp" "/" name))))
          
-         (iface-enabled state (woo-get-option cmd 'state #f)
-                        toggled)
-         
-         (iface-dhcp state (woo-get-option cmd 'dhcp #f)
-                     toggled)
+         (iface-enabled state (woo-get-option cmd 'state #f))
+         (iface-dhcp state (woo-get-option cmd 'dhcp #f))
+
+         (cond
+          ((not (iface-enabled state))
+           (iface-enabled toggled))
+          ((iface-dhcp state)
+           (iface-dhcp toggled)))
          
          (iface-ip text (woo-get-option cmd 'ip))
          (iface-mask text (woo-get-option cmd 'mask))
