@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.2
-Release: alt4
+Release: alt5
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -49,6 +49,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Thu Nov 30 2006 Stanislav Ievlev <inger@altlinux.org> 0.2-alt5
+- tunings for installer
+
 * Wed Nov 22 2006 Stanislav Ievlev <inger@altlinux.org> 0.2-alt4
 - add "exclude" constraints
 

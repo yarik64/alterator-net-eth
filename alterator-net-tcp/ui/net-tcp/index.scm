@@ -39,9 +39,8 @@ margin 10
       spacing 10
       (document:id c-button (button "Commit" layout-policy 33 -1))
       (document:id r-button (button "Reset"  layout-policy 33 -1))
-      (document:id q-button (button "Quit" layout-policy -2 -1)))
-
-
+      (or (global 'frame:next)
+          (document:id q-button (button "Quit" layout-policy -2 -1))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 (define (update-interface name)
@@ -72,7 +71,8 @@ margin 10
 
 (c-button (when clicked (commit-interface (ifaces text))))
 (r-button (when clicked (update-interface (ifaces text))))
-(q-button (when clicked (document:end)))
+(or (global 'frame:next)
+    (q-button (when clicked (document:end))))
 
 ;;init first update
 (ifaces current 0 selected)
@@ -80,3 +80,4 @@ margin 10
 (document:root
  (when loaded
    (update-constraints "write" "/net-tcp")))
+
