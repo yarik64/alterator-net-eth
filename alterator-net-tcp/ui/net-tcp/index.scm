@@ -56,14 +56,18 @@ margin 10
 
 (define (commit-interface name)
   (and (not-empty-string? name)
-       (woo-catch/message
-        (thunk
-         (woo-write/constraints (string-append "/net-tcp" "/" name)
-                                'state (iface-enabled state)
-                                'dhcp  (iface-dhcp state)
-                                'ip    (iface-ip text)
-                                'mask  (iface-mask text)
-                                'default (iface-gw text))))))
+       (begin
+         (splash-message "Restarting message...")
+         (document:release)
+         (splash-message)
+         (woo-catch/message
+          (thunk
+           (woo-write/constraints (string-append "/net-tcp" "/" name)
+                                  'state (iface-enabled state)
+                                  'dhcp  (iface-dhcp state)
+                                  'ip    (iface-ip text)
+                                  'mask  (iface-mask text)
+                                  'default (iface-gw text)))))))
 
 (ifaces header (vector"Network interfaces")
         rows (woo-list-names "/net-tcp")
