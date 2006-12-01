@@ -57,7 +57,7 @@ margin 10
 (define (commit-interface name)
   (and (not-empty-string? name)
        (begin
-         (splash-message "Restarting message...")
+         (splash-message "Restarting network...")
          (document:release)
          (splash-message)
          (woo-catch/message
