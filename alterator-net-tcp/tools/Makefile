@@ -3,7 +3,7 @@ PARANOID_FLAGS=-Wunused-function -Wunused-label -Wunused-variable -Wunused-value
 	-Werror -Wmissing-prototypes -Wmissing-declarations -Wmissing-format-attribute \
 	-Wredundant-decls -Wdisabled-optimization -Wmissing-noreturn -Wextra
 
-CFLAGS=$(PARANOID_FLAGS)  $(RPM_OPTFLAGS)
+CFLAGS=$(RPM_OPTFLAGS)
 
 INSTALL=/usr/bin/install
 

@@ -19,7 +19,10 @@ static
 uint32_t
 prefix2mask(uint32_t prefix)
 {
-    return htonl((uint32_t)~((1 << (32 - prefix)) - 1));
+	if (prefix)
+    		return htonl((uint32_t)~((1 << (32 - prefix)) - 1));
+    	else
+		return 0;
 }
 
 static
