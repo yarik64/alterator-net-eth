@@ -1,13 +1,13 @@
 (document:surround "/std/base")
 (document:insert "/std/functions")
 
-(document:envelop with-container-presentations ((netmask '/net-tcp/mask text)) )
-
 width 600
 height 400
 
 spacing 5
 margin 10
+
+(define avail-masks (woo-list-names "/net-tcp/eth0/avail_masks"))
 
 (hbox
  layout-policy 100 -1
@@ -19,19 +19,22 @@ margin 10
 (document:id iface-enabled (checkbox "Enabled" widget-name "state"))
 (document:id iface-dhcp (checkbox "Use DHCP" widget-name "dhcp"))
 
-(hbox
- layout-policy 100 -1
- (label "IP address" layout-policy 30 -1)
+(define (field x y)
+  (y layout-policy -2 -1)
+  (hbox layout-policy 100 -1
+        (label x layout-policy 50 -1)
+        y))
+
+(field
+ "IP address"
  (document:id iface-ip (edit "" layout-policy -2 -1 widget-name "ip")))
 
-(hbox
- layout-policy 100 -1
- (label "NetMask" layout-policy 30 -1)
- (document:id iface-mask (netmask "" layout-policy -2 -1 widget-name "mask")))
+(field
+ "NetMask"
+ (document:id iface-mask (combobox "" rows avail-masks layout-policy -2 -1 widget-name "mask")))
 
-(hbox
- layout-policy 100 -1
- (label "Default gateway" layout-policy 30 -1)
+(field
+ "Default gateway"
  (document:id iface-gw (edit "" layout-policy -2 -1 widget-name "default")))
 
 (vertical-spacer)
@@ -50,7 +53,8 @@ margin 10
          (iface-enabled state (woo-get-option cmd 'state #f))
          (iface-dhcp state (woo-get-option cmd 'dhcp #f))
          (iface-ip text (woo-get-option cmd 'ip))
-         (iface-mask text (woo-get-option cmd 'mask))
+         (iface-mask current (or (string-list-index (woo-get-option cmd 'mask) avail-masks)
+                                 0))
          (iface-gw text (woo-get-option cmd 'default)))))
 
 

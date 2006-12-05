@@ -49,6 +49,7 @@ alterator module for tcp/ip connections configuration
 %changelog
 * Tue Dec 05 2006 Stanislav Ievlev <inger@altlinux.org> 0.3-alt1
 - add tool to converting masks
+- generate mask names in backend
 
 * Fri Dec 01 2006 Stanislav Ievlev <inger@altlinux.org> 0.2-alt6
 - show splash message during network restart
