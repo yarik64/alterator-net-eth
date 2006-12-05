@@ -6,8 +6,6 @@ Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
-BuildArch:	noarch
-
 Source:%name-%version.tar
 
 Summary: alterator module for tcp/ip connections configuration
