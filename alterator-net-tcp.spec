@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.3
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -47,6 +47,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Wed Dec 13 2006 Stanislav Ievlev <inger@altlinux.org> 0.3-alt2
+- improve backend: add default values, don't fail on read /
+
 * Tue Dec 05 2006 Stanislav Ievlev <inger@altlinux.org> 0.3-alt1
 - add tool to converting masks
 - generate mask names in backend

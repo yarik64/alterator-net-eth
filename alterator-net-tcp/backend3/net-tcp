@@ -107,8 +107,8 @@ on_message()
 	case "$in_action" in
 		constraints)
 			echo '('
-			echo 'state (exclude (#f ip) exclude (#f default) exclude (#f mask) exclude (#f dhcp))'
-			echo 'dhcp (exclude (#t ip) exclude (#t default) exclude (#t mask))'
+			echo 'state (exclude (#f ip) exclude (#f default) exclude (#f mask) exclude (#f dhcp) default #f)'
+			echo 'dhcp (exclude (#t ip) exclude (#t default) exclude (#t mask) default #f)'
 			echo 'ip (required #t ipv4-address #t)'
 			echo 'default (ipv4-address #t)'
 			echo ')'
@@ -121,7 +121,11 @@ on_message()
 			fi
 			;;
 		read) 
-			read_iface "$in__objects"
+			if [ "$in__objects" == "/" ];then
+				echo '()'
+			else
+				read_iface "$in__objects"
+			fi
 			;;
 		write)
 			in_mask=$(echo "$in_mask"| sed -r 's,^(/)?([0-9]+).*,\2,')
