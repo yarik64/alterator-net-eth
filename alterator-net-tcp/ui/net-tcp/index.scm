@@ -1,4 +1,4 @@
-(document:surround "/std/base")
+(document:surround "/std/frame")
 (document:insert "/std/functions")
 
 width 600
@@ -7,6 +7,7 @@ height 400
 spacing 5
 margin 10
 
+(define avail-ifaces (woo-list-names "/net-tcp"))
 (define avail-masks (woo-list-names "/net-tcp/eth0/avail_masks"))
 
 (hbox
@@ -14,7 +15,6 @@ margin 10
  spacing 2
  (label "Interface:")
  (document:id ifaces (combobox layout-policy 20 -1)))
-
 
 (document:id iface-enabled (checkbox "Enabled" widget-name "state"))
 (document:id iface-dhcp (checkbox "Use DHCP" widget-name "dhcp"))
@@ -27,22 +27,22 @@ margin 10
 
 (field
  "IP address"
- (document:id iface-ip (edit "" layout-policy -2 -1 widget-name "ip")))
+ (document:id iface-ip (edit "" widget-name "ip")))
 
 (field
  "NetMask"
- (document:id iface-mask (combobox "" rows avail-masks layout-policy -2 -1 widget-name "mask")))
+ (document:id iface-mask (combobox "" rows avail-masks widget-name "mask")))
 
 (field
  "Default gateway"
- (document:id iface-gw (edit "" layout-policy -2 -1 widget-name "default")))
+ (document:id iface-gw (edit "" widget-name "default")))
 
 (vertical-spacer)
-(hbox layout-policy 100 -1
-      spacing 10
-      (document:id c-button (button "Commit" layout-policy 33 -1))
-      (document:id r-button (button "Reset"  layout-policy 33 -1))
-      (or (global 'frame:next)
+(or (global 'frame:next)
+    (hbox layout-policy 100 -1
+          spacing 10
+          (document:id c-button (button "Commit" layout-policy 33 -1))
+          (document:id r-button (button "Reset"  layout-policy 33 -1))
           (document:id q-button (button "Quit" layout-policy -2 -1))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -59,7 +59,7 @@ margin 10
 
 
 (define (commit-interface name)
-  (and (not-empty-string? name)
+  (or (string-null? name)
        (begin
          (splash-message "Restarting network...")
          (document:release)
@@ -73,19 +73,30 @@ margin 10
                                   'mask  (iface-mask text)
                                   'default (iface-gw text)))))))
 
+
+
+;;common behaviour
 (ifaces header (vector"Network interfaces")
-        rows (woo-list-names "/net-tcp")
+        rows avail-ifaces
         (when selected (update-interface (ifaces text))))
-
-(c-button (when clicked (commit-interface (ifaces text))))
-(r-button (when clicked (update-interface (ifaces text))))
-(or (global 'frame:next)
-    (q-button (when clicked (document:end))))
-
-;;init first update
 (ifaces current 0 selected)
-
 (document:root
  (when loaded
    (update-constraints "write" "/net-tcp")))
 
+;;standalone specific behaviour
+(or (global 'frame:next)
+    (begin
+      (c-button (when clicked (commit-interface (ifaces text))))
+      (r-button (when clicked (update-interface (ifaces text))))
+      (q-button (when clicked (document:end)))))
+
+;;installer specific behaviour
+(and (global 'frame:next)
+     (begin (iface-dhcp state #t)
+            (document:root (when loaded
+                             (if (null? avail-ifaces)
+                                 (if (eq? (global 'frame:direction) 'next)
+                                     (frame:next)
+                                     (frame:back)))))))
+(frame:on-next (thunk (commit-interface (ifaces text))))
