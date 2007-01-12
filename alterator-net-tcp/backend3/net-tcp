@@ -3,6 +3,9 @@
 ################### shell file helpers
 
 ifdumptool="/etc/net/scripts/contrib/ifdump"
+ifup="/etc/net/scripts/ifup"
+ifdown="/etc/net/scripts/ifdown"
+
 
 . /etc/net/scripts/functions
 
@@ -94,11 +97,17 @@ write_iface()
 		shell_add_or_subst "DISABLED=" \
 			$([ "$in_state" = "#t" ] && echo "no" || echo "yes") \
 			"$tmpfile"
-	/sbin/service network stop >&2 &&
+#	/sbin/service network stop >&2 &&
+	"$ifdown" "$name" >&2 &&
 	mv -f "$tmpfile" "/etc/net/ifaces/$name/options" &&
-	/sbin/service network start >&2
+#	/sbin/service network start >&2
+	"$ifup" "$name" >&2
 }
 
+_()
+{
+LANG=${in_language%%;*}.utf8 gettext "alterator-net-tcp" "$1"
+}
 
 . /usr/share/alterator/build/backend3.sh
 
@@ -107,10 +116,16 @@ on_message()
 	case "$in_action" in
 		constraints)
 			echo '('
-			echo 'state (exclude (#f ip) exclude (#f default) exclude (#f mask) exclude (#f dhcp) default #f)'
-			echo 'dhcp (exclude (#t ip) exclude (#t default) exclude (#t mask) default #f)'
-			echo 'ip (required #t ipv4-address #t)'
-			echo 'default (ipv4-address #t)'
+			printf 'state (exclude (#f ip) exclude (#f default) exclude (#f mask) exclude (#f dhcp) default #f label "%s")' \
+				"$(_ "Enabled")"
+			printf 'dhcp (exclude (#t ip) exclude (#t default) exclude (#t mask) default #f label "%s")' \
+				"$(_ "Use DHCP")"
+			printf 'ip (required #t ipv4-address #t label "%s")' \
+				"$(_ "IP address")"
+			printf 'default (ipv4-address #t label "%s")' \
+				"$(_ "Default gateway")"
+			printf 'mask (label "%s")' \
+				"$(_ "NetMask")"
 			echo ')'
 			;;
 		list)

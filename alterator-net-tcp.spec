@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-tcp
-Version: 0.3
-Release: alt3
+Version: 0.4
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -47,6 +47,11 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Fri Jan 12 2007 Stanislav Ievlev <inger@altlinux.org> 0.4-alt1
+- add label constraints
+- add translations
+- use ifup/ifdown instead of full network restart
+
 * Thu Dec 14 2006 Stanislav Ievlev <inger@altlinux.org> 0.3-alt3
 - special behaviour for installer
 

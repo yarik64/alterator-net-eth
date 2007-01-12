@@ -1,6 +1,8 @@
 (document:surround "/std/frame")
 (document:insert "/std/functions")
 
+(document:envelop with-translation _ "alterator-net-tcp")
+
 width 600
 height 400
 
@@ -13,11 +15,11 @@ margin 10
 (hbox
  layout-policy 100 -1
  spacing 2
- (label "Interface:")
+ (label (_"Interface:"))
  (document:id ifaces (combobox layout-policy 20 -1)))
 
-(document:id iface-enabled (checkbox "Enabled" widget-name "state"))
-(document:id iface-dhcp (checkbox "Use DHCP" widget-name "dhcp"))
+(document:id iface-enabled (checkbox (_ "Enabled") widget-name "state"))
+(document:id iface-dhcp (checkbox (_ "Use DHCP") widget-name "dhcp"))
 
 (define (field x y)
   (y layout-policy -2 -1)
@@ -26,24 +28,24 @@ margin 10
         y))
 
 (field
- "IP address"
+ (_ "IP address")
  (document:id iface-ip (edit "" widget-name "ip")))
 
 (field
- "NetMask"
+ (_ "NetMask")
  (document:id iface-mask (combobox "" rows avail-masks widget-name "mask")))
 
 (field
- "Default gateway"
+ (_ "Default gateway")
  (document:id iface-gw (edit "" widget-name "default")))
 
 (vertical-spacer)
 (or (global 'frame:next)
     (hbox layout-policy 100 -1
           spacing 10
-          (document:id c-button (button "Commit" layout-policy 33 -1))
-          (document:id r-button (button "Reset"  layout-policy 33 -1))
-          (document:id q-button (button "Quit" layout-policy -2 -1))))
+          (document:id c-button (button (_ "Commit") layout-policy 33 -1))
+          (document:id r-button (button (_ "Reset")  layout-policy 33 -1))
+          (document:id q-button (button (_ "Quit") layout-policy -2 -1))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 (define (update-interface name)
@@ -61,7 +63,7 @@ margin 10
 (define (commit-interface name)
   (or (string-null? name)
        (begin
-         (splash-message "Restarting network...")
+         (splash-message (_ "Restarting network..."))
          (document:release)
          (splash-message)
          (woo-catch/message
@@ -76,7 +78,7 @@ margin 10
 
 
 ;;common behaviour
-(ifaces header (vector"Network interfaces")
+(ifaces header (vector (_ "Network interfaces"))
         rows avail-ifaces
         (when selected (update-interface (ifaces text))))
 (ifaces current 0 selected)

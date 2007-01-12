@@ -1,0 +1,62 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-01-12 10:51+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. message from shell backend
+#: ui/net-tcp/messages.scm:2 ui/net-tcp/index.scm:21
+msgid "Enabled"
+msgstr "Включён"
+
+#: ui/net-tcp/messages.scm:3 ui/net-tcp/index.scm:22
+msgid "Use DHCP"
+msgstr "Использовать DHCP"
+
+#: ui/net-tcp/messages.scm:4 ui/net-tcp/index.scm:31
+msgid "IP address"
+msgstr "IP адрес"
+
+#: ui/net-tcp/messages.scm:5 ui/net-tcp/index.scm:39
+msgid "Default gateway"
+msgstr "Шлюз по умолчанию"
+
+#: ui/net-tcp/messages.scm:6 ui/net-tcp/index.scm:35
+msgid "NetMask"
+msgstr "Маска сети"
+
+#: ui/net-tcp/index.scm:18
+msgid "Interface:"
+msgstr "Интерфейс:"
+
+#: ui/net-tcp/index.scm:46
+msgid "Commit"
+msgstr "Принять"
+
+#: ui/net-tcp/index.scm:47
+msgid "Reset"
+msgstr "Перечитать"
+
+#: ui/net-tcp/index.scm:48
+msgid "Quit"
+msgstr "Выход"
+
+#: ui/net-tcp/index.scm:66
+msgid "Restarting network..."
+msgstr "Перегружаются сетевые настройки..."
+
+#. common behaviour
+#: ui/net-tcp/index.scm:81
+msgid "Network interfaces"
+msgstr "Сетевые интерфейсы"
