@@ -3,8 +3,8 @@
 ################### shell file helpers
 
 ifdumptool="/etc/net/scripts/contrib/ifdump"
-ifup="/etc/net/scripts/ifup"
-ifdown="/etc/net/scripts/ifdown"
+ifup="/sbin/ifup"
+ifdown="/sbin/ifdown"
 
 
 . /etc/net/scripts/functions

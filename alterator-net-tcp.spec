@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.4
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -11,7 +11,7 @@ Source:%name-%version.tar
 Summary: alterator module for tcp/ip connections configuration
 License: GPL
 Group: System/Configuration/Other
-Requires: alterator >= 2.9
+Requires: alterator >= 2.9 gettext
 
 BuildPreReq: alterator >= 2.9-alt0.10, alterator-standalone >= 2.5-alt0.3
 
@@ -47,6 +47,10 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Mon Jan 15 2007 Stanislav Ievlev <inger@altlinux.org> 0.4-alt2
+- require gettext
+- fix path to ifup/ifdown tools
+
 * Fri Jan 12 2007 Stanislav Ievlev <inger@altlinux.org> 0.4-alt1
 - add label constraints
 - add translations
