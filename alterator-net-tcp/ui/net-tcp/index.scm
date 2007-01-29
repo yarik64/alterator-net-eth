@@ -59,7 +59,6 @@ margin 10
                                  0))
          (iface-gw text (woo-get-option cmd 'default)))))
 
-
 (define (commit-interface name)
   (or (string-null? name)
        (begin
@@ -73,9 +72,14 @@ margin 10
                                   'dhcp  (iface-dhcp state)
                                   'ip    (iface-ip text)
                                   'mask  (iface-mask text)
-                                  'default (iface-gw text)))))))
-
-
+                                  'default (iface-gw text))
+           (and (global 'frame:next)
+	       (woo-write (string-append "/autoinstall/net-tcp" "/" name)
+                          'state (iface-enabled state)
+                          'dhcp  (iface-dhcp state)
+                          'ip    (iface-ip text)
+                          'mask  (iface-mask text)
+                          'default (iface-gw text))))))))
 
 ;;common behaviour
 (ifaces header (vector (_ "Network interfaces"))

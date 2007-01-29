@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.4
-Release: alt2
+Release: alt3
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -47,6 +47,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Mon Jan 29 2007 Stanislav Ievlev <inger@altlinux.org> 0.4-alt3
+- add support for autoinstall
+
 * Mon Jan 15 2007 Stanislav Ievlev <inger@altlinux.org> 0.4-alt2
 - require gettext
 - fix path to ifup/ifdown tools
