@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-tcp
-Version: 0.4
-Release: alt3
+Version: 0.5
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -47,6 +47,10 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Mon Feb 05 2007 Stanislav Ievlev <inger@altlinux.org> 0.5-alt1
+- add card description to interface list
+- fix wrong grep (/eth0/eth/)
+
 * Mon Jan 29 2007 Stanislav Ievlev <inger@altlinux.org> 0.4-alt3
 - add support for autoinstall
 

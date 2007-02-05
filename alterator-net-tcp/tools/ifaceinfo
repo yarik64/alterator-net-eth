@@ -1,0 +1,25 @@
+#!/bin/sh
+
+usage()
+{
+	echo "Usage: $0 <interface>" > /dev/stderr
+	exit 1
+}
+
+description()
+{
+    echo "$4"
+}
+
+[ -z "$1" ] && usage
+
+device=$(readlink "/sys/class/net/$1/device")
+
+if echo "$device" | grep -q usb; then
+	cat "$device/../manufacturer"
+else
+	slot=${device##*/}
+	if [ -n "$slot" ]; then
+		eval description $(lspci -m -s "$slot")
+	fi
+fi

@@ -56,8 +56,10 @@ list_iface()
 	echo '('
 	/sbin/ip link|egrep '^[[:digit:]]+'|
 		sed -r 's,^[[:digit:]]+\:[[:space:]]+([^:]+).*,\1,'|
-		grep 'eth0'|
-                sed 's,.*,("&"),'
+		grep 'eth'|
+		while read iface; do
+		    printf '("%s (%s)")' "$iface" "$(ifaceinfo "$iface")"
+		done
 	echo ')'
 }
 
@@ -139,13 +141,13 @@ on_message()
 			if [ "$in__objects" == "/" ];then
 				echo '()'
 			else
-				read_iface "$in__objects"
+				read_iface "${in__objects%% *}"
 			fi
 			;;
 		write)
-			in_mask=$(echo "$in_mask"| sed -r 's,^(/)?([0-9]+).*,\2,')
-			write_iface "$in__objects"
-			echo "()"
+			in_mask="$(echo "$in_mask"| sed -r 's,^(/)?([0-9]+).*,\2,')"
+			write_iface "${in__objects%% *}"
+			echo '()'
 			;;
 		*)
 			echo '#f'
@@ -154,4 +156,3 @@ on_message()
 }
 
 message_loop
-

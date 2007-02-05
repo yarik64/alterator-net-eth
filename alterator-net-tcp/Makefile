@@ -13,7 +13,8 @@ include /usr/share/alterator/build/backend.mak
 include /usr/share/alterator/build/standalone.mak
 
 build-tools:
-	make -C tools
+	make -C tools/maskname
 
 install-tools:
-	make -C tools bindir=$(bindir) install
+	make -C tools/maskname bindir=$(bindir) install
+	install -Dpm755 tools/ifaceinfo $(bindir)/ifaceinfo
