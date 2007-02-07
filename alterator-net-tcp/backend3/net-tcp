@@ -4,12 +4,12 @@
 
 run_ifup()
 {
-    env -i PATH="$PATH" HOME="$HOME" TMPDIR="$TMPDIR" /sbin/ifup
+    env -i PATH="$PATH" HOME="$HOME" TMPDIR="$TMPDIR" /sbin/ifup "$1"
 }
 
 run_ifdown()
 {
-    env -i PATH="$PATH" HOME="$HOME" TMPDIR="$TMPDIR" /sbin/ifdown
+    env -i PATH="$PATH" HOME="$HOME" TMPDIR="$TMPDIR" /sbin/ifdown "$1"
 }
 
 ifdumptool="/etc/net/scripts/contrib/ifdump"
