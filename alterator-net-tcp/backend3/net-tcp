@@ -2,12 +2,22 @@
 
 ################### shell file helpers
 
-ifdumptool="/etc/net/scripts/contrib/ifdump"
-ifup="/sbin/ifup"
-ifdown="/sbin/ifdown"
+run_ifup()
+{
+    env -i PATH="$PATH" HOME="$HOME" TMPDIR="$TMPDIR" /sbin/ifup
+}
 
+run_ifdown()
+{
+    env -i PATH="$PATH" HOME="$HOME" TMPDIR="$TMPDIR" /sbin/ifdown
+}
+
+ifdumptool="/etc/net/scripts/contrib/ifdump"
+ifup="run_ifup"
+ifdown="run_ifdown"
 
 . /etc/net/scripts/functions
+
 
 shell_add_or_subst()
 {
