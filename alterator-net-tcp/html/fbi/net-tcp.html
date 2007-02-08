@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<!-- tcp connections module -->
+<html>
+  <head>
+    <title>Alterator-FBI:Network connection</title>
+    <link type="text/css" rel="stylesheet" href="/fbi/net-connect.css"/>
+  </head>
+  <body>
+    <div class="title">
+      <img src="/fbi/alterator-connect.png" id="net-tcp-img"/>
+      TCP connections
+    </div>
+    <form method="POST" class="selector-chooser">
+      <span class="label" translate="_">Interface:</span>
+      <span class="selector" >
+	<select name="name"/>
+	<input type="submit" name="card-index-select" value="Select"/>
+      </span>
+    </form>
+    <hr/>
+    <form method="POST" class="selector-data">
+      <table>
+	<div class="selector-name">
+	</div>
+	<tbody>
+	  <tr>
+	    <td><label for="state">state</label></td>
+	    <td><input type="checkbox" name="state"/></td>
+	  </tr>
+	  <tr>
+	    <td><label for="dhcp">dhcp</label></td>
+	    <td><input type="checkbox" name="dhcp"/></td>
+	  </tr>
+	  <tr>
+	    <td><label for="ip">ip</label></td>
+	    <td><input type="text" name="ip"/></td>
+	  </tr>
+	  <tr>
+	    <td><label for="mask">mask</label></td>
+	    <td><select name="mask" optionlist="avail_masks"></select></td>
+	  </tr>
+	  <tr>
+	    <td><label for="default">default</label></td>
+	    <td><input type="text" name="default"/></td>
+	  </tr>
+	</tbody>
+      </table>
+      <span class="form-actions">
+	<input type="submit" name="card-index-apply"/>
+	<input type="reset" name="card-index-reset" />
+      </span>
+    </form>
+  </body>
+</html>

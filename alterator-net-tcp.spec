@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-tcp
-Version: 0.5
-Release: alt2
+Version: 0.6
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -13,7 +13,13 @@ License: GPL
 Group: System/Configuration/Other
 Requires: alterator >= 2.9 gettext
 
-BuildPreReq: alterator >= 2.9-alt0.10, alterator-standalone >= 2.5-alt0.3
+BuildPreReq: alterator >= 2.9-alt0.10, alterator-standalone >= 2.5-alt0.3, alterator-fbi >= 0.7-alt1
+
+Provides: alterator-network = %version
+Obsoletes: alterator-network
+
+Provides: alterator-backend-simple_etcnet = %version
+Obsoletes: alterator-backend-simple_etcnet
 
 # Automatically added by buildreq on Mon Jul 11 2005 (-bi)
 BuildRequires: alterator
@@ -28,7 +34,7 @@ alterator module for tcp/ip connections configuration
 %make_build libdir=%_libdir
 
 %install
-%makeinstall DESTDIR=%buildroot
+%makeinstall HTMLROOT=%buildroot%_var/www/
 %find_lang %name
 
 %post
@@ -42,11 +48,16 @@ alterator module for tcp/ip connections configuration
 %_bindir/*
 %_altdata_dir/maps/*
 %_altdata_dir/ui/*/
-%_alterator_backend3dir/*
+%_var/www/html/*
 %_desktopdir/*
+%_alterator_backend3dir/*
 
 
 %changelog
+* Thu Feb 08 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt1
+- add fbi data
+- obsolete alterator-network and alterator-backend-simple_etcnet
+
 * Wed Feb 07 2007 Stanislav Ievlev <inger@altlinux.org> 0.5-alt2
 - clean environment before ifup/ifdown start (etcnet has problems)
 

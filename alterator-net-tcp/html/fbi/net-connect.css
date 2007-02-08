@@ -1,0 +1,15 @@
+@import url(/fbi/alterator.css);
+
+.selector-actions {
+	position: absolute;
+	right: 10px;
+}
+
+.selector-chooser {
+	width: 100%;
+}
+
+#net-tcp-img {
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/fbi/alerator-connect.png');
+}
+    
