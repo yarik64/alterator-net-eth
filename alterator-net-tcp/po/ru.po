@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-01-12 10:51+0300\n"
+"POT-Creation-Date: 2007-02-08 17:59+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,30 +15,30 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#. message from shell backend
-#: ui/net-tcp/messages.scm:2 ui/net-tcp/index.scm:21
-msgid "Enabled"
-msgstr "Включён"
-
-#: ui/net-tcp/messages.scm:3 ui/net-tcp/index.scm:22
-msgid "Use DHCP"
-msgstr "Использовать DHCP"
-
-#: ui/net-tcp/messages.scm:4 ui/net-tcp/index.scm:31
-msgid "IP address"
-msgstr "IP адрес"
-
-#: ui/net-tcp/messages.scm:5 ui/net-tcp/index.scm:39
-msgid "Default gateway"
-msgstr "Шлюз по умолчанию"
-
-#: ui/net-tcp/messages.scm:6 ui/net-tcp/index.scm:35
-msgid "NetMask"
-msgstr "Маска сети"
-
 #: ui/net-tcp/index.scm:18
 msgid "Interface:"
 msgstr "Интерфейс:"
+
+#. message from shell backend
+#: ui/net-tcp/index.scm:21 ui/net-tcp/messages.scm:2
+msgid "Enabled"
+msgstr "Включён"
+
+#: ui/net-tcp/index.scm:22 ui/net-tcp/messages.scm:3
+msgid "Use DHCP"
+msgstr "Использовать DHCP"
+
+#: ui/net-tcp/index.scm:31 ui/net-tcp/messages.scm:4
+msgid "IP address"
+msgstr "IP адрес"
+
+#: ui/net-tcp/index.scm:35 ui/net-tcp/messages.scm:6
+msgid "NetMask"
+msgstr "Маска сети"
+
+#: ui/net-tcp/index.scm:39 ui/net-tcp/messages.scm:5
+msgid "Default gateway"
+msgstr "Шлюз по умолчанию"
 
 #: ui/net-tcp/index.scm:46
 msgid "Commit"
@@ -52,11 +52,19 @@ msgstr "Перечитать"
 msgid "Quit"
 msgstr "Выход"
 
-#: ui/net-tcp/index.scm:66
+#: ui/net-tcp/index.scm:65
 msgid "Restarting network..."
 msgstr "Перегружаются сетевые настройки..."
 
 #. common behaviour
-#: ui/net-tcp/index.scm:81
+#: ui/net-tcp/index.scm:85
 msgid "Network interfaces"
 msgstr "Сетевые интерфейсы"
+
+#: ui/net-tcp/messages.scm:7
+msgid "TCP/IP Connections"
+msgstr "TCP/IP соединения"
+
+#: ui/net-tcp/messages.scm:8
+msgid "TCP/IP connections administration"
+msgstr "Управление TCP/IP соединениями"

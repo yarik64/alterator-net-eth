@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-01-12 10:51+0300\n"
+"POT-Creation-Date: 2007-02-08 17:59+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,29 +16,29 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: ui/net-tcp/index.scm:18
+msgid "Interface:"
+msgstr ""
+
 #. message from shell backend
-#: ui/net-tcp/messages.scm:2 ui/net-tcp/index.scm:21
+#: ui/net-tcp/index.scm:21 ui/net-tcp/messages.scm:2
 msgid "Enabled"
 msgstr ""
 
-#: ui/net-tcp/messages.scm:3 ui/net-tcp/index.scm:22
+#: ui/net-tcp/index.scm:22 ui/net-tcp/messages.scm:3
 msgid "Use DHCP"
 msgstr ""
 
-#: ui/net-tcp/messages.scm:4 ui/net-tcp/index.scm:31
+#: ui/net-tcp/index.scm:31 ui/net-tcp/messages.scm:4
 msgid "IP address"
 msgstr ""
 
-#: ui/net-tcp/messages.scm:5 ui/net-tcp/index.scm:39
-msgid "Default gateway"
-msgstr ""
-
-#: ui/net-tcp/messages.scm:6 ui/net-tcp/index.scm:35
+#: ui/net-tcp/index.scm:35 ui/net-tcp/messages.scm:6
 msgid "NetMask"
 msgstr ""
 
-#: ui/net-tcp/index.scm:18
-msgid "Interface:"
+#: ui/net-tcp/index.scm:39 ui/net-tcp/messages.scm:5
+msgid "Default gateway"
 msgstr ""
 
 #: ui/net-tcp/index.scm:46
@@ -53,11 +53,19 @@ msgstr ""
 msgid "Quit"
 msgstr ""
 
-#: ui/net-tcp/index.scm:66
+#: ui/net-tcp/index.scm:65
 msgid "Restarting network..."
 msgstr ""
 
 #. common behaviour
-#: ui/net-tcp/index.scm:81
+#: ui/net-tcp/index.scm:85
 msgid "Network interfaces"
+msgstr ""
+
+#: ui/net-tcp/messages.scm:7
+msgid "TCP/IP Connections"
+msgstr ""
+
+#: ui/net-tcp/messages.scm:8
+msgid "TCP/IP connections administration"
 msgstr ""

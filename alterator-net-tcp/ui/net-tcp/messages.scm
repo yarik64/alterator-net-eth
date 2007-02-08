@@ -4,3 +4,5 @@
 (_ "IP address")
 (_ "Default gateway")
 (_ "NetMask")
+(_ "TCP/IP Connections")
+(_ "TCP/IP connections administration")

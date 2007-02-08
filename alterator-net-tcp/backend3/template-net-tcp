@@ -1,5 +1,10 @@
 #!/bin/sh 
 
+_()
+{
+LANG=${in_language%%;*}.utf8 gettext "alterator-net-tcp" "$1"
+}
+
 #turn off auto expansion
 set -f
 
@@ -18,6 +23,12 @@ on_message()
 			else
 				echo '#f'
 			fi
+			;;
+		info)
+			echo '('
+			printf ' title "%s"' "$(_ "TCP/IP Connections")"
+			printf ' description "%s"' "$(_ "TCP/IP connections administration")"
+			echo ')'
 			;;
 		*)
 			echo '#f'
