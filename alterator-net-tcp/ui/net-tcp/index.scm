@@ -84,5 +84,5 @@ margin 10
 (and (global 'frame:next)
      (document:root (when loaded
                       (frame:next-activity #f)
-                      (frame:prev-activity #f))))
+                      (frame:back-activity #f))))
 

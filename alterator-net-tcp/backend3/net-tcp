@@ -64,12 +64,11 @@ list_mask()
 list_iface()
 {
 	echo '('
-	/sbin/ip link|egrep '^[[:digit:]]+'|
-		sed -r 's,^[[:digit:]]+\:[[:space:]]+([^:]+).*,\1,'|
-		grep 'eth'|
-		while read iface; do
-		    printf '("%s (%s)")' "$iface" "$(ifaceinfo "$iface")"
-		done
+	/sbin/ip -o a l|
+	    sed -ne 's|^[0-9]\+: \([^:]\+\): [^/]* link/ether .*|\1|p'|
+	    while read iface; do
+	        printf '("%s (%s)")' "$iface" "$(ifaceinfo "$iface")"
+	    done
 	echo ')'
 }
 

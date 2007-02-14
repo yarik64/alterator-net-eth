@@ -57,6 +57,7 @@ alterator module for tcp/ip connections configuration
 * Wed Feb 14 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt2
 - fix ui layout
 - add hrefs to wireless settings and general settings
+- improve interface listing algo
 
 * Thu Feb 08 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt1
 - add fbi data
