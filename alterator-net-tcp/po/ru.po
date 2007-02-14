@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-08 17:59+0300\n"
+"POT-Creation-Date: 2007-02-14 15:01+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,51 +15,63 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ui/net-tcp/index.scm:18
-msgid "Interface:"
-msgstr "Интерфейс:"
+#: ui/net-tcp/index.scm:17
+msgid "General network settings"
+msgstr "Общие настройки сети"
+
+#: ui/net-tcp/index.scm:19
+msgid "Wireless settings"
+msgstr "Настройки для беспроводных интерфейсов"
+
+#: ui/net-tcp/index.scm:24
+msgid "Interface"
+msgstr "Интерфейс"
 
 #. message from shell backend
-#: ui/net-tcp/index.scm:21 ui/net-tcp/messages.scm:2
+#: ui/net-tcp/index.scm:26 ui/net-tcp/messages.scm:2
 msgid "Enabled"
 msgstr "Включён"
 
-#: ui/net-tcp/index.scm:22 ui/net-tcp/messages.scm:3
+#: ui/net-tcp/index.scm:27 ui/net-tcp/messages.scm:3
 msgid "Use DHCP"
 msgstr "Использовать DHCP"
 
-#: ui/net-tcp/index.scm:31 ui/net-tcp/messages.scm:4
+#: ui/net-tcp/index.scm:28 ui/net-tcp/messages.scm:4
 msgid "IP address"
 msgstr "IP адрес"
 
-#: ui/net-tcp/index.scm:35 ui/net-tcp/messages.scm:6
-msgid "NetMask"
+#: ui/net-tcp/index.scm:29
+msgid "Netmask"
 msgstr "Маска сети"
 
-#: ui/net-tcp/index.scm:39 ui/net-tcp/messages.scm:5
+#: ui/net-tcp/index.scm:30 ui/net-tcp/messages.scm:5
 msgid "Default gateway"
 msgstr "Шлюз по умолчанию"
 
-#: ui/net-tcp/index.scm:46
+#: ui/net-tcp/index.scm:33
 msgid "Commit"
 msgstr "Принять"
 
-#: ui/net-tcp/index.scm:47
+#: ui/net-tcp/index.scm:34
 msgid "Reset"
 msgstr "Перечитать"
 
-#: ui/net-tcp/index.scm:48
+#: ui/net-tcp/index.scm:35
 msgid "Quit"
 msgstr "Выход"
 
-#: ui/net-tcp/index.scm:65
+#: ui/net-tcp/index.scm:52
 msgid "Restarting network..."
 msgstr "Перегружаются сетевые настройки..."
 
 #. common behaviour
-#: ui/net-tcp/index.scm:85
+#: ui/net-tcp/index.scm:72
 msgid "Network interfaces"
 msgstr "Сетевые интерфейсы"
+
+#: ui/net-tcp/messages.scm:6
+msgid "NetMask"
+msgstr "Маска сети"
 
 #: ui/net-tcp/messages.scm:7
 msgid "TCP/IP Connections"
