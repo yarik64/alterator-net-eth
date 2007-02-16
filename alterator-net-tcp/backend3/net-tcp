@@ -80,7 +80,7 @@ read_iface()
 	ip="${addr%%/*}"
 	mask="${addr#$ip}"; mask="${mask#/}"
 	printf 'ip "%s" mask "%s"\n' "$ip" "$(print_mask "$mask")"
-	printf 'wireless %s' "$(grep -qw "^$name:" /proc/net/wireless && echo "#t" || echo "#f")"
+	printf 'wireless %s' "$([ -d "/sys/class/net/$name/wireless" ] && echo "#t" || echo "#f")"
 	printf 'default "%s"\n' \
 		$(grep '^default' "/etc/net/ifaces/$name/ipv4route" | sed -r 's,default[[:space:]]+via[[:space:]],,' || echo "")
 

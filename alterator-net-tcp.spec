@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.6
-Release: alt2
+Release: alt3
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -54,6 +54,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Fri Feb 16 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt3
+- improve wireless detection
+
 * Wed Feb 14 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt2
 - fix ui layout
 - add hrefs to wireless settings and general settings
