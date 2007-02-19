@@ -44,32 +44,24 @@ shell_get()
 }
 
 ################### interface modificators
-print_mask()
-{
-	if [ -n "$1" ] ;then
-		printf '/%s (%s)\n' "$1" $(maskname "$1")
-	else
-		echo
-	fi
-}
-
 list_mask()
 {
-	echo '('
-	for i in `seq 0 32`; do print_mask "$i"; done | sed 's,.*,("&"),'
-	echo ')'
+    echo '('
+    for i in `seq 0 32`; do 
+        printf '("%s" label "/%s (%s)")' "$i" "$i" "$(maskname "$i")"
+    done
+    echo ')'
 }
-
 
 list_iface()
 {
-	echo '('
-	/sbin/ip -o a l|
-	    sed -ne 's|^[0-9]\+: \([^:]\+\): [^/]* link/ether .*|\1|p'|
-	    while read iface; do
-	        printf '("%s (%s)")' "$iface" "$(ifaceinfo "$iface")"
-	    done
-	echo ')'
+    echo '('
+    /sbin/ip -o a l|
+        sed -ne 's|^[0-9]\+: \([^:]\+\): [^/]* link/ether .*|\1|p'|
+        while read iface; do
+            printf '("%s" label "%s (%s)")' "$iface" "$iface" "$(ifaceinfo "$iface")"
+        done
+    echo ')'
 }
 
 read_iface()
@@ -79,7 +71,7 @@ read_iface()
 	addr=$(grep '^[0-9]' "/etc/net/ifaces/$name/ipv4address" | head -n1 || echo "")
 	ip="${addr%%/*}"
 	mask="${addr#$ip}"; mask="${mask#/}"
-	printf 'ip "%s" mask "%s"\n' "$ip" "$(print_mask "$mask")"
+	printf 'ip "%s" mask "%s"\n' "$ip" "$mask"
 	printf 'wireless %s' "$([ -d "/sys/class/net/$name/wireless" ] && echo "#t" || echo "#f")"
 	printf 'default "%s"\n' \
 		$(grep '^default' "/etc/net/ifaces/$name/ipv4route" | sed -r 's,default[[:space:]]+via[[:space:]],,' || echo "")
@@ -109,10 +101,8 @@ write_iface()
 		shell_add_or_subst "DISABLED=" \
 			$([ "$in_state" = "#t" ] && echo "no" || echo "yes") \
 			"$tmpfile"
-#	/sbin/service network stop >&2 &&
 	"$ifdown" "$name" >&2 &&
 	mv -f "$tmpfile" "/etc/net/ifaces/$name/options" &&
-#	/sbin/service network start >&2
 	"$ifup" "$name" >&2
 }
 
@@ -151,12 +141,11 @@ on_message()
 			if [ "$in__objects" == "/" ];then
 				echo '()'
 			else
-				read_iface "${in__objects%% *}"
+				read_iface "${in__objects}"
 			fi
 			;;
 		write)
-			in_mask="$(echo "$in_mask"| sed -r 's,^(/)?([0-9]+).*,\2,')"
-			write_iface "${in__objects%% *}"
+			write_iface "${in__objects}"
 			echo '()'
 			;;
 		*)
