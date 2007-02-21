@@ -81,8 +81,12 @@ list_iface()
 
 read_iface()
 {
-	echo "("
 	local name="$1" && shift
+	if [ -z "$name" -o ! -d "/etc/net/ifaces/$name" ]; then
+		printf '(ip "" mask "" wireless #f default "" dhcp #f state #f)\n'
+		return
+	fi
+	echo "("
 	addr=$(grep '^[0-9]' "/etc/net/ifaces/$name/ipv4address" | head -n1 || echo "")
 	ip="${addr%%/*}"
 	mask="${addr#$ip}"; mask="${mask#/}"
