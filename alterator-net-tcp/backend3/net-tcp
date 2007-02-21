@@ -86,19 +86,27 @@ read_iface()
 		printf '(ip "" mask "" wireless #f default "" dhcp #f state #f)\n'
 		return
 	fi
+	local addr= ip= mask=
 	echo "("
-	addr=$(grep '^[0-9]' "/etc/net/ifaces/$name/ipv4address" | head -n1 || echo "")
-	ip="${addr%%/*}"
-	mask="${addr#$ip}"; mask="${mask#/}"
+	[ ! -s "/etc/net/ifaces/$name/ipv4address" ] ||
+		addr=$(grep '^[0-9]' "/etc/net/ifaces/$name/ipv4address" | head -n1 || echo "")
+
+	if [ -n "$addr" ]; then
+		ip="${addr%%/*}"
+		mask="${addr#$ip}"; mask="${mask#/}"
+	fi
+
 	printf 'ip "%s" mask "%s"\n' "$ip" "$mask"
 	printf 'wireless %s' "$([ -d "/sys/class/net/$name/wireless" ] && echo "#t" || echo "#f")"
-	printf 'default "%s"\n' \
-		$(grep '^default' "/etc/net/ifaces/$name/ipv4route" | sed -r 's,default[[:space:]]+via[[:space:]],,' || echo "")
+
+	[ ! -s "/etc/net/ifaces/$name/ipv4route" ] ||
+		printf 'default "%s"\n' \
+			$(grep '^default' "/etc/net/ifaces/$name/ipv4route" | sed -r 's,default[[:space:]]+via[[:space:]],,' || echo "")
 
 	(eval $("$ifdumptool" "$name")
 		[ "$BOOTPROTO" = "dhcp" ] && echo "dhcp #t" || echo "dhcp #f"
 		is_yes "$DISABLED" && echo "state #f" || echo "state #t")
-		
+
 	echo ")"
 }
 
@@ -110,8 +118,9 @@ write_iface()
 		printf '%s/%s\n' "$in_ip" "$in_mask" >"/etc/net/ifaces/$name/ipv4address"
 	[ -n "$in_default" ] &&
 		printf 'default via %s\n' "$in_default" >"/etc/net/ifaces/$name/ipv4route"
-	tmpfile=$(mktemp "/etc/net/ifaces/$name/options.XXXXXX")
-	cat "/etc/net/ifaces/$name/options" >"$tmpfile" 
+	local tmpfile=$(mktemp "/etc/net/ifaces/$name/options.XXXXXX")
+	[ ! -s "/etc/net/ifaces/$name/options" ] ||
+		cat "/etc/net/ifaces/$name/options" >"$tmpfile"
 	[ -n "$in_dhcp" ] &&
 		shell_add_or_subst "BOOTPROTO=" \
 			$([ "$in_dhcp" = "#t" ] && echo "dhcp" || echo "static")\
@@ -120,6 +129,10 @@ write_iface()
 		shell_add_or_subst "DISABLED=" \
 			$([ "$in_state" = "#t" ] && echo "no" || echo "yes") \
 			"$tmpfile"
+	if [ ! -s "$tmpfile" ]; then
+		rm "$tmpfile"
+		return
+	fi
 	"$ifdown" "$name" >&2 &&
 	mv -f "$tmpfile" "/etc/net/ifaces/$name/options" &&
 	"$ifup" "$name" >&2
