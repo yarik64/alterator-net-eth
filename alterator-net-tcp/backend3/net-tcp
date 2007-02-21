@@ -16,6 +16,7 @@ ifdumptool="/etc/net/scripts/contrib/ifdump"
 ifup="run_ifup"
 ifdown="run_ifdown"
 
+
 . /etc/net/scripts/functions
 
 
@@ -44,6 +45,20 @@ shell_get()
 }
 
 ################### interface modificators
+update_iftab()
+{
+    local IFTAB_CONFIG="/etc/iftab"
+    /sbin/ip -o a l|
+	sed -nre 's|^[0-9]+: ([^:]+): [^/]* link/ether ([a-f0-9:]+).*|\1 \2|p'|
+	while read name mac;do
+	    if grep -qs "^$name[[:space:]]" "$IFTAB_CONFIG";then
+		sed -r -e "s,^($name[[:space:]]+mac[[:space:]]+).*,\1$mac," -i "$IFTAB_CONFIG"
+	    else
+		printf "%s\tmac %s\n" "$name" "$mac" >>"$IFTAB_CONFIG"
+	    fi
+	done
+}
+
 list_mask()
 {
     echo '('
@@ -112,6 +127,9 @@ LANG=${in_language%%;*}.utf8 gettext "alterator-net-tcp" "$1"
 }
 
 . /usr/share/alterator/build/backend3.sh
+
+#initial actions
+update_iftab
 
 on_message()
 {

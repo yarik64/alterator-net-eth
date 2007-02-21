@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.6
-Release: alt4
+Release: alt5
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -54,6 +54,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Wed Feb 21 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt5
+- automatically fill iftab
+
 * Mon Feb 19 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt4
 - simplify backend: separate interface name and interface label
 - html: add link to top-level menu
