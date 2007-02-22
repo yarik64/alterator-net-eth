@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.6
-Release: alt5
+Release: alt6
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -54,6 +54,11 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Thu Feb 22 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt6
+- improvements from legion
+  (Return default parameters in read_iface() if iface does not exist.
+   Add some checks.)
+
 * Wed Feb 21 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt5
 - automatically fill iftab
 
