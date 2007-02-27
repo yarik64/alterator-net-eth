@@ -59,10 +59,12 @@ margin 10
  (document:id iface-gw (edit "" widget-name "default"))
  (spacer))
 
-(hbox align "center"
-      (document:id c-button (button (_ "Commit") layout-policy 33 -1))
-      (document:id r-button (button (_ "Reset")  layout-policy 33 -1))
-      (or (global 'frame:next) (document:id q-button (button (_ "Quit") layout-policy -2 -1))))
+(or (global 'frame:next)
+    (hbox align "center"
+          (document:id c-button (button (_ "Commit") layout-policy 33 -1))
+          (document:id r-button (button (_ "Reset")  layout-policy 33 -1))
+          (document:id s-button (button (_ "Restart network")  layout-policy 33 -1))
+          (document:id q-button (button (_ "Quit") layout-policy -2 -1))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 (define (prev-interface)
@@ -127,10 +129,11 @@ margin 10
  (when loaded
        (update-constraints "write" "/net-tcp")))
 
-(c-button (when clicked (commit-interface (current-interface))))
-(r-button (when clicked (update-interface (current-interface))))
-(or (global 'frame:next) (q-button (when clicked (document:end))))
-
-(and (global 'frame:next)
-     (frame:on-back (thunk (restart-interfaces) (frame:replace "/net-general") 'cancel))
-     (frame:on-next (thunk (restart-interfaces) (frame:replace "/net-general") 'cancel)))
+(if (global 'frame:next)
+    (begin
+      (frame:on-back (thunk (restart-interfaces) (frame:replace "/net-general") 'cancel))
+      (frame:on-next (thunk (restart-interfaces) (frame:replace "/net-general") 'cancel)))
+    (begin (c-button (when clicked (commit-interface (current-interface))))
+           (r-button (when clicked (update-interface (current-interface))))
+           (s-button (when clicked (restart-interfaces)))
+           (q-button (when clicked (document:end)))))

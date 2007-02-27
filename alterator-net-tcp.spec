@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.6
-Release: alt6
+Release: alt7
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -54,6 +54,11 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Tue Feb 27 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt7
+- another improvements from legion
+  (Auto save network settings on select another interface,
+   Restart network interfaces on exit.)
+
 * Thu Feb 22 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt6
 - improvements from legion
   (Return default parameters in read_iface() if iface does not exist.
