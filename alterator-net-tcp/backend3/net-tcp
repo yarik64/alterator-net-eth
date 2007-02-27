@@ -79,6 +79,14 @@ list_iface()
     echo ')'
 }
 
+restart_ifaces() {
+    /sbin/ip -o a l|
+        sed -ne 's|^[0-9]\+: \([^:]\+\): [^/]* link/ether .*|\1|p'|
+        while read iface; do
+		"$ifdown" "$iface" && "$ifup" "$iface"
+        done >&2
+}
+
 read_iface()
 {
 	local name="$1" && shift
@@ -133,9 +141,7 @@ write_iface()
 		rm "$tmpfile"
 		return
 	fi
-	"$ifdown" "$name" >&2 &&
-	mv -f "$tmpfile" "/etc/net/ifaces/$name/options" &&
-	"$ifup" "$name" >&2
+	mv -f "$tmpfile" "/etc/net/ifaces/$name/options"
 }
 
 _()
@@ -181,6 +187,10 @@ on_message()
 			;;
 		write)
 			write_iface "${in__objects}"
+			echo '()'
+			;;
+		restart)
+			restart_ifaces
 			echo '()'
 			;;
 		*)

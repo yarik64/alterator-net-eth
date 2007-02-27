@@ -3,6 +3,8 @@
 
 (document:envelop with-translation _ "alterator-net-tcp")
 
+(define prev-current (make-cell 0))
+
 width 600
 height 400
 
@@ -19,9 +21,10 @@ margin 10
 (hbox
  align "center"
  (button (_ "General network settings")
-         (when clicked (frame:replace "/net-general")))
+         (when clicked (and (restart-interfaces)
+			    (frame:replace "/net-general"))))
  (document:id w-button (button (_ "Wireless settings")
-                               (when clicked (frame:replace "/net-wifi")))))
+			       (when clicked (frame:replace "/net-wifi")))))
 
 (gridbox
  columns "20;20;40;20"
@@ -62,11 +65,22 @@ margin 10
       (or (global 'frame:next) (document:id q-button (button (_ "Quit") layout-policy -2 -1))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
+(define (prev-interface)
+  (car (list-ref avail-ifaces (cell-ref prev-current))))
+
 (define (current-interface)
   (car (list-ref avail-ifaces (ifaces current))))
 
 (define (current-mask)
   (car (list-ref avail-masks (iface-mask current))))
+
+(define (restart-interfaces)
+  (commit-interface (prev-interface))
+  (splash-message (_ "Restarting network..."))
+  (document:release)
+  (splash-message)
+  (woo-catch/message (thunk (and  (woo-try "restart" "/net-tcp")
+				  (woo-try "restart" "/autoinstall/net-tcp")))))
 
 (define (update-interface name)
   (and (not-empty-string? name)
@@ -81,19 +95,16 @@ margin 10
 
 (define (commit-interface name)
   (or (string-null? name)
-       (begin
-         (splash-message (_ "Restarting network..."))
-         (document:release)
-         (splash-message)
-         (woo-catch/message
-          (thunk
-           (woo-write/constraints (string-append "/net-tcp" "/" name)
-                                  'state (iface-enabled state)
-                                  'dhcp  (iface-dhcp state)
-                                  'ip    (iface-ip text)
-                                  'mask  (current-mask)
-                                  'default (iface-gw text))
-           (and (global 'frame:next)
+      (begin
+	(woo-catch/message
+	 (thunk
+	  (woo-write/constraints (string-append "/net-tcp" "/" name)
+				 'state (iface-enabled state)
+				 'dhcp  (iface-dhcp state)
+				 'ip    (iface-ip text)
+				 'mask  (current-mask)
+				 'default (iface-gw text))
+	  (and (global 'frame:next)
 	       (woo-write (string-append "/autoinstall/net-tcp" "/" name)
                           'state (iface-enabled state)
                           'dhcp  (iface-dhcp state)
@@ -104,17 +115,22 @@ margin 10
 ;;common behaviour
 (ifaces header (vector (_ "Network interfaces"))
         rows (map cdr avail-ifaces)
-        (when selected (update-interface (current-interface))))
-(ifaces current 0 selected)
+        (when selected (and (commit-interface (prev-interface))
+			    (update-interface (current-interface))
+			    (cell-set! prev-current (ifaces current)))))
+
+(and (positive? (ifaces count))
+     (begin (ifaces current 0)
+	    (update-interface (current-interface))))
+
 (document:root
  (when loaded
-   (update-constraints "write" "/net-tcp")))
+       (update-constraints "write" "/net-tcp")))
 
 (c-button (when clicked (commit-interface (current-interface))))
 (r-button (when clicked (update-interface (current-interface))))
 (or (global 'frame:next) (q-button (when clicked (document:end))))
 
 (and (global 'frame:next)
-     (document:root (when loaded
-                      (frame:next-activity #f)
-                      (frame:back-activity #f))))
+     (frame:on-back (thunk (restart-interfaces) (frame:replace "/net-general") 'cancel))
+     (frame:on-next (thunk (restart-interfaces) (frame:replace "/net-general") 'cancel)))
