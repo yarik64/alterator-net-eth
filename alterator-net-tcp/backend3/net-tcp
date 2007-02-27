@@ -79,11 +79,16 @@ list_iface()
     echo ')'
 }
 
-restart_ifaces() {
+restart_iface()
+{
+    "$ifdown" "$1" && "$ifup" "$1"
+}
+
+restart_all_ifaces() {
     /sbin/ip -o a l|
         sed -ne 's|^[0-9]\+: \([^:]\+\): [^/]* link/ether .*|\1|p'|
         while read iface; do
-		"$ifdown" "$iface" && "$ifup" "$iface"
+		restart_iface "$iface"
         done >&2
 }
 
@@ -187,10 +192,11 @@ on_message()
 			;;
 		write)
 			write_iface "${in__objects}"
+			[ "$in_restart" = "#f" ] || restart_iface "$in__objects"
 			echo '()'
 			;;
 		restart)
-			restart_ifaces
+			restart_all_ifaces
 			echo '()'
 			;;
 		*)
