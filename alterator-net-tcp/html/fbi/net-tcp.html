@@ -4,6 +4,10 @@
   <head>
     <title>Alterator-FBI:Network connection</title>
     <link type="text/css" rel="stylesheet" href="/fbi/net-connect.css"/>
+
+    <!-- ajax selector -->
+    <script src="/fbi/selector.js"/>
+
   </head>
   <body>
     <div class="main-menu"/>
@@ -11,7 +15,7 @@
       <img src="/fbi/alterator-connect.png" id="net-tcp-img"/>
       TCP connections
     </div>
-    <form method="POST" class="selector-chooser">
+    <form method="POST" class="selector-chooser" id="ajax-selector">
       <span class="label" translate="_">Interface:</span>
       <span class="selector" >
 	<select name="name"/>
