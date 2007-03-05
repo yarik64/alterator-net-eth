@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.6
-Release: alt7
+Release: alt8
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -54,6 +54,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Mon Mar 05 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt8
+- prepare for tabbox
+
 * Tue Feb 27 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt7
 - another improvements from legion
   (Auto save network settings on select another interface,

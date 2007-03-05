@@ -3,32 +3,35 @@
 (define (prev-interface)
   (car (list-ref avail-ifaces (cell-ref prev-current))))
 
-(define (restart-interfaces)
-  (woo-catch/message
-   (thunk (woo-try "restart" "/net-tcp")
-          (woo-try "restart" "/autoinstall/net-tcp"))))
-
-(define (auto-restart-interfaces)
-  (woo-try "restart" "/autoinstall/net-tcp"))
-
 (define (auto-commit-interface name . args)
-  (apply
-   woo-write (string-append "/autoinstall/net-tcp" "/" name)
+  (and name (apply
+             woo-write (string-append "/autoinstall/net-tcp" "/" name)
              'state (iface-enabled state)
              'dhcp  (iface-dhcp state)
              'ip    (iface-ip text)
              'mask  (current-mask)
-             'default (iface-gw text) args))
+             'default (iface-gw text) args)))
 
+(define (commit-current-interface)
+  (commit-interface (current-interface) 'restart #f)
+  (auto-commit-interface (current-interface) 'restart #f))
+
+(define (restart-interfaces)
+  (and  (commit-current-interface)
+        (woo-catch/message
+          (thunk 
+            (woo-try "restart" "/net-tcp")
+            (woo-try "restart" "/autoinstall/net-tcp")))))
+ 
 (define (install-behaviour)
   (ifaces (when selected
             (and (commit-interface (prev-interface) 'restart #f)
                  (auto-commit-interface (prev-interface) 'restart #f)
                  (update-interface (current-interface))
                  (cell-set! prev-current (ifaces current)))))
-  (g-button (when clicked (and (restart-interfaces)
-                               (auto-restart-interfaces)
-                               (frame:replace "/net-general"))))
-  (frame:on-back (thunk (restart-interfaces) (frame:replace "/net-general") 'cancel))
-  (frame:on-next (thunk (restart-interfaces) (frame:replace "/net-general") 'cancel)))
+  (and (global 'frame:auto-save)
+       (cell-set! (global 'frame:auto-save) commit-current-interface))
+  (frame:on-back (thunk (or (restart-interfaces) 'cancel)))
+  (frame:on-next (thunk (or (restart-interfaces) 'cancel))))
+
 

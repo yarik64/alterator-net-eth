@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-14 15:01+0300\n"
+"POT-Creation-Date: 2007-03-05 11:23+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,59 +15,50 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ui/net-tcp/index.scm:17
-msgid "General network settings"
-msgstr "Общие настройки сети"
-
-#: ui/net-tcp/index.scm:19
-msgid "Wireless settings"
-msgstr "Настройки для беспроводных интерфейсов"
-
-#: ui/net-tcp/index.scm:24
+#: ui/net-tcp/index.scm:16
 msgid "Interface"
 msgstr "Интерфейс"
 
-#. message from shell backend
-#: ui/net-tcp/index.scm:26 ui/net-tcp/messages.scm:2
-msgid "Enabled"
-msgstr "Включён"
+#: ui/net-tcp/index.scm:22
+msgid "Wireless settings"
+msgstr "Настройки для беспроводных интерфейсов"
 
-#: ui/net-tcp/index.scm:27 ui/net-tcp/messages.scm:3
+#: ui/net-tcp/index.scm:26
+msgid "Interface is enabled"
+msgstr "Интерфейс включён"
+
+#: ui/net-tcp/index.scm:31 ui/net-tcp/messages.scm:3
 msgid "Use DHCP"
 msgstr "Использовать DHCP"
 
-#: ui/net-tcp/index.scm:28 ui/net-tcp/messages.scm:4
+#: ui/net-tcp/index.scm:36 ui/net-tcp/messages.scm:4
 msgid "IP address"
 msgstr "IP адрес"
 
-#: ui/net-tcp/index.scm:29
+#: ui/net-tcp/index.scm:41
 msgid "Netmask"
 msgstr "Маска сети"
 
-#: ui/net-tcp/index.scm:30 ui/net-tcp/messages.scm:5
+#: ui/net-tcp/index.scm:46 ui/net-tcp/messages.scm:5
 msgid "Default gateway"
 msgstr "Шлюз по умолчанию"
 
-#: ui/net-tcp/index.scm:33
+#: ui/net-tcp/index.scm:54
 msgid "Commit"
 msgstr "Принять"
 
-#: ui/net-tcp/index.scm:34
+#: ui/net-tcp/index.scm:55
 msgid "Reset"
 msgstr "Перечитать"
 
-#: ui/net-tcp/index.scm:35
+#: ui/net-tcp/index.scm:56
 msgid "Quit"
 msgstr "Выход"
 
-#: ui/net-tcp/index.scm:52
-msgid "Restarting network..."
-msgstr "Перегружаются сетевые настройки..."
-
-#. common behaviour
-#: ui/net-tcp/index.scm:72
-msgid "Network interfaces"
-msgstr "Сетевые интерфейсы"
+#. message from shell backend
+#: ui/net-tcp/messages.scm:2
+msgid "Enabled"
+msgstr ""
 
 #: ui/net-tcp/messages.scm:6
 msgid "NetMask"
@@ -80,3 +71,13 @@ msgstr "TCP/IP соединения"
 #: ui/net-tcp/messages.scm:8
 msgid "TCP/IP connections administration"
 msgstr "Управление TCP/IP соединениями"
+
+#: ui/net-tcp/common-functions.scm:39
+msgid "Network interfaces"
+msgstr "Сетевые интерфейсы"
+
+#~ msgid "General network settings"
+#~ msgstr "Общие настройки сети"
+
+#~ msgid "Restarting network..."
+#~ msgstr "Перегружаются сетевые настройки..."

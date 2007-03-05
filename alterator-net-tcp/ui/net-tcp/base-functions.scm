@@ -1,6 +1,5 @@
 (define (base-behaviour)
   (ifaces (when selected (update-interface (current-interface))))
-  (g-button (when clicked (frame:replace "/net-general")))
   (c-button (when clicked (commit-interface (current-interface))))
   (r-button (when clicked (update-interface (current-interface))))
   (q-button (when clicked (document:end))))

@@ -28,7 +28,8 @@
                            'default (iface-gw text) args))))
 
 (define (current-interface)
-  (car (list-ref avail-ifaces (ifaces current))))
+  (and (>= (ifaces current) 0)
+       (car (list-ref avail-ifaces (ifaces current)))))
 
 (define (current-mask)
   (car (list-ref avail-masks (iface-mask current))))

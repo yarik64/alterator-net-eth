@@ -9,21 +9,21 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(hbox
- align "center"
- (document:id g-button (button (_ "General network settings")))
- (document:id w-button (button (_ "Wireless settings"))))
-
 (gridbox
  columns "20;20;40;20"
  ;;
  (spacer)
- (label (_ "Interface"))
+ (label (_ "Interface") align "right")
  (document:id ifaces (combobox layout-policy 20 -1))
+ (spacer)
+
+ (spacer)
+ (spacer)
+ (document:id w-button (button (_ "Wireless settings")))
  (spacer)
  ;;
  (spacer)
- (document:id iface-enabled (checkbox (_ "Enabled") widget-name "state"))
+ (document:id iface-enabled (checkbox (_ "Interface is enabled") widget-name "state"))
  (spacer)
  (spacer)
  ;;
@@ -33,17 +33,17 @@
  (spacer)
  ;;
  (spacer)
- (label (_ "IP address"))
+ (label (_ "IP address") align "right")
  (document:id iface-ip (edit "" widget-name "ip"))
  (spacer)
  ;;
  (spacer)
- (label (_ "Netmask"))
+ (label (_ "Netmask") align "right")
  (document:id iface-mask (combobox "" rows (map cdr avail-masks) widget-name "mask"))
  (spacer)
  ;;
  (spacer)
- (label (_ "Default gateway"))
+ (label (_ "Default gateway") align "right")
  (document:id iface-gw (edit "" widget-name "default"))
  (spacer))
 
