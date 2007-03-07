@@ -51,7 +51,7 @@
 
 (or (global 'frame:next)
     (hbox align "center"
-          (document:id c-button (button (_ "Commit")))
+          (document:id c-button (button (_ "Apply")))
           (document:id r-button (button (_ "Reset")))
           (document:id q-button (button (_ "Quit")))))
 

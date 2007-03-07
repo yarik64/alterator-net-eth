@@ -18,7 +18,7 @@ on_message()
 			if [ "$in__objects" = "/" ];then
 				echo '('
 				echo 'template "card-index" '
-				echo 'url "/var/www/html/fbi/net-tcp.html"'
+				echo 'url "net-tcp.html"'
 				echo ')'
 			else
 				echo '#f'
@@ -26,8 +26,8 @@ on_message()
 			;;
 		info)
 			echo '('
-			printf ' title "%s"' "$(_ "TCP/IP Connections")"
-			printf ' description "%s"' "$(_ "TCP/IP connections administration")"
+			printf ' title "%s"' "$(_ "IP interfaces")"
+			printf ' description "%s"' "$(_ "IP interfaces administration")"
 			echo ')'
 			;;
 		*)

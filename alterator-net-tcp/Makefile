@@ -1,5 +1,5 @@
 NAME=net-tcp
-DESCRIPTION="TCP/IP connections"
+DESCRIPTION="IP interfaces"
 
 INSTALL=/usr/bin/install
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-03-05 11:23+0300\n"
+"POT-Creation-Date: 2007-03-07 17:35+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,8 @@ msgstr "Интерфейс"
 msgid "Wireless settings"
 msgstr "Настройки для беспроводных интерфейсов"
 
-#: ui/net-tcp/index.scm:26
+#. message from shell backend
+#: ui/net-tcp/index.scm:26 ui/net-tcp/messages.scm:2
 msgid "Interface is enabled"
 msgstr "Интерфейс включён"
 
@@ -44,40 +45,29 @@ msgid "Default gateway"
 msgstr "Шлюз по умолчанию"
 
 #: ui/net-tcp/index.scm:54
-msgid "Commit"
+msgid "Apply"
 msgstr "Принять"
 
 #: ui/net-tcp/index.scm:55
 msgid "Reset"
-msgstr "Перечитать"
+msgstr "Cброс"
 
 #: ui/net-tcp/index.scm:56
 msgid "Quit"
 msgstr "Выход"
-
-#. message from shell backend
-#: ui/net-tcp/messages.scm:2
-msgid "Enabled"
-msgstr ""
 
 #: ui/net-tcp/messages.scm:6
 msgid "NetMask"
 msgstr "Маска сети"
 
 #: ui/net-tcp/messages.scm:7
-msgid "TCP/IP Connections"
-msgstr "TCP/IP соединения"
+msgid "IP interfaces"
+msgstr "IP интерфейсы"
 
 #: ui/net-tcp/messages.scm:8
-msgid "TCP/IP connections administration"
-msgstr "Управление TCP/IP соединениями"
+msgid "IP interfaces administration"
+msgstr "Управление IP интерфейсами"
 
-#: ui/net-tcp/common-functions.scm:39
-msgid "Network interfaces"
-msgstr "Сетевые интерфейсы"
-
-#~ msgid "General network settings"
-#~ msgstr "Общие настройки сети"
-
-#~ msgid "Restarting network..."
-#~ msgstr "Перегружаются сетевые настройки..."
+#: ui/net-tcp/messages.scm:9
+msgid "Select"
+msgstr "Выбрать"

@@ -166,7 +166,7 @@ on_message()
 		constraints)
 			echo '('
 			printf 'state (exclude (#f ip) exclude (#f default) exclude (#f mask) exclude (#f dhcp) default #f label "%s")' \
-				"$(_ "Enabled")"
+				"$(_ "Interface is enabled")"
 			printf 'dhcp (exclude (#t ip) exclude (#t default) exclude (#t mask) default #f label "%s")' \
 				"$(_ "Use DHCP")"
 			printf 'ip (required #t ipv4-address #t label "%s")' \

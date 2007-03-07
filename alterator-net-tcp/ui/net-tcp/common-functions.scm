@@ -36,8 +36,7 @@
 
 (define (common-behaviour)
   (w-button (when clicked (frame:replace "/net-wifi")))
-  (ifaces header (vector (_ "Network interfaces"))
-          rows (map cdr avail-ifaces))
+  (ifaces rows (map cdr avail-ifaces))
   (and (positive? (ifaces count))
        (begin (ifaces current 0)
               (update-interface (current-interface))))

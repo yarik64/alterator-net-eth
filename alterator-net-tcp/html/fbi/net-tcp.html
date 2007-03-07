@@ -2,24 +2,20 @@
 <!-- tcp connections module -->
 <html>
   <head>
-    <title>Alterator-FBI:Network connection</title>
-    <link type="text/css" rel="stylesheet" href="/fbi/net-connect.css"/>
+    <title>Alterator-FBI:IP interfaces</title>
+    <link type="text/css" rel="stylesheet" href="/fbi/net-tcp.css"/>
 
     <!-- ajax selector -->
     <script src="/fbi/selector.js"/>
-
   </head>
   <body>
     <div class="main-menu"/>
-    <div class="title">
-      <img src="/fbi/alterator-connect.png" id="net-tcp-img"/>
-      TCP connections
-    </div>
+    <h1><span translate="_">IP interfaces</span></h1>
     <form method="POST" class="selector-chooser" id="ajax-selector">
-      <span class="label" translate="_">Interface:</span>
+      <span translate="_">Interface</span>
       <span class="selector" >
 	<select name="name"/>
-	<input type="submit" name="card-index-select" value="Select"/>
+	<input type="submit" name="card-index-select" value="Select" class="btn"/>
       </span>
     </form>
     <hr/>
@@ -51,8 +47,8 @@
 	</tbody>
       </table>
       <span class="form-actions">
-	<input type="submit" name="card-index-apply"/>
-	<input type="reset" name="card-index-reset" />
+	<input type="submit" name="card-index-apply" value="Apply" class="btn"/>
+	<input type="reset" name="card-index-reset" value="Reset" class="btn"/>
       </span>
     </form>
   </body>

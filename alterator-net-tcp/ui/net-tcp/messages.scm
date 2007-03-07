@@ -1,8 +1,9 @@
 ;; message from shell backend
-(_ "Enabled")
+(_ "Interface is enabled")
 (_ "Use DHCP")
 (_ "IP address")
 (_ "Default gateway")
 (_ "NetMask")
-(_ "TCP/IP Connections")
-(_ "TCP/IP connections administration")
+(_ "IP interfaces")
+(_ "IP interfaces administration")
+(_ "Select")
