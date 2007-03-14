@@ -7,3 +7,4 @@
 (_ "IP interfaces")
 (_ "IP interfaces administration")
 (_ "Select")
+(_ "Network")

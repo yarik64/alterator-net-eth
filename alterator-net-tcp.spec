@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.6
-Release: alt9
+Release: alt10
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -54,6 +54,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Wed Mar 14 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt10
+- assign 'Network' group
+
 * Wed Mar 07 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt9
 - more translations
 - rename to 'IP Interfaces'
