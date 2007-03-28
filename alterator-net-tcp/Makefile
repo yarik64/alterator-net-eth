@@ -12,6 +12,9 @@ include /usr/share/alterator/build/ui2.mak
 include /usr/share/alterator/build/backend.mak
 include /usr/share/alterator/build/standalone.mak
 include /usr/share/alterator/build/fbi.mak
+include /usr/share/alterator/build/html-messages.mak
+
+HTML_PO_TEMPLATE=ui/net-tcp/html-messages.scm
 
 build-tools:
 	make -C tools/maskname

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-03-14 16:10+0300\n"
+"POT-Creation-Date: 2007-03-28 15:03+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,15 +25,15 @@ msgid "Wireless settings"
 msgstr ""
 
 #. message from shell backend
-#: ui/net-tcp/index.scm:26 ui/net-tcp/messages.scm:2
+#: ui/net-tcp/index.scm:26 ui/net-tcp/html-messages.scm:2 backend3/net-tcp:169
 msgid "Interface is enabled"
 msgstr ""
 
-#: ui/net-tcp/index.scm:31 ui/net-tcp/messages.scm:3
+#: ui/net-tcp/index.scm:31 ui/net-tcp/html-messages.scm:3 backend3/net-tcp:171
 msgid "Use DHCP"
 msgstr ""
 
-#: ui/net-tcp/index.scm:36 ui/net-tcp/messages.scm:4
+#: ui/net-tcp/index.scm:36 ui/net-tcp/html-messages.scm:4 backend3/net-tcp:173
 msgid "IP address"
 msgstr ""
 
@@ -41,7 +41,7 @@ msgstr ""
 msgid "Netmask"
 msgstr ""
 
-#: ui/net-tcp/index.scm:46 ui/net-tcp/messages.scm:5
+#: ui/net-tcp/index.scm:46 ui/net-tcp/html-messages.scm:5 backend3/net-tcp:175
 msgid "Default gateway"
 msgstr ""
 
@@ -57,22 +57,26 @@ msgstr ""
 msgid "Quit"
 msgstr ""
 
-#: ui/net-tcp/messages.scm:6
+#: ui/net-tcp/html-messages.scm:6 backend3/net-tcp:177
 msgid "NetMask"
 msgstr ""
 
-#: ui/net-tcp/messages.scm:7
+#: ui/net-tcp/html-messages.scm:7 backend3/template-net-tcp:30
 msgid "IP interfaces"
 msgstr ""
 
-#: ui/net-tcp/messages.scm:8
+#: ui/net-tcp/html-messages.scm:8 backend3/template-net-tcp:31
 msgid "IP interfaces administration"
 msgstr ""
 
-#: ui/net-tcp/messages.scm:9
+#: ui/net-tcp/html-messages.scm:9
 msgid "Select"
 msgstr ""
 
-#: ui/net-tcp/messages.scm:10
+#: ui/net-tcp/html-messages.scm:10 backend3/template-net-tcp:32
 msgid "Network"
+msgstr ""
+
+#: backend3/net-tcp:155 backend3/template-net-tcp:5
+msgid "alterator-net-tcp"
 msgstr ""

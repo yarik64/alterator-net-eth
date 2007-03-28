@@ -19,6 +19,7 @@ on_message()
 				echo '('
 				echo 'template "card-index" '
 				echo 'url "net-tcp.html"'
+				echo 'help "net-tcp.html"'
 				echo ')'
 			else
 				echo '#f'
@@ -26,9 +27,9 @@ on_message()
 			;;
 		info)
 			echo '('
-			printf ' title "%s"' "$(_ "IP interfaces")"
-			printf ' description "%s"' "$(_ "IP interfaces administration")"
-			printf ' group "%s"' "$(_ "Network")"
+			printf ' title "%s"' "`_ "IP interfaces"`"
+			printf ' description "%s"' "`_ "IP interfaces administration"`"
+			printf ' group "%s"' "`_ "Network"`"
 			printf ' weight 89'
 			echo ')'
 			;;
