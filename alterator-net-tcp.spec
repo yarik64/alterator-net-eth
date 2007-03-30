@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.6
-Release: alt12
+Release: alt13
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -54,6 +54,12 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Fri Mar 30 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt13
+- add Ukrainian translation
+- help improvements from kirill@
+- fix titles
+
+
 * Wed Mar 28 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt12
 - improve po template generation
 - add documentation
