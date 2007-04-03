@@ -11,8 +11,7 @@
          (iface-enabled state (woo-get-option cmd 'state #f))
          (iface-dhcp state (woo-get-option cmd 'dhcp #f))
          (iface-ip text (woo-get-option cmd 'ip))
-         (iface-mask current (or (string-list-index (woo-get-option cmd 'mask) (map car avail-masks))
-                                 24))
+         (iface-mask current (string-list-index (woo-get-option cmd 'mask "24") (map car avail-masks)))
          (w-button activity (woo-get-option cmd 'wireless))
          (iface-gw text (woo-get-option cmd 'default)))))
 

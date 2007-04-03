@@ -62,7 +62,7 @@ update_iftab()
 list_mask()
 {
     echo '('
-    for i in `seq 0 32`; do 
+    for i in `seq 32 -1 0`; do 
         printf '("%s" label "/%s (%s)")' "$i" "$i" "$(maskname "$i")"
     done
     echo ')'
@@ -96,7 +96,7 @@ read_iface()
 {
 	local name="$1" && shift
 	if [ -z "$name" -o ! -d "/etc/net/ifaces/$name" ]; then
-		printf '(ip "" mask "" wireless #f default "" dhcp #f state #f)\n'
+		printf '(wireless #f dhcp #f state #f)\n'
 		return
 	fi
 	local addr= ip= mask=
