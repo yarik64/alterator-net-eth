@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.6
-Release: alt14
+Release: alt14.1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -54,6 +54,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Wed Apr 04 2007 Alexey Gladkov <legion@altlinux.ru> 0.6-alt14.1
+- Add netmask default value.
+
 * Tue Apr 03 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt14
 - usability improvements (reverse mask list)
 

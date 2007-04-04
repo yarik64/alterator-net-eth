@@ -110,7 +110,8 @@ read_iface()
 		mask="${addr#$ip}"; mask="${mask#/}"
 	fi
 
-	printf 'ip "%s" mask "%s"\n' "$ip" "$mask"
+	printf 'ip "%s" mask "%s"\n' "$ip" "${mask:-32}"
+
 	printf 'wireless %s' "$([ -d "/sys/class/net/$name/wireless" ] && echo "#t" || echo "#f")"
 
 	[ ! -s "/etc/net/ifaces/$name/ipv4route" ] ||
