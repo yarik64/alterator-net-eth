@@ -5,7 +5,7 @@ INSTALL=/usr/bin/install
 
 all: build-profile build-tools
 clean: clean-po clean-profile
-install: install-backend install-ui install-po install-scripts install-profile install-tools install-html
+install: install-backend install-ui install-po install-profile install-tools install-html
 
 include /usr/share/alterator/build/po.mak
 include /usr/share/alterator/build/ui2.mak
