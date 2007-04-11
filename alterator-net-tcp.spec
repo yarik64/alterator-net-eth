@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.6
-Release: alt15
+Release: alt16
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -54,6 +54,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Wed Apr 11 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt16
+- backend: start loopback device at start
+
 * Thu Apr 05 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt15
 - temporary remove config-* scripts
 

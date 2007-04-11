@@ -159,6 +159,7 @@ LANG=${in_language%%;*}.utf8 gettext "alterator-net-tcp" "$1"
 . /usr/share/alterator/build/backend3.sh
 
 #initial actions
+run_ifup lo
 update_iftab
 
 on_message()
