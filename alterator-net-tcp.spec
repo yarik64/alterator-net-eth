@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.6
-Release: alt16
+Release: alt18
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -54,6 +54,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Mon Apr 16 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt18
+- fix work with empty interface list
+
 * Wed Apr 11 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt16
 - backend: start loopback device at start
 

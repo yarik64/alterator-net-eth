@@ -4,13 +4,14 @@
   (car (list-ref avail-ifaces (cell-ref prev-current))))
 
 (define (auto-commit-interface name . args)
-  (and name (apply
-             woo-write (string-append "/autoinstall/net-tcp" "/" name)
-             'state (iface-enabled state)
-             'dhcp  (iface-dhcp state)
-             'ip    (iface-ip text)
-             'mask  (current-mask)
-             'default (iface-gw text) args)))
+  (and (not-empty-string? name)
+       (apply
+        woo-write (string-append "/autoinstall/net-tcp" "/" name)
+        'state (iface-enabled state)
+        'dhcp  (iface-dhcp state)
+        'ip    (iface-ip text)
+        'mask  (current-mask)
+        'default (iface-gw text) args)))
 
 (define (commit-current-interface)
   (commit-interface (current-interface) 'restart #f)

@@ -16,18 +16,20 @@
          (iface-gw text (woo-get-option cmd 'default)))))
 
 (define (commit-interface name . args)
-  (woo-catch/message
-   (thunk
-    (apply
-     woo-write/constraints (string-append "/net-tcp" "/" name)
-                           'state (iface-enabled state)
-                           'dhcp  (iface-dhcp state)
-                           'ip    (iface-ip text)
-                           'mask  (current-mask)
-                           'default (iface-gw text) args))))
+  (and (not-empty-string? name)
+       (woo-catch/message
+        (thunk
+         (apply
+          woo-write/constraints (string-append "/net-tcp" "/" name)
+          'state (iface-enabled state)
+          'dhcp  (iface-dhcp state)
+          'ip    (iface-ip text)
+          'mask  (current-mask)
+          'default (iface-gw text) args)))))
 
 (define (current-interface)
-  (and (>= (ifaces current) 0)
+  (and (number? (ifaces current))
+       (>= (ifaces current) 0)
        (car (list-ref avail-ifaces (ifaces current)))))
 
 (define (current-mask)
