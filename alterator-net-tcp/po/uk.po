@@ -26,7 +26,7 @@ msgstr "Налаштування бездротових інтерфейсів"
 #. message from shell backend
 #: ui/net-tcp/index.scm:26 ui/net-tcp/html-messages.scm:2 backend3/net-tcp:169
 msgid "Interface is enabled"
-msgstr "Інтерфейс увімкнено"
+msgstr "Інтерфейс ввімкнено"
 
 #: ui/net-tcp/index.scm:31 ui/net-tcp/html-messages.scm:3 backend3/net-tcp:171
 msgid "Use DHCP"
@@ -38,11 +38,11 @@ msgstr "IP-адреса"
 
 #: ui/net-tcp/index.scm:41
 msgid "Netmask"
-msgstr "Маска мережі"
+msgstr "Мережева маска"
 
 #: ui/net-tcp/index.scm:46 ui/net-tcp/html-messages.scm:5 backend3/net-tcp:175
 msgid "Default gateway"
-msgstr "Типовий шлюз"
+msgstr "Шлюз по змовчуванню"
 
 #: ui/net-tcp/index.scm:54
 msgid "Apply"
@@ -58,7 +58,7 @@ msgstr "Вийти"
 
 #: ui/net-tcp/html-messages.scm:6 backend3/net-tcp:177
 msgid "NetMask"
-msgstr "Маска мережі"
+msgstr "Мережева маска"
 
 #: ui/net-tcp/html-messages.scm:7 backend3/template-net-tcp:30
 msgid "IP interfaces"
@@ -70,7 +70,7 @@ msgstr "Керування IP-інтерфейсами"
 
 #: ui/net-tcp/html-messages.scm:9
 msgid "Select"
-msgstr "Обрати"
+msgstr "Вибрати"
 
 #: ui/net-tcp/html-messages.scm:10 backend3/template-net-tcp:32
 msgid "Network"

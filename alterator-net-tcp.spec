@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.6
-Release: alt19
+Release: alt20
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -54,6 +54,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Mon Apr 23 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt20
+- update Ukrainian translation
+
 * Thu Apr 19 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt19
 - little CSS optimizations
 
