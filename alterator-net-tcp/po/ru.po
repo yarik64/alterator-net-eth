@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-03-28 15:03+0400\n"
+"POT-Creation-Date: 2007-04-27 11:34+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,24 +15,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ui/net-tcp/index.scm:16
+#: ui/net-tcp/index.scm:16 ui/net-tcp/html-messages.scm:2
 msgid "Interface"
 msgstr "Интерфейс"
 
-#: ui/net-tcp/index.scm:22
+#: ui/net-tcp/index.scm:22 ui/net-tcp/html-messages.scm:4
 msgid "Wireless settings"
 msgstr "Настройки для беспроводных интерфейсов"
 
-#. message from shell backend
-#: ui/net-tcp/index.scm:26 ui/net-tcp/html-messages.scm:2 backend3/net-tcp:169
+#: ui/net-tcp/index.scm:26 backend3/net-tcp:171
 msgid "Interface is enabled"
 msgstr "Интерфейс включён"
 
-#: ui/net-tcp/index.scm:31 ui/net-tcp/html-messages.scm:3 backend3/net-tcp:171
+#: ui/net-tcp/index.scm:31 backend3/net-tcp:173
 msgid "Use DHCP"
 msgstr "Использовать DHCP"
 
-#: ui/net-tcp/index.scm:36 ui/net-tcp/html-messages.scm:4 backend3/net-tcp:173
+#: ui/net-tcp/index.scm:36 backend3/net-tcp:175
 msgid "IP address"
 msgstr "IP-адрес"
 
@@ -40,15 +39,15 @@ msgstr "IP-адрес"
 msgid "Netmask"
 msgstr "Маска сети"
 
-#: ui/net-tcp/index.scm:46 ui/net-tcp/html-messages.scm:5 backend3/net-tcp:175
+#: ui/net-tcp/index.scm:46 backend3/net-tcp:177
 msgid "Default gateway"
 msgstr "Шлюз по умолчанию"
 
-#: ui/net-tcp/index.scm:54
+#: ui/net-tcp/index.scm:54 ui/net-tcp/html-messages.scm:6
 msgid "Apply"
 msgstr "Применить"
 
-#: ui/net-tcp/index.scm:55
+#: ui/net-tcp/index.scm:55 ui/net-tcp/html-messages.scm:5
 msgid "Reset"
 msgstr "Cброс"
 
@@ -56,26 +55,30 @@ msgstr "Cброс"
 msgid "Quit"
 msgstr "Выход"
 
-#: ui/net-tcp/html-messages.scm:6 backend3/net-tcp:177
-msgid "NetMask"
-msgstr "Маска сети"
-
-#: ui/net-tcp/html-messages.scm:7 backend3/template-net-tcp:30
+#: ui/net-tcp/html-messages.scm:1 backend3/template-net-tcp:30
 msgid "IP interfaces"
 msgstr "IP-интерфейсы"
 
-#: ui/net-tcp/html-messages.scm:8 backend3/template-net-tcp:31
-msgid "IP interfaces administration"
-msgstr "Управление IP-интерфейсами"
-
-#: ui/net-tcp/html-messages.scm:9
+#: ui/net-tcp/html-messages.scm:3
 msgid "Select"
 msgstr "Выбрать"
 
-#: ui/net-tcp/html-messages.scm:10 backend3/template-net-tcp:32
-msgid "Network"
-msgstr "Сеть"
+#: ui/net-tcp/html-messages.scm:7
+msgid "apply current settings and restart interface"
+msgstr "применить текущие настройки и перезапустить интерфейс"
 
-#: backend3/net-tcp:155 backend3/template-net-tcp:5
+#: backend3/net-tcp:156 backend3/template-net-tcp:5
 msgid "alterator-net-tcp"
 msgstr ""
+
+#: backend3/net-tcp:179
+msgid "NetMask"
+msgstr "Маска сети"
+
+#: backend3/template-net-tcp:31
+msgid "IP interfaces administration"
+msgstr "Управление IP-интерфейсами"
+
+#: backend3/template-net-tcp:32
+msgid "Network"
+msgstr "Сеть"

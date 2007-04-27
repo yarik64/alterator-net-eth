@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.6
-Release: alt20
+Release: alt21
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -12,6 +12,7 @@ Summary: alterator module for tcp/ip connections configuration
 License: GPL
 Group: System/Configuration/Other
 Requires: alterator >= 2.9 gettext
+Requires: alterator-net-wifi
 
 BuildPreReq: alterator >= 2.9-alt0.10, alterator-standalone >= 2.5-alt0.3, alterator-fbi >= 0.7-alt1
 
@@ -54,6 +55,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Fri Apr 27 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt21
+- add link to wireless settings
+
 * Mon Apr 23 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt20
 - update Ukrainian translation
 
