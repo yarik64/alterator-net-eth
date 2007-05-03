@@ -2,7 +2,7 @@
 
 Name: alterator-net-tcp
 Version: 0.6
-Release: alt21
+Release: alt22
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -55,6 +55,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Thu May 03 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt22
+- shutup ifup (in verbose mode)
+
 * Fri Apr 27 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt21
 - add link to wireless settings
 
