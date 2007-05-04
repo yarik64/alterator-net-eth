@@ -6,7 +6,7 @@
 (define (auto-commit-interface name . args)
   (and (not-empty-string? name)
        (apply
-        woo-write (string-append "/autoinstall/net-tcp" "/" name)
+        woo-write (string-append "/autoinstall/net-eth" "/" name)
         'state (iface-enabled state)
         'dhcp  (iface-dhcp state)
         'ip    (iface-ip text)
@@ -21,8 +21,8 @@
   (and  (commit-current-interface)
         (woo-catch/message
           (thunk 
-            (woo-try "restart" "/net-tcp")
-            (woo-try "restart" "/autoinstall/net-tcp")))))
+            (woo-try "restart" "/net-eth")
+            (woo-try "restart" "/autoinstall/net-eth")))))
  
 (define (install-behaviour)
   (ifaces (when selected

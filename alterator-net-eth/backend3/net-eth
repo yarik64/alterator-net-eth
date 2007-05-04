@@ -128,32 +128,31 @@ read_iface()
 write_iface()
 {
 	local name="$1" && shift
-	[ -d "/etc/net/ifaces/$name" ] || mkdir "/etc/net/ifaces/$name"
+	local ifacedir="/etc/net/ifaces/$name"
+	local options="$ifacedir/options"
+
+	[ -d "$ifacedir" ] || mkdir "$ifacedir"
+	
 	[ -n "$in_mask" ] && [ -n "$in_ip" ] && \
 		printf '%s/%s\n' "$in_ip" "$in_mask" >"/etc/net/ifaces/$name/ipv4address"
 	[ -n "$in_default" ] &&
 		printf 'default via %s\n' "$in_default" >"/etc/net/ifaces/$name/ipv4route"
-	local tmpfile=$(mktemp "/etc/net/ifaces/$name/options.XXXXXX")
-	[ ! -s "/etc/net/ifaces/$name/options" ] ||
-		cat "/etc/net/ifaces/$name/options" >"$tmpfile"
+
+	shell_add_or_subst "TYPE=" "eth" "$options"
+
 	[ -n "$in_dhcp" ] &&
 		shell_add_or_subst "BOOTPROTO=" \
 			$([ "$in_dhcp" = "#t" ] && echo "dhcp" || echo "static")\
-			"$tmpfile"
+			"$options"
 	[ -n "$in_state" ] &&
 		shell_add_or_subst "DISABLED=" \
 			$([ "$in_state" = "#t" ] && echo "no" || echo "yes") \
-			"$tmpfile"
-	if [ ! -s "$tmpfile" ]; then
-		rm "$tmpfile"
-		return
-	fi
-	mv -f "$tmpfile" "/etc/net/ifaces/$name/options"
+			"$options"
 }
 
 _()
 {
-LANG=${in_language%%;*}.utf8 gettext "alterator-net-tcp" "$1"
+LANG=${in_language%%;*}.utf8 gettext "alterator-net-eth" "$1"
 }
 
 . /usr/share/alterator/build/backend3.sh

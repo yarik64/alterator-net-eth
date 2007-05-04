@@ -2,7 +2,7 @@
 
 _()
 {
-LANG=${in_language%%;*}.utf8 gettext "alterator-net-tcp" "$1"
+LANG=${in_language%%;*}.utf8 gettext "alterator-net-eth" "$1"
 }
 
 #turn off auto expansion
@@ -18,8 +18,8 @@ on_message()
 			if [ "$in__objects" = "/" ];then
 				echo '('
 				echo 'template "card-index" '
-				echo 'url "net-tcp.html"'
-				echo 'help "net-tcp.html"'
+				echo 'url "net-eth.html"'
+				echo 'help "net-eth.html"'
 				echo ')'
 			else
 				echo '#f'

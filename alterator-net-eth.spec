@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
-Name: alterator-net-tcp
-Version: 0.6
-Release: alt22
+Name: alterator-net-eth
+Version: 0.7
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -16,8 +16,12 @@ Requires: alterator-net-wifi
 
 BuildPreReq: alterator >= 2.9-alt0.10, alterator-standalone >= 2.5-alt0.3, alterator-fbi >= 0.7-alt1
 
+#old names
 Provides: alterator-network = %version
 Obsoletes: alterator-network
+
+Provides: alterator-net-tcp = %version
+Obsoletes: alterator-net-tcp
 
 Provides: alterator-backend-simple_etcnet = %version
 Obsoletes: alterator-backend-simple_etcnet
@@ -55,6 +59,10 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Fri May 04 2007 Stanislav Ievlev <inger@altlinux.org> 0.7-alt1
+- rename module to net-eth
+- bugfix: enforce eth type in etcnet configs
+
 * Thu May 03 2007 Stanislav Ievlev <inger@altlinux.org> 0.6-alt22
 - shutup ifup (in verbose mode)
 

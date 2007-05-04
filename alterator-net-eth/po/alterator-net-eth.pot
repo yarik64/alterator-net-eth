@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-04-27 11:34+0400\n"
+"POT-Creation-Date: 2007-05-04 16:18+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,70 +16,70 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ui/net-tcp/index.scm:16 ui/net-tcp/html-messages.scm:2
+#: ui/net-eth/index.scm:16 ui/net-eth/html-messages.scm:2
 msgid "Interface"
 msgstr ""
 
-#: ui/net-tcp/index.scm:22 ui/net-tcp/html-messages.scm:4
+#: ui/net-eth/index.scm:22 ui/net-eth/html-messages.scm:4
 msgid "Wireless settings"
 msgstr ""
 
-#: ui/net-tcp/index.scm:26 backend3/net-tcp:171
+#: ui/net-eth/index.scm:26 backend3/net-eth:170
 msgid "Interface is enabled"
 msgstr ""
 
-#: ui/net-tcp/index.scm:31 backend3/net-tcp:173
+#: ui/net-eth/index.scm:31 backend3/net-eth:172
 msgid "Use DHCP"
 msgstr ""
 
-#: ui/net-tcp/index.scm:36 backend3/net-tcp:175
+#: ui/net-eth/index.scm:36 backend3/net-eth:174
 msgid "IP address"
 msgstr ""
 
-#: ui/net-tcp/index.scm:41
+#: ui/net-eth/index.scm:41
 msgid "Netmask"
 msgstr ""
 
-#: ui/net-tcp/index.scm:46 backend3/net-tcp:177
+#: ui/net-eth/index.scm:46 backend3/net-eth:176
 msgid "Default gateway"
 msgstr ""
 
-#: ui/net-tcp/index.scm:54 ui/net-tcp/html-messages.scm:6
+#: ui/net-eth/index.scm:54 ui/net-eth/html-messages.scm:6
 msgid "Apply"
 msgstr ""
 
-#: ui/net-tcp/index.scm:55 ui/net-tcp/html-messages.scm:5
+#: ui/net-eth/index.scm:55 ui/net-eth/html-messages.scm:5
 msgid "Reset"
 msgstr ""
 
-#: ui/net-tcp/index.scm:56
+#: ui/net-eth/index.scm:56
 msgid "Quit"
 msgstr ""
 
-#: ui/net-tcp/html-messages.scm:1 backend3/template-net-tcp:30
+#: ui/net-eth/html-messages.scm:1 backend3/template-net-eth:30
 msgid "IP interfaces"
 msgstr ""
 
-#: ui/net-tcp/html-messages.scm:3
+#: ui/net-eth/html-messages.scm:3
 msgid "Select"
 msgstr ""
 
-#: ui/net-tcp/html-messages.scm:7
+#: ui/net-eth/html-messages.scm:7
 msgid "apply current settings and restart interface"
 msgstr ""
 
-#: backend3/net-tcp:156 backend3/template-net-tcp:5
-msgid "alterator-net-tcp"
+#: backend3/net-eth:155 backend3/template-net-eth:5
+msgid "alterator-net-eth"
 msgstr ""
 
-#: backend3/net-tcp:179
+#: backend3/net-eth:178
 msgid "NetMask"
 msgstr ""
 
-#: backend3/template-net-tcp:31
+#: backend3/template-net-eth:31
 msgid "IP interfaces administration"
 msgstr ""
 
-#: backend3/template-net-tcp:32
+#: backend3/template-net-eth:32
 msgid "Network"
 msgstr ""

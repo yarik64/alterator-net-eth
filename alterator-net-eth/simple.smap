@@ -1,4 +1,4 @@
 (include "*.map")
 
-(/ view /net-tcp)
+(/ view /net-eth)
 (/std/frame view /standalone/frame)

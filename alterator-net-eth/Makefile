@@ -1,4 +1,4 @@
-NAME=net-tcp
+NAME=net-eth
 DESCRIPTION="IP interfaces"
 
 INSTALL=/usr/bin/install
@@ -14,7 +14,7 @@ include /usr/share/alterator/build/standalone.mak
 include /usr/share/alterator/build/fbi.mak
 include /usr/share/alterator/build/html-messages.mak
 
-HTML_PO_TEMPLATE=ui/net-tcp/html-messages.scm
+HTML_PO_TEMPLATE=ui/net-eth/html-messages.scm
 
 build-tools:
 	make -C tools/maskname

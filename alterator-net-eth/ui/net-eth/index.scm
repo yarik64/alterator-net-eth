@@ -1,11 +1,11 @@
 (document:surround "/std/frame")
 (document:insert "/std/functions")
 
-(document:insert "/net-tcp/common-functions")
-(document:insert "/net-tcp/base-functions")
-(document:insert "/net-tcp/install-functions")
+(document:insert "/net-eth/common-functions")
+(document:insert "/net-eth/base-functions")
+(document:insert "/net-eth/install-functions")
 
-(document:envelop with-translation _ "alterator-net-tcp")
+(document:envelop with-translation _ "alterator-net-eth")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 

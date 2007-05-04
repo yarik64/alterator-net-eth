@@ -2,12 +2,12 @@
   (cons (woo-get-option x 'name)
         (woo-get-option x 'label)))
 
-(define avail-ifaces (map name+label (woo-list "/net-tcp")))
-(define avail-masks (map name+label (woo-list "/net-tcp/eth0/avail_masks")))
+(define avail-ifaces (map name+label (woo-list "/net-eth")))
+(define avail-masks (map name+label (woo-list "/net-eth/eth0/avail_masks")))
 
 (define (update-interface name)
   (and (not-empty-string? name)
-       (let ((cmd (woo-read-first (string-append "/net-tcp" "/" name))))
+       (let ((cmd (woo-read-first (string-append "/net-eth" "/" name))))
          (iface-enabled state (woo-get-option cmd 'state #f))
          (iface-dhcp state (woo-get-option cmd 'dhcp #f))
          (iface-ip text (woo-get-option cmd 'ip))
@@ -20,7 +20,7 @@
        (woo-catch/message
         (thunk
          (apply
-          woo-write/constraints (string-append "/net-tcp" "/" name)
+          woo-write/constraints (string-append "/net-eth" "/" name)
           'state (iface-enabled state)
           'dhcp  (iface-dhcp state)
           'ip    (iface-ip text)
@@ -43,4 +43,4 @@
               (update-interface (current-interface))))
   (document:root
    (when loaded
-     (update-constraints "write" "/net-tcp"))))
+     (update-constraints "write" "/net-eth"))))
