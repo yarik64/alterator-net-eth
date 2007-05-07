@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 0.7
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -59,6 +59,10 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Mon May 07 2007 Stanislav Ievlev <inger@altlinux.org> 0.7-alt2
+- return apply,cancel buttons to old places
+- update call of /net-wifi sub-dialog
+
 * Fri May 04 2007 Stanislav Ievlev <inger@altlinux.org> 0.7-alt1
 - rename module to net-eth
 - bugfix: enforce eth type in etcnet configs

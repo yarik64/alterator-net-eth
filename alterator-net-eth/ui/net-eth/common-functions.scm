@@ -35,8 +35,12 @@
 (define (current-mask)
   (car (list-ref avail-masks (iface-mask current))))
 
+(define (net-wifi name)
+  (and (not-empty-string? name)
+       (document:popup "/net-wifi/" 'interface name)))
+
 (define (common-behaviour)
-  (w-button (when clicked (frame:replace "/net-wifi")))
+  (w-button (when clicked (net-wifi (current-interface))))
   (ifaces rows (map cdr avail-ifaces))
   (and (positive? (ifaces count))
        (begin (ifaces current 0)
