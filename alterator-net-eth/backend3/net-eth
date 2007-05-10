@@ -95,31 +95,28 @@ restart_all_ifaces() {
 read_iface()
 {
 	local name="$1" && shift
-	if [ -z "$name" -o ! -d "/etc/net/ifaces/$name" ]; then
-		printf '(wireless #f dhcp #f state #f)\n'
-		return
-	fi
+	echo "("
+
+	printf 'wireless %s' "$([ -d "/sys/class/net/$name/wireless" ] && echo "#t" || echo "#f")"
+
 	local addr= ip= mask=
 	local BOOTPROTO= DISABLED=
-	echo "("
 	[ ! -s "/etc/net/ifaces/$name/ipv4address" ] ||
 		addr=$(grep '^[0-9]' "/etc/net/ifaces/$name/ipv4address" | head -n1 || echo "")
 
 	if [ -n "$addr" ]; then
 		ip="${addr%%/*}"
 		mask="${addr#$ip}"; mask="${mask#/}"
+		
+		printf 'ip "%s" mask "%s"\n' "$ip" "${mask:-32}"
 	fi
-
-	printf 'ip "%s" mask "%s"\n' "$ip" "${mask:-32}"
-
-	printf 'wireless %s' "$([ -d "/sys/class/net/$name/wireless" ] && echo "#t" || echo "#f")"
 
 	[ ! -s "/etc/net/ifaces/$name/ipv4route" ] ||
 		printf 'default "%s"\n' \
 			$(grep '^default' "/etc/net/ifaces/$name/ipv4route" | sed -r 's,default[[:space:]]+via[[:space:]],,' || echo "")
 
-	(eval $("$ifdumptool" "$name")
-		[ "$BOOTPROTO" = "dhcp" ] && echo "dhcp #t" || echo "dhcp #f"
+	([ -d "/etc/net/ifaces/$name" ] && eval $("$ifdumptool" "$name")
+	 [ "$BOOTPROTO" = "dhcp" ] && echo "dhcp #t" || echo "dhcp #f"
 		is_yes "$DISABLED" && echo "state #f" || echo "state #t")
 
 	echo ")"

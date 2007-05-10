@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 0.7
-Release: alt2
+Release: alt3
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -59,6 +59,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Thu May 10 2007 Stanislav Ievlev <inger@altlinux.org> 0.7-alt3
+- fix information about non-configured devices
+
 * Mon May 07 2007 Stanislav Ievlev <inger@altlinux.org> 0.7-alt2
 - return apply,cancel buttons to old places
 - update call of /net-wifi sub-dialog
