@@ -7,7 +7,6 @@
   (and (not-empty-string? name)
        (apply
         woo-write (string-append "/autoinstall/net-eth" "/" name)
-        'state (iface-enabled state)
         'dhcp  (iface-dhcp state)
         'ip    (iface-ip text)
         'mask  (current-mask)

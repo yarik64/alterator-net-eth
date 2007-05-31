@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-05-04 16:18+0400\n"
+"POT-Creation-Date: 2007-05-31 17:37+0400\n"
 "PO-Revision-Date: 2007-03-29 18:05+0300\n"
 "Last-Translator: Michael Shigorin <mike@altlinux.org>\n"
 "Language-Team: Ukrainian <ru@li.org>\n"
@@ -19,39 +19,35 @@ msgstr ""
 msgid "Interface"
 msgstr "Інтерфейс"
 
-#: ui/net-eth/index.scm:22 ui/net-eth/html-messages.scm:4
-msgid "Wireless settings"
-msgstr "Налаштування бездротових інтерфейсів"
-
-#: ui/net-eth/index.scm:26 backend3/net-eth:170
-msgid "Interface is enabled"
-msgstr "Інтерфейс ввімкнено"
-
-#: ui/net-eth/index.scm:31 backend3/net-eth:172
+#: ui/net-eth/index.scm:28 backend3/net-eth:183
 msgid "Use DHCP"
 msgstr "Використовувати DHCP"
 
-#: ui/net-eth/index.scm:36 backend3/net-eth:174
+#: ui/net-eth/index.scm:33 backend3/net-eth:185
 msgid "IP address"
 msgstr "IP-адреса"
 
-#: ui/net-eth/index.scm:41
+#: ui/net-eth/index.scm:38
 msgid "Netmask"
 msgstr "Мережева маска"
 
-#: ui/net-eth/index.scm:46 backend3/net-eth:176
+#: ui/net-eth/index.scm:43 backend3/net-eth:187
 msgid "Default gateway"
 msgstr "Шлюз по змовчуванню"
 
-#: ui/net-eth/index.scm:54 ui/net-eth/html-messages.scm:6
+#: ui/net-eth/index.scm:50 ui/net-eth/html-messages.scm:4
+msgid "Wireless settings"
+msgstr "Налаштування бездротових інтерфейсів"
+
+#: ui/net-eth/index.scm:59 ui/net-eth/html-messages.scm:6
 msgid "Apply"
 msgstr "Застосувати"
 
-#: ui/net-eth/index.scm:55 ui/net-eth/html-messages.scm:5
+#: ui/net-eth/index.scm:60 ui/net-eth/html-messages.scm:5
 msgid "Reset"
 msgstr "Скинути"
 
-#: ui/net-eth/index.scm:56
+#: ui/net-eth/index.scm:61
 msgid "Quit"
 msgstr "Вийти"
 
@@ -67,11 +63,34 @@ msgstr "Вибрати"
 msgid "apply current settings and restart interface"
 msgstr ""
 
-#: backend3/net-eth:155 backend3/template-net-eth:5
+#: backend3/net-eth:110
+#, fuzzy
+msgid "interface is up"
+msgstr "IP-інтерфейси"
+
+#: backend3/net-eth:110
+#, fuzzy
+msgid "interface is down"
+msgstr "Інтерфейс ввімкнено"
+
+#: backend3/net-eth:112
+msgid "plugged"
+msgstr ""
+
+#: backend3/net-eth:114
+msgid "unplugged"
+msgstr ""
+
+#: backend3/net-eth:167 backend3/template-net-eth:5
 msgid "alterator-net-eth"
 msgstr ""
 
-#: backend3/net-eth:178
+#: backend3/net-eth:181
+#, fuzzy
+msgid "Interface state"
+msgstr "Інтерфейс"
+
+#: backend3/net-eth:189
 msgid "NetMask"
 msgstr "Мережева маска"
 

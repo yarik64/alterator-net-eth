@@ -61,22 +61,18 @@ update_iftab()
 
 list_mask()
 {
-    echo '('
     for i in `seq 32 -1 0`; do 
         printf '("%s" label "/%s (%s)")' "$i" "$i" "$(maskname "$i")"
     done
-    echo ')'
 }
 
 list_iface()
 {
-    echo '('
     /sbin/ip -o a l|
         sed -ne 's|^[0-9]\+: \([^:]\+\): [^/]* link/ether .*|\1|p'|
         while read iface; do
             printf '("%s" label "%s (%s)")' "$iface" "$iface" "$(ifaceinfo "$iface")"
         done
-    echo ')'
 }
 
 restart_iface()
@@ -92,10 +88,34 @@ restart_all_ifaces() {
         done >&2
 }
 
+is_up_iface()
+{
+    /sbin/ip -o link show dev "$1" 2>/dev/null |cut -d' ' -f3 |grep -qs -- '[<,]UP[,>]'
+}
+
+is_plug_iface()
+{
+   /usr/sbin/ifplugstatus "$1" >/dev/null 2>/dev/null
+   echo "$?"
+}
+	      
+
 read_iface()
 {
 	local name="$1" && shift
 	echo "("
+	
+	#collect general information
+	local info=
+	is_up_iface "$name" && info="`_ "interface is up"`" || info="`_ "interface is down"`"
+	
+	[ -d "/sys/class/net/$name/wireless" ] ||
+	    case "$(is_plug_iface "$name")" in
+		2) info="$info, `_ "plugged"`"   ;;
+		3) info="$info, `_ "unplugged"`" ;;
+	    esac
+
+	printf 'info "%s"' "$info"
 
 	printf 'wireless %s' "$([ -d "/sys/class/net/$name/wireless" ] && echo "#t" || echo "#f")"
 
@@ -116,8 +136,7 @@ read_iface()
 			$(grep '^default' "/etc/net/ifaces/$name/ipv4route" | sed -r 's,default[[:space:]]+via[[:space:]],,' || echo "")
 
 	([ -d "/etc/net/ifaces/$name" ] && eval $("$ifdumptool" "$name")
-	 [ "$BOOTPROTO" = "dhcp" ] && echo "dhcp #t" || echo "dhcp #f"
-		is_yes "$DISABLED" && echo "state #f" || echo "state #t")
+	 [ "$BOOTPROTO" = "dhcp" ] && echo "dhcp #t" || echo "dhcp #f")
 
 	echo ")"
 }
@@ -141,10 +160,6 @@ write_iface()
 		shell_add_or_subst "BOOTPROTO=" \
 			$([ "$in_dhcp" = "#t" ] && echo "dhcp" || echo "static")\
 			"$options"
-	[ -n "$in_state" ] &&
-		shell_add_or_subst "DISABLED=" \
-			$([ "$in_state" = "#t" ] && echo "no" || echo "yes") \
-			"$options"
 }
 
 _()
@@ -163,8 +178,7 @@ on_message()
 	case "$in_action" in
 		constraints)
 			echo '('
-			printf 'state (exclude (#f ip) exclude (#f default) exclude (#f mask) exclude (#f dhcp) default #f label "%s")' \
-				"`_ "Interface is enabled"`"
+			printf 'info (label "%s")' "`_ "Interface state"`"
 			printf 'dhcp (exclude (#t ip) exclude (#t default) exclude (#t mask) default #f label "%s")' \
 				"`_ "Use DHCP"`"
 			printf 'ip (required #t ipv4-address #t label "%s")' \
@@ -176,11 +190,13 @@ on_message()
 			echo ')'
 			;;
 		list)
+			echo '('
 			if [ "$in__objects" == "/" ];then
 				list_iface
 			else
 				list_mask
 			fi
+			echo ')'
 			;;
 		read) 
 			if [ "$in__objects" == "/" ];then

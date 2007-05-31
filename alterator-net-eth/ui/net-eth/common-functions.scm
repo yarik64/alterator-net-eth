@@ -8,7 +8,7 @@
 (define (update-interface name)
   (and (not-empty-string? name)
        (let ((cmd (woo-read-first (string-append "/net-eth" "/" name))))
-         (iface-enabled state (woo-get-option cmd 'state #f))
+	 (iface-info text (string-append "<small>(" (woo-get-option cmd 'info) ")</small>"))
          (iface-dhcp state (woo-get-option cmd 'dhcp #f))
          (iface-ip text (woo-get-option cmd 'ip))
          (iface-mask current (string-list-index (woo-get-option cmd 'mask "24") (map car avail-masks)))
@@ -21,7 +21,6 @@
         (thunk
          (apply
           woo-write/constraints (string-append "/net-eth" "/" name)
-          'state (iface-enabled state)
           'dhcp  (iface-dhcp state)
           'ip    (iface-ip text)
           'mask  (current-mask)

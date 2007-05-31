@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 0.7
-Release: alt3
+Release: alt5
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -42,23 +42,21 @@ alterator module for tcp/ip connections configuration
 %makeinstall HTMLROOT=%buildroot%_var/www/
 %find_lang %name
 
-%post
-%update_menus
-%postun
-%clean_menus
-
-
 %files -f %name.lang
-%_sysconfdir/alterator/profile.d/*
 %_bindir/*
-%_altdata_dir/maps/*
 %_altdata_dir/ui/*/
 %_var/www/html/*
-%_desktopdir/*
 %_alterator_backend3dir/*
 
-
 %changelog
+* Thu May 31 2007 Stanislav Ievlev <inger@altlinux.org> 0.7-alt5
+- add interface status information
+- remove 'enabled' parameter
+
+* Thu May 31 2007 Stanislav Ievlev <inger@altlinux.org> 0.7-alt4
+- rebuild with latest standalone
+- add interface status information
+
 * Thu May 10 2007 Stanislav Ievlev <inger@altlinux.org> 0.7-alt3
 - fix information about non-configured devices
 

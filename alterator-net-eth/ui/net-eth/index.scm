@@ -17,15 +17,12 @@
  (document:id ifaces (combobox layout-policy 20 -1))
  (spacer)
 
- (spacer)
- (spacer)
- (document:id w-button (button (_ "Wireless settings")))
- (spacer)
  ;;
  (spacer)
- (document:id iface-enabled (checkbox (_ "Interface is enabled") widget-name "state"))
  (spacer)
+ (document:id iface-info (label ""))
  (spacer)
+
  ;;
  (spacer)
  (document:id iface-dhcp (checkbox (_ "Use DHCP") widget-name "dhcp"))
@@ -45,7 +42,15 @@
  (spacer)
  (label (_ "Default gateway") align "right")
  (document:id iface-gw (edit "" widget-name "default"))
- (spacer))
+ (spacer)
+ 
+ ;;
+ (spacer)
+ (spacer)
+ (document:id w-button (button (_ "Wireless settings")))
+ (spacer)
+ 
+ )
 
 ;;;;;;;;;;;;;;;
 

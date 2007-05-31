@@ -20,42 +20,36 @@
     </form>
     <hr/>
     <form method="POST" class="selector-data">
+      <span class="alterator-label" name="info"/>
+      <br/>
+      <br/>
       <table>
 	<div class="selector-name">
 	</div>
 	<tbody>
 	  <tr>
-	    <td colspan="2">
-	      <a href="/net-wifi/" class="alterator-ref2">
-		<span translate="_">Wireless settings</span>
-	      </a>
-	    </td>
-	  </tr>
-	  <tr>
-	    <td colspan="2">&nbsp;</td>
-	  </tr>
-	  <tr>
-	    <td><label for="state">state</label></td>
-	    <td><input type="checkbox" name="state"/></td>
-	  </tr>
-	  <tr>
-	    <td><label for="dhcp">dhcp</label></td>
+	    <td><label for="dhcp"/></td>
 	    <td><input type="checkbox" name="dhcp"/></td>
 	  </tr>
 	  <tr>
-	    <td><label for="ip">ip</label></td>
+	    <td><label for="ip"/></td>
 	    <td><input type="text" name="ip" class="text"/></td>
 	  </tr>
 	  <tr>
-	    <td><label for="mask">mask</label></td>
+	    <td><label for="mask"/></td>
 	    <td><select name="mask" optionlist="avail_masks"></select></td>
 	  </tr>
 	  <tr>
-	    <td><label for="default">default</label></td>
+	    <td><label for="default"/></td>
 	    <td><input type="text" name="default" class="text"/></td>
 	  </tr>
 	</tbody>
       </table>
+      <a href="/net-wifi/" class="alterator-ref2">
+	<span translate="_">Wireless settings</span>
+      </a>
+      <br/>
+      <br/>
       <input type="submit" name="card-index-apply" value="Apply" class="btn"/>
       &nbsp;
       <input type="reset" name="card-index-reset" value="Reset" class="btn"/>
