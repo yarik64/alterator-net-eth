@@ -1,9 +1,5 @@
-(define (name+label x)
-  (cons (woo-get-option x 'name)
-        (woo-get-option x 'label)))
-
-(define avail-ifaces (map name+label (woo-list "/net-eth")))
-(define avail-masks (map name+label (woo-list "/net-eth/eth0/avail_masks")))
+(define avail-ifaces (woo-list/name+label "/net-eth"))
+(define avail-masks (woo-list/name+label "/net-eth/eth0/avail_masks"))
 
 (define (update-interface name)
   (and (not-empty-string? name)

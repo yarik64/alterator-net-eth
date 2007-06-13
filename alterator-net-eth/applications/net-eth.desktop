@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Categories=X-Alterator-Network
+Icon=net-eth
+Terminal=false
+Name=IP interfaces
+Name[ru_RU]=IP-интерфейсы
+Name[uk_UA]=IP-інтерфейси
+X-Alterator-URI=/net-eth
+X-Alterator-Weight=30

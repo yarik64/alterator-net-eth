@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 0.7
-Release: alt5
+Release: alt6
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -44,11 +44,16 @@ alterator module for tcp/ip connections configuration
 
 %files -f %name.lang
 %_bindir/*
+%_altdata_dir/applications/*
 %_altdata_dir/ui/*/
 %_var/www/html/*
 %_alterator_backend3dir/*
 
 %changelog
+* Wed Jun 13 2007 Stanislav Ievlev <inger@altlinux.org> 0.7-alt6
+- add desktop file
+- use std woo-list/name+label function
+
 * Thu May 31 2007 Stanislav Ievlev <inger@altlinux.org> 0.7-alt5
 - add interface status information
 - remove 'enabled' parameter
