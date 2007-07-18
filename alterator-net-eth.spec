@@ -52,6 +52,7 @@ alterator module for tcp/ip connections configuration
 %changelog
 * Wed Jul 18 2007 Stanislav Ievlev <inger@altlinux.org> 0.7-alt7
 - avoid wrong mac addresses from broken drivers (like rt61)
+- don't use constraints (was conflict in tab widget)
 
 * Wed Jun 13 2007 Stanislav Ievlev <inger@altlinux.org> 0.7-alt6
 - add desktop file

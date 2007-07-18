@@ -40,6 +40,11 @@
   (and (positive? (ifaces count))
        (begin (ifaces current 0)
               (update-interface (current-interface))))
-  (document:root
-   (when loaded
-     (update-constraints "write" "/net-eth"))))
+  ;;constraints
+  (iface-dhcp (when toggled
+                ((widgets iface-ip
+                          iface-gw
+                          iface-mask)
+                 activity (not (iface-dhcp state)))))
+  (iface-dhcp toggled))
+
