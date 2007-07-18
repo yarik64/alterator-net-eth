@@ -50,7 +50,9 @@ update_iftab()
     local IFTAB_CONFIG="/etc/iftab"
     /sbin/ip -o a l|
 	sed -nre 's|^[0-9]+: ([^:]+): [^/]* link/ether ([a-f0-9:]+).*|\1 \2|p'|
-	while read name mac;do
+	while read name mac;do	    
+	    [ "00:00:00:00:00:00" = "$mac" ] && continue # avoid wrong mac addresses from broken drivers (like rt61)
+	    
 	    if grep -qs "^$name[[:space:]]" "$IFTAB_CONFIG";then
 		sed -r -e "s,^($name[[:space:]]+mac[[:space:]]+).*,\1$mac," -i "$IFTAB_CONFIG"
 	    else

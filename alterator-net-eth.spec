@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 0.7
-Release: alt6
+Release: alt7
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -50,6 +50,9 @@ alterator module for tcp/ip connections configuration
 %_alterator_backend3dir/*
 
 %changelog
+* Wed Jul 18 2007 Stanislav Ievlev <inger@altlinux.org> 0.7-alt7
+- avoid wrong mac addresses from broken drivers (like rt61)
+
 * Wed Jun 13 2007 Stanislav Ievlev <inger@altlinux.org> 0.7-alt6
 - add desktop file
 - use std woo-list/name+label function
