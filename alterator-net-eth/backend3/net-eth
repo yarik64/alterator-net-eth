@@ -2,23 +2,7 @@
 
 ################### shell file helpers
 
-run_ifup()
-{
-    env -i PATH="$PATH" HOME="$HOME" TMPDIR="$TMPDIR" /sbin/ifup "$1" >/dev/null
-}
-
-run_ifdown()
-{
-    env -i PATH="$PATH" HOME="$HOME" TMPDIR="$TMPDIR" /sbin/ifdown "$1" >/dev/null
-}
-
-ifdumptool="/etc/net/scripts/contrib/ifdump"
-ifup="run_ifup"
-ifdown="run_ifdown"
-
-
-. /etc/net/scripts/functions
-
+PATH=/usr/lib/alterator-net-common:$PATH
 
 shell_add_or_subst()
 {
@@ -48,8 +32,8 @@ shell_get()
 update_iftab()
 {
     local IFTAB_CONFIG="/etc/iftab"
-    /sbin/ip -o a l|
-	sed -nre 's|^[0-9]+: ([^:]+): [^/]* link/ether ([a-f0-9:]+).*|\1 \2|p'|
+    [ -w "$IFTAB_CONFIG" ] || return
+    iflist|
 	while read name mac;do	    
 	    [ "00:00:00:00:00:00" = "$mac" ] && continue # avoid wrong mac addresses from broken drivers (like rt61)
 	    
@@ -70,37 +54,23 @@ list_mask()
 
 list_iface()
 {
-    /sbin/ip -o a l|
-        sed -ne 's|^[0-9]\+: \([^:]\+\): [^/]* link/ether .*|\1|p'|
-        while read iface; do
+    iflist|
+        while read iface mac; do
             printf '("%s" label "%s (%s)")' "$iface" "$iface" "$(ifaceinfo "$iface")"
         done
 }
 
 restart_iface()
 {
-    "$ifdown" "$1" && "$ifup" "$1"
+    ifdown "$1" && ifup "$1"
 }
 
 restart_all_ifaces() {
-    /sbin/ip -o a l|
-        sed -ne 's|^[0-9]\+: \([^:]\+\): [^/]* link/ether .*|\1|p'|
-        while read iface; do
+    iflist|
+        while read iface mac; do
 		restart_iface "$iface"
         done >&2
 }
-
-is_up_iface()
-{
-    /sbin/ip -o link show dev "$1" 2>/dev/null |cut -d' ' -f3 |grep -qs -- '[<,]UP[,>]'
-}
-
-is_plug_iface()
-{
-   /usr/sbin/ifplugstatus "$1" >/dev/null 2>/dev/null
-   echo "$?"
-}
-	      
 
 read_iface()
 {
@@ -109,20 +79,20 @@ read_iface()
 	
 	#collect general information
 	local info=
-	is_up_iface "$name" && info="`_ "interface is up"`" || info="`_ "interface is down"`"
+	ifcheckup "$name" && info="`_ "interface is up"`" || info="`_ "interface is down"`"
 	
-	[ -d "/sys/class/net/$name/wireless" ] ||
-	    case "$(is_plug_iface "$name")" in
+	if ! [ -d "/sys/class/net/$name/wireless" ];then
+	    ifcheckplug "$name"
+	    case "$?" in
 		2) info="$info, `_ "plugged"`"   ;;
 		3) info="$info, `_ "unplugged"`" ;;
 	    esac
+	fi
 
 	printf 'info "%s"' "$info"
-
 	printf 'wireless %s' "$([ -d "/sys/class/net/$name/wireless" ] && echo "#t" || echo "#f")"
 
-	local addr= ip= mask=
-	local BOOTPROTO= DISABLED=
+	local addr= ip= mask= bootproto=
 	[ ! -s "/etc/net/ifaces/$name/ipv4address" ] ||
 		addr=$(grep '^[0-9]' "/etc/net/ifaces/$name/ipv4address" | head -n1 || echo "")
 
@@ -137,8 +107,8 @@ read_iface()
 		printf 'default "%s"\n' \
 			$(grep '^default' "/etc/net/ifaces/$name/ipv4route" | sed -r 's,default[[:space:]]+via[[:space:]],,' || echo "")
 
-	([ -d "/etc/net/ifaces/$name" ] && eval $("$ifdumptool" "$name")
-	 [ "$BOOTPROTO" = "dhcp" ] && echo "dhcp #t" || echo "dhcp #f")
+	bootproto="$(ifvar "$name" "BOOTPROTO")"
+	[ "$bootproto" = "dhcp" ] && echo "dhcp #t" || echo "dhcp #f"
 
 	echo ")"
 }
@@ -172,7 +142,7 @@ LANG=${in_language%%;*}.utf8 gettext "alterator-net-eth" "$1"
 . /usr/share/alterator/build/backend3.sh
 
 #initial actions
-run_ifup lo
+ifup lo
 update_iftab
 
 on_message()

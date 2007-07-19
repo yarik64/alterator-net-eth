@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 0.7
-Release: alt7
+Version: 0.8
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -12,6 +12,7 @@ Summary: alterator module for tcp/ip connections configuration
 License: GPL
 Group: System/Configuration/Other
 Requires: alterator >= 2.9 gettext
+Requires: alterator-net-common
 Requires: alterator-net-wifi
 
 BuildPreReq: alterator >= 2.9-alt0.10, alterator-standalone >= 2.5-alt0.3, alterator-fbi >= 0.7-alt1
@@ -50,6 +51,10 @@ alterator module for tcp/ip connections configuration
 %_alterator_backend3dir/*
 
 %changelog
+* Thu Jul 19 2007 Stanislav Ievlev <inger@altlinux.org> 0.8-alt1
+- move all common functions to common place (alterator-net-common),
+- replace ifdump with ifvar (ifdump was too slow)
+
 * Wed Jul 18 2007 Stanislav Ievlev <inger@altlinux.org> 0.7-alt7
 - avoid wrong mac addresses from broken drivers (like rt61)
 - don't use constraints (was conflict in tab widget)
