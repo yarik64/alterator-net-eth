@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 0.8
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -51,6 +51,9 @@ alterator module for tcp/ip connections configuration
 %_alterator_backend3dir/*
 
 %changelog
+* Wed Aug 01 2007 Stanislav Ievlev <inger@altlinux.org> 0.8-alt2
+- fix iftab creating
+
 * Thu Jul 19 2007 Stanislav Ievlev <inger@altlinux.org> 0.8-alt1
 - move all common functions to common place (alterator-net-common),
 - replace ifdump with ifvar (ifdump was too slow)

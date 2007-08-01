@@ -32,6 +32,7 @@ shell_get()
 update_iftab()
 {
     local IFTAB_CONFIG="/etc/iftab"
+    touch "$IFTAB_CONFIG" >/dev/null
     [ -w "$IFTAB_CONFIG" ] || return
     iflist|
 	while read name mac;do	    
