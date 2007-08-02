@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 0.8
-Release: alt2
+Release: alt3
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -51,6 +51,9 @@ alterator module for tcp/ip connections configuration
 %_alterator_backend3dir/*
 
 %changelog
+* Thu Aug 02 2007 Stanislav Ievlev <inger@altlinux.org> 0.8-alt3
+- try to fix behaviour in installer
+
 * Wed Aug 01 2007 Stanislav Ievlev <inger@altlinux.org> 0.8-alt2
 - fix iftab creating
 

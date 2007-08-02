@@ -5,22 +5,24 @@
   (and (not-empty-string? name)
        (let ((cmd (woo-read-first (string-append "/net-eth" "/" name))))
 	 (iface-info text (string-append "<small>(" (woo-get-option cmd 'info) ")</small>"))
-         (iface-dhcp state (woo-get-option cmd 'dhcp #f))
+         (iface-dhcp state (woo-get-option cmd 'dhcp #f) toggled)
          (iface-ip text (woo-get-option cmd 'ip))
          (iface-mask current (string-list-index (woo-get-option cmd 'mask "24") (map car avail-masks)))
          (w-button activity (woo-get-option cmd 'wireless))
          (iface-gw text (woo-get-option cmd 'default)))))
 
-(define (commit-interface name . args)
-  (and (not-empty-string? name)
-       (woo-catch/message
-        (thunk
-         (apply
-          woo-write/constraints (string-append "/net-eth" "/" name)
-          'dhcp  (iface-dhcp state)
-          'ip    (iface-ip text)
-          'mask  (current-mask)
-          'default (iface-gw text) args)))))
+(define (commit-interface path name . args)
+  (if (or (iface-dhcp state) (not-empty-string? (iface-ip text)))
+      (and (not-empty-string? name)
+           (woo-catch/message
+            (thunk
+             (apply
+              woo-write/constraints (string-append path "/" name)
+              'dhcp  (iface-dhcp state)
+              'ip    (iface-ip text)
+              'mask  (current-mask)
+              'default (iface-gw text) args))))
+      #t))
 
 (define (current-interface)
   (and (number? (ifaces current))

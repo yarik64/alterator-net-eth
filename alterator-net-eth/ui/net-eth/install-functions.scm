@@ -3,18 +3,9 @@
 (define (prev-interface)
   (car (list-ref avail-ifaces (cell-ref prev-current))))
 
-(define (auto-commit-interface name . args)
-  (and (not-empty-string? name)
-       (apply
-        woo-write (string-append "/autoinstall/net-eth" "/" name)
-        'dhcp  (iface-dhcp state)
-        'ip    (iface-ip text)
-        'mask  (current-mask)
-        'default (iface-gw text) args)))
-
 (define (commit-current-interface)
-  (commit-interface (current-interface) 'restart #f)
-  (auto-commit-interface (current-interface) 'restart #f))
+  (and (commit-interface "/net-eth" (current-interface) 'restart #f)
+       (commit-interface "/autoinstall/net-eth" (current-interface) 'restart #f)))
 
 (define (restart-interfaces)
   (and  (commit-current-interface)
@@ -25,8 +16,8 @@
  
 (define (install-behaviour)
   (ifaces (when selected
-            (and (commit-interface (prev-interface) 'restart #f)
-                 (auto-commit-interface (prev-interface) 'restart #f)
+            (and (commit-interface "/net-eth" (prev-interface) 'restart #f)
+                 (commit-interface "/autoinstall/net-eth" (prev-interface) 'restart #f)
                  (update-interface (current-interface))
                  (cell-set! prev-current (ifaces current)))))
   (and (global 'frame:auto-save)
