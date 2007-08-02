@@ -32,8 +32,6 @@ shell_get()
 update_iftab()
 {
     local IFTAB_CONFIG="/etc/iftab"
-    touch "$IFTAB_CONFIG" >/dev/null
-    [ -w "$IFTAB_CONFIG" ] || return
     iflist|
 	while read name mac;do	    
 	    [ "00:00:00:00:00:00" = "$mac" ] && continue # avoid wrong mac addresses from broken drivers (like rt61)
@@ -41,7 +39,7 @@ update_iftab()
 	    if grep -qs "^$name[[:space:]]" "$IFTAB_CONFIG";then
 		sed -r -e "s,^($name[[:space:]]+mac[[:space:]]+).*,\1$mac," -i "$IFTAB_CONFIG"
 	    else
-		printf "%s\tmac %s\n" "$name" "$mac" >>"$IFTAB_CONFIG"
+		printf "%s\tmac %s\n" "$name" "$mac" >>"$IFTAB_CONFIG" 2>/dev/null || return
 	    fi
 	done
 }
