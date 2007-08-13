@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2007-05-31 17:37+0400\n"
-"PO-Revision-Date: 2007-03-29 18:05+0300\n"
+"PO-Revision-Date: 2007-08-13 20:57+0300\n"
 "Last-Translator: Michael Shigorin <mike@altlinux.org>\n"
-"Language-Team: Ukrainian <ru@li.org>\n"
+"Language-Team: Ukrainian <uk@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -61,34 +61,31 @@ msgstr "Вибрати"
 
 #: ui/net-eth/html-messages.scm:7
 msgid "apply current settings and restart interface"
-msgstr ""
+msgstr "застосувати поточні налаштування та рестартувати інтерфейс"
 
 #: backend3/net-eth:110
-#, fuzzy
 msgid "interface is up"
-msgstr "IP-інтерфейси"
+msgstr "інтерфейс піднято"
 
 #: backend3/net-eth:110
-#, fuzzy
 msgid "interface is down"
-msgstr "Інтерфейс ввімкнено"
+msgstr "інтерфейс опущено"
 
 #: backend3/net-eth:112
 msgid "plugged"
-msgstr ""
+msgstr "увімкнуто"
 
 #: backend3/net-eth:114
 msgid "unplugged"
-msgstr ""
+msgstr "вимкнуто"
 
 #: backend3/net-eth:167 backend3/template-net-eth:5
 msgid "alterator-net-eth"
 msgstr ""
 
 #: backend3/net-eth:181
-#, fuzzy
 msgid "Interface state"
-msgstr "Інтерфейс"
+msgstr "Стан інтерфейсу"
 
 #: backend3/net-eth:189
 msgid "NetMask"
