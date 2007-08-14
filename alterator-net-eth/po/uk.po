@@ -49,7 +49,7 @@ msgstr "Скинути"
 
 #: ui/net-eth/index.scm:61
 msgid "Quit"
-msgstr "Вийти"
+msgstr "Вихід"
 
 #: ui/net-eth/html-messages.scm:1 backend3/template-net-eth:30
 msgid "IP interfaces"
