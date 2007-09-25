@@ -3,7 +3,7 @@ DESCRIPTION="IP interfaces"
 
 INSTALL=/usr/bin/install
 
-all:  build-tools
+all:
 clean: clean-po 
 install: install-backend install-ui install-po  install-tools install-html
 
@@ -15,9 +15,6 @@ include /usr/share/alterator/build/html-messages.mak
 
 HTML_PO_TEMPLATE=ui/net-eth/html-messages.scm
 
-build-tools:
-	make -C tools/maskname
-
 install-tools:
-	make -C tools/maskname bindir=$(bindir) install
+	install -Dpm755 tools/maskname $(bindir)/maskname
 	install -Dpm755 tools/ifaceinfo $(bindir)/ifaceinfo

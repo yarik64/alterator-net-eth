@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 0.8
-Release: alt4
+Release: alt5
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -16,6 +16,8 @@ Requires: alterator-net-common
 Requires: alterator-net-wifi
 
 BuildPreReq: alterator >= 2.9-alt0.10, alterator-standalone >= 2.5-alt0.3, alterator-fbi >= 0.7-alt1
+
+BuildArch: noarch
 
 #old names
 Provides: alterator-network = %version
@@ -51,6 +53,9 @@ alterator module for tcp/ip connections configuration
 %_alterator_backend3dir/*
 
 %changelog
+* Tue Sep 25 2007 Stanislav Ievlev <inger@altlinux.org> 0.8-alt5
+- replace C tool with shell script
+
 * Wed Aug 15 2007 Stanislav Ievlev <inger@altlinux.org> 0.8-alt4
 - updated Ukrainian translation
 
