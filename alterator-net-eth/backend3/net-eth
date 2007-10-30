@@ -2,7 +2,7 @@
 
 ################### shell file helpers
 
-PATH=/usr/lib/alterator-net-common:$PATH
+PATH="/usr/lib/alterator-net-common:$PATH"
 
 shell_add_or_subst()
 {
@@ -29,20 +29,6 @@ shell_get()
 }
 
 ################### interface modificators
-update_iftab()
-{
-    local IFTAB_CONFIG="/etc/iftab"
-    iflist|
-	while read name mac;do	    
-	    [ "00:00:00:00:00:00" = "$mac" ] && continue # avoid wrong mac addresses from broken drivers (like rt61)
-	    
-	    if grep -qs "^$name[[:space:]]" "$IFTAB_CONFIG";then
-		sed -r -e "s,^($name[[:space:]]+mac[[:space:]]+).*,\1$mac," -i "$IFTAB_CONFIG"
-	    else
-		printf "%s\tmac %s\n" "$name" "$mac" >>"$IFTAB_CONFIG" 2>/dev/null || return
-	    fi
-	done
-}
 
 list_mask()
 {
@@ -143,7 +129,7 @@ LANG=${in_language%%;*}.utf8 gettext "alterator-net-eth" "$1"
 
 #initial actions
 ifup lo
-update_iftab
+iftabupdate
 
 on_message()
 {

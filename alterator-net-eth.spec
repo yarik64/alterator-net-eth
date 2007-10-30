@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 0.8
-Release: alt5
+Release: alt6
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -12,7 +12,7 @@ Summary: alterator module for tcp/ip connections configuration
 License: GPL
 Group: System/Configuration/Other
 Requires: alterator >= 2.9 gettext
-Requires: alterator-net-common
+Requires: alterator-net-common >= 0.1-alt3
 Requires: alterator-net-wifi
 
 BuildPreReq: alterator >= 2.9-alt0.10, alterator-standalone >= 2.5-alt0.3, alterator-fbi >= 0.7-alt1
@@ -46,13 +46,16 @@ alterator module for tcp/ip connections configuration
 %find_lang %name
 
 %files -f %name.lang
-%_bindir/*
 %_altdata_dir/applications/*
 %_altdata_dir/ui/*/
 %_var/www/html/*
 %_alterator_backend3dir/*
 
 %changelog
+* Tue Oct 30 2007 Stanislav Ievlev <inger@altlinux.org> 0.8-alt6
+- fix iftab generation
+- move tools to alterator-net-common
+
 * Tue Sep 25 2007 Stanislav Ievlev <inger@altlinux.org> 0.8-alt5
 - replace C tool with shell script
 
