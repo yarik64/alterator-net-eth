@@ -66,7 +66,7 @@ read_iface()
 	local info=
 	ifcheckup "$name" && info="`_ "interface is up"`" || info="`_ "interface is down"`"
 	
-	if ! [ -d "/sys/class/net/$name/wireless" ];then
+	if ! ifcheckwireless "$name"; then
 	    ifcheckplug "$name"
 	    case "$?" in
 		2) info="$info, `_ "plugged"`"   ;;
@@ -75,7 +75,7 @@ read_iface()
 	fi
 
 	printf 'info "%s"' "$info"
-	printf 'wireless %s' "$([ -d "/sys/class/net/$name/wireless" ] && echo "#t" || echo "#f")"
+	printf 'wireless %s' "$(ifcheckwireless "$name" && echo "#t" || echo "#f")"
 
 	local addr= ip= mask= bootproto=
 	[ ! -s "/etc/net/ifaces/$name/ipv4address" ] ||

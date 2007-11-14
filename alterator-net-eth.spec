@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 0.8
-Release: alt6
+Release: alt7
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -52,6 +52,9 @@ alterator module for tcp/ip connections configuration
 %_alterator_backend3dir/*
 
 %changelog
+* Wed Nov 14 2007 Stanislav Ievlev <inger@altlinux.org> 0.8-alt7
+- use new ifcheckwireless common script
+
 * Tue Oct 30 2007 Stanislav Ievlev <inger@altlinux.org> 0.8-alt6
 - fix iftab generation
 - move tools to alterator-net-common
