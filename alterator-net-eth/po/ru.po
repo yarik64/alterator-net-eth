@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-05-31 17:37+0400\n"
+"POT-Creation-Date: 2008-01-14 12:34+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,15 +15,39 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ui/net-eth/index.scm:16 ui/net-eth/html-messages.scm:2
+#: ui/net-eth/html-messages.scm:1 backend3/template-net-eth:30
+msgid "IP interfaces"
+msgstr "IP-интерфейсы"
+
+#: ui/net-eth/html-messages.scm:2 ui/net-eth/index.scm:16
 msgid "Interface"
 msgstr "Интерфейс"
 
-#: ui/net-eth/index.scm:28 backend3/net-eth:183
+#: ui/net-eth/html-messages.scm:3
+msgid "Select"
+msgstr "Выбрать"
+
+#: ui/net-eth/html-messages.scm:4 ui/net-eth/index.scm:55
+msgid "Wireless settings"
+msgstr "Настройки для беспроводных интерфейсов"
+
+#: ui/net-eth/html-messages.scm:5 ui/net-eth/index.scm:65
+msgid "Reset"
+msgstr "Cброс"
+
+#: ui/net-eth/html-messages.scm:6 ui/net-eth/index.scm:64
+msgid "Apply"
+msgstr "Применить"
+
+#: ui/net-eth/html-messages.scm:7
+msgid "apply current settings and restart interface"
+msgstr "применить текущие настройки и перезапустить интерфейс"
+
+#: ui/net-eth/index.scm:28 backend3/net-eth:210
 msgid "Use DHCP"
 msgstr "Использовать DHCP"
 
-#: ui/net-eth/index.scm:33 backend3/net-eth:185
+#: ui/net-eth/index.scm:33 backend3/net-eth:212
 msgid "IP address"
 msgstr "IP-адрес"
 
@@ -31,63 +55,51 @@ msgstr "IP-адрес"
 msgid "Netmask"
 msgstr "Маска сети"
 
-#: ui/net-eth/index.scm:43 backend3/net-eth:187
+#: ui/net-eth/index.scm:43 backend3/net-eth:214
 msgid "Default gateway"
 msgstr "Шлюз по умолчанию"
 
-#: ui/net-eth/index.scm:50 ui/net-eth/html-messages.scm:4
-msgid "Wireless settings"
-msgstr "Настройки для беспроводных интерфейсов"
+#: ui/net-eth/index.scm:49 backend3/net-eth:218
+msgid "Hardware binding"
+msgstr "Привязка"
 
-#: ui/net-eth/index.scm:59 ui/net-eth/html-messages.scm:6
-msgid "Apply"
-msgstr "Применить"
-
-#: ui/net-eth/index.scm:60 ui/net-eth/html-messages.scm:5
-msgid "Reset"
-msgstr "Cброс"
-
-#: ui/net-eth/index.scm:61
+#: ui/net-eth/index.scm:66
 msgid "Quit"
 msgstr "Выход"
 
-#: ui/net-eth/html-messages.scm:1 backend3/template-net-eth:30
-msgid "IP interfaces"
-msgstr "IP-интерфейсы"
+#: backend3/net-eth:57
+msgid "missing"
+msgstr "отсутствует"
 
-#: ui/net-eth/html-messages.scm:3
-msgid "Select"
-msgstr "Выбрать"
+#: backend3/net-eth:58
+msgid "by MAC address"
+msgstr "по  аппаратному адресу (MAC)"
 
-#: ui/net-eth/html-messages.scm:7
-msgid "apply current settings and restart interface"
-msgstr "применить текущие настройки и перезапустить интерфейс"
+#: backend3/net-eth:59
+msgid "by bus location"
+msgstr "по местоположению на шине"
 
-#: backend3/net-eth:110
+#: backend3/net-eth:98
 msgid "interface is up"
 msgstr "интерфейс включён"
 
-#: backend3/net-eth:110
+#: backend3/net-eth:98
 msgid "interface is down"
 msgstr "интерфейс выключен"
 
-#: backend3/net-eth:112
+#: backend3/net-eth:103
 msgid "plugged"
 msgstr "провод подсоединён"
 
-#: backend3/net-eth:114
+#: backend3/net-eth:104
 msgid "unplugged"
 msgstr "провод отсоединён"
 
-#: backend3/net-eth:167 backend3/template-net-eth:5
-msgid "alterator-net-eth"
-msgstr ""
-
-#: backend3/net-eth:181
+#: backend3/net-eth:208
 msgid "Interface state"
 msgstr "Состояние интерфейса"
 
-#: backend3/net-eth:189
+#: backend3/net-eth:216
 msgid "NetMask"
 msgstr "Маска сети"
 
@@ -98,4 +110,3 @@ msgstr "Управление IP-интерфейсами"
 #: backend3/template-net-eth:32
 msgid "Network"
 msgstr "Сеть"
-

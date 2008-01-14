@@ -1,5 +1,6 @@
 (define avail-ifaces (woo-list/name+label "/net-eth"))
 (define avail-masks (woo-list/name+label "/net-eth/eth0/avail_masks"))
+(define avail-hw-bindings (woo-list/name+label "/net-eth/eth0/avail_hw_bindings"))
 
 (define (update-interface name)
   (and (not-empty-string? name)
@@ -8,6 +9,7 @@
          (iface-dhcp state (woo-get-option cmd 'dhcp #f) toggled)
          (iface-ip text (woo-get-option cmd 'ip))
          (iface-mask current (string-list-index (woo-get-option cmd 'mask "24") (map car avail-masks)))
+	 (iface-hw-binding current (string-list-index (woo-get-option cmd 'hw_binding) (map car avail-hw-bindings)))
          (w-button activity (woo-get-option cmd 'wireless))
          (iface-gw text (woo-get-option cmd 'default)))))
 
@@ -21,6 +23,7 @@
               'dhcp  (iface-dhcp state)
               'ip    (iface-ip text)
               'mask  (current-mask)
+	      'hw_binding (current-hw-binding)
               'default (iface-gw text) args))))
       #t))
 
@@ -31,6 +34,9 @@
 
 (define (current-mask)
   (car (list-ref avail-masks (iface-mask current))))
+
+(define (current-hw-binding)
+  (car (list-ref avail-hw-bindings (iface-hw-binding current))))
 
 (define (net-wifi name)
   (and (not-empty-string? name)

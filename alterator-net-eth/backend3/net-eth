@@ -1,5 +1,12 @@
 #!/bin/sh
 
+iftab_file="/etc/iftab"
+
+_()
+{
+LANG=${in_language%%;*}.utf8 gettext "alterator-net-eth" "$1"
+}
+
 ################### shell file helpers
 
 PATH="/usr/lib/alterator-net-common:$PATH"
@@ -45,6 +52,13 @@ list_iface()
         done
 }
 
+list_hw_binding()
+{
+    printf '("missing" label "%s")' "`_ "missing"`"
+    printf '("mac" label "%s")' "`_ "by MAC address"`"
+    printf '("businfo" label "%s")' "`_ "by bus location"`"
+}
+
 restart_iface()
 {
     ifdown "$1" && ifup "$1"
@@ -55,6 +69,23 @@ restart_all_ifaces() {
         while read iface mac; do
 		restart_iface "$iface"
         done >&2
+}
+
+read_hw_binding()
+{
+    local line="$(grep "^[[:space:]]*$1[[:space:]]" "$iftab_file")"
+
+    if [ -z "$line" ]; then
+	echo "missing"
+    else
+	if echo "$line" | fgrep -qsw mac; then
+	    echo "mac"
+	elif echo "$line" | fgrep -qsw businfo; then
+	    echo "businfo"
+	else
+	    echo "missing"
+	fi
+    fi
 }
 
 read_iface()
@@ -74,8 +105,9 @@ read_iface()
 	    esac
 	fi
 
-	printf 'info "%s"' "$info"
-	printf 'wireless %s' "$(ifcheckwireless "$name" && echo "#t" || echo "#f")"
+	printf 'info "%s" ' "$info"
+	printf 'wireless %s ' "$(ifcheckwireless "$name" && echo "#t" || echo "#f")"
+	printf 'hw_binding "%s" ' "$(read_hw_binding "$name")"
 
 	local addr= ip= mask= bootproto=
 	[ ! -s "/etc/net/ifaces/$name/ipv4address" ] ||
@@ -98,6 +130,45 @@ read_iface()
 	echo ")"
 }
 
+write_hw_binding()
+{
+    local name="$1";shift
+    local value="$1";shift
+
+    local mac="$(ifread "$name"|cut -f1)"
+    local businfo="$(ifread "$name"|cut -f2)"
+
+    if [ -s "$iftab_file" ]; then
+	sed -r \
+	    -e "/^$name[[:space:]]/ d" \
+	    -i "$iftab_file"
+
+	[ -z "$mac" ] ||
+	[ "$mac" = "00:00:00:00:00:00" ] ||
+	    sed -r \
+		-e "/[[:space:]]mac[[:space:]]+$mac([[:space:]]|\$)/ d" \
+	        -i "$iftab_file"
+
+	[ -z "$businfo" ] ||
+	    sed -r \
+		-e "/[[:space:]]businfo[[:space:]]+$businfo([[:space:]]|\$)/ d" \
+	    	-i "$iftab_file"
+    fi
+
+    case "$value" in
+	none) ;;
+	mac)
+	    [ -z "$mac" ] ||
+	    [ "$mac" = "00:00:00:00:00:00" ] ||
+	    printf "%s\tmac %s\n" "$name" "$mac" >>"$iftab_file"
+	    ;;
+	businfo)
+	    [ -z "$businfo" ] ||
+	    printf "%s\tbusinfo %s\n" "$name" "$businfo" >>"$iftab_file"
+	    ;;
+    esac
+}
+
 write_iface()
 {
 	local name="$1" && shift
@@ -118,18 +189,16 @@ write_iface()
 		shell_add_or_subst "BOOTPROTO=" \
 			$([ "$in_dhcp" = "#t" ] && echo "dhcp" || echo "static")\
 			"$options"
+
+	[ -n "$in_hw_binding" ] &&
+	    write_hw_binding "$name" "$in_hw_binding"
 }
 
-_()
-{
-LANG=${in_language%%;*}.utf8 gettext "alterator-net-eth" "$1"
-}
 
 . /usr/share/alterator/build/backend3.sh
 
 #initial actions
 ifup lo
-iftabupdate
 
 on_message()
 {
@@ -145,15 +214,17 @@ on_message()
 				"`_ "Default gateway"`"
 			printf 'mask (label "%s")' \
 				"`_ "NetMask"`"
+			printf 'hw_binding (label "%s")' \
+				"`_ "Hardware binding"`"
 			echo ')'
 			;;
 		list)
 			echo '('
-			if [ "$in__objects" == "/" ];then
-				list_iface
-			else
-				list_mask
-			fi
+			case "${in__objects##*/}" in
+			    avail_masks) list_mask ;;
+			    avail_hw_bindings) list_hw_binding ;;
+			    *) list_iface;;
+			esac
 			echo ')'
 			;;
 		read) 

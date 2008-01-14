@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 0.8
-Release: alt7
+Version: 0.9
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -12,10 +12,11 @@ Summary: alterator module for tcp/ip connections configuration
 License: GPL
 Group: System/Configuration/Other
 Requires: alterator >= 2.9 gettext
-Requires: alterator-net-common >= 0.1-alt3
+Requires: alterator-net-common >= 0.2-alt3
 Requires: alterator-net-wifi
+Conflicts: alterator-fbi < 0.15-alt2
 
-BuildPreReq: alterator >= 2.9-alt0.10, alterator-standalone >= 2.5-alt0.3, alterator-fbi >= 0.7-alt1
+BuildPreReq: alterator >= 3.1 alterator-fbi >= 0.7-alt1
 
 BuildArch: noarch
 
@@ -48,10 +49,15 @@ alterator module for tcp/ip connections configuration
 %files -f %name.lang
 %_altdata_dir/applications/*
 %_altdata_dir/ui/*/
+%_altdata_dir/help/*/*
 %_var/www/html/*
 %_alterator_backend3dir/*
 
 %changelog
+* Mon Jan 14 2008 Stanislav Ievlev <inger@altlinux.org> 0.9-alt1
+- update to new help system
+- new feature: replace stupid iftabupdate with interface binding to hardware
+
 * Wed Nov 14 2007 Stanislav Ievlev <inger@altlinux.org> 0.8-alt7
 - use new ifcheckwireless common script
 

@@ -43,7 +43,12 @@
  (label (_ "Default gateway") align "right")
  (document:id iface-gw (edit "" widget-name "default"))
  (spacer)
- 
+
+ ;;
+ (spacer)
+ (label (_ "Hardware binding") align "right")
+ (document:id iface-hw-binding (combobox "" rows (map cdr avail-hw-bindings) widget-name "hw_binding"))
+
  ;;
  (spacer)
  (spacer)
