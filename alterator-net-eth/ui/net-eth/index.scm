@@ -25,8 +25,8 @@
 
  ;;
  (spacer)
- (document:id iface-dhcp (checkbox (_ "Use DHCP") widget-name "dhcp"))
  (spacer)
+ (document:id iface-dhcp (checkbox (_ "Use DHCP") widget-name "dhcp"))
  (spacer)
  ;;
  (spacer)
@@ -52,8 +52,8 @@
  ;;
  (spacer)
  (spacer)
- (document:id w-button (button (_ "Wireless settings")))
  (spacer)
+ (document:id w-button (button (_ "Wireless settings")))
  
  )
 

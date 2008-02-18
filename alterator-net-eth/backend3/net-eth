@@ -1,39 +1,12 @@
 #!/bin/sh
 
+po_domain="alterator-net-eth"
 iftab_file="/etc/iftab"
 
-_()
-{
-LANG=${in_language%%;*}.utf8 gettext "alterator-net-eth" "$1"
-}
-
-################### shell file helpers
+. alterator-sh-functions
+. shell-config
 
 PATH="/usr/lib/alterator-net-common:$PATH"
-
-shell_add_or_subst()
-{
-	local name="$1" && shift
-	local value="$1" && shift
-	local file="$1" && shift
-
-	[ -f "$file" ] || touch "$file"
-	if grep -qs "^$name" "$file"; then
-		/bin/sed -r -i "s,^$name.*,$name$value," -- "$file"
-		return 0
-	fi
-	printf %s\\n "$name$value" >> "$file"
-}
-
-shell_get()
-{
-	local name="$1" && shift
-	local file="$1" && shift
-
-	[ -f "$file" ] &&
-	grep -qs "^$name=" "$file" &&
-	grep "^$name=" "$file"|sed "s,^$name=,,"
-}
 
 ################### interface modificators
 
@@ -183,19 +156,17 @@ write_iface()
 	[ -n "$in_default" ] && [ -s "/etc/net/ifaces/$name/ipv4address" ] && \
 		printf 'default via %s\n' "$in_default" >"/etc/net/ifaces/$name/ipv4route"
 
-	shell_add_or_subst "TYPE=" "eth" "$options"
+	shell_config_set "$options" TYPE eth
 
 	[ -n "$in_dhcp" ] &&
-		shell_add_or_subst "BOOTPROTO=" \
-			$([ "$in_dhcp" = "#t" ] && echo "dhcp" || echo "static")\
-			"$options"
+		shell_config_set \
+			"$options" \
+			BOOTPROTO \
+			$(test_bool "$in_dhcp" && echo "dhcp" || echo "static")
 
 	[ -n "$in_hw_binding" ] &&
 	    write_hw_binding "$name" "$in_hw_binding"
 }
-
-
-. /usr/share/alterator/build/backend3.sh
 
 #initial actions
 ifup lo
@@ -229,7 +200,7 @@ on_message()
 			;;
 		read) 
 			if [ "$in__objects" == "/" ];then
-				echo '()'
+				write_nop
 			else
 				read_iface "${in__objects}"
 			fi
@@ -237,11 +208,11 @@ on_message()
 		write)
 			write_iface "${in__objects}"
 			[ "$in_restart" = "#f" ] || restart_iface "$in__objects"
-			echo '()'
+			write_nop
 			;;
 		restart)
 			restart_all_ifaces
-			echo '()'
+			write_nop
 			;;
 		*)
 			echo '#f'

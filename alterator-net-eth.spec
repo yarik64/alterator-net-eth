@@ -1,7 +1,7 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 0.9
+Version: 1.0
 Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
@@ -11,7 +11,7 @@ Source:%name-%version.tar
 Summary: alterator module for tcp/ip connections configuration
 License: GPL
 Group: System/Configuration/Other
-Requires: alterator >= 2.9 gettext
+Requires: alterator >= 2.9 alterator-sh-functions libshell >= 0.0.1-alt4
 Requires: alterator-net-common >= 0.2-alt3
 Requires: alterator-net-wifi
 Conflicts: alterator-fbi < 0.15-alt2
@@ -54,6 +54,10 @@ alterator module for tcp/ip connections configuration
 %_alterator_backend3dir/*
 
 %changelog
+* Mon Feb 18 2008 Stanislav Ievlev <inger@altlinux.org> 1.0-alt1
+- little interface improvements
+- use alterator-sh-functions and libshell
+
 * Mon Jan 14 2008 Stanislav Ievlev <inger@altlinux.org> 0.9-alt1
 - update to new help system
 - new feature: replace stupid iftabupdate with interface binding to hardware
