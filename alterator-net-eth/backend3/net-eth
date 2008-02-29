@@ -21,7 +21,9 @@ list_iface()
 {
     iflist|
         while read iface mac; do
-            printf '("%s" label "%s (%s)")' "$iface" "$iface" "$(ifaceinfo "$iface")"
+    	    local v="$(ifaceinfo "$iface")"
+	    [ -z "$v" ] || v="($v)"
+            printf '("%s" label "%s %s")' "$iface" "$iface" "$v"
         done
 }
 

@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 1.0
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -54,6 +54,9 @@ alterator module for tcp/ip connections configuration
 %_alterator_backend3dir/*
 
 %changelog
+* Fri Feb 29 2008 Vladislav Zavjalov <slazav@altlinux.org> 1.0-alt2
+- removed () in ifaceinfo
+
 * Mon Feb 18 2008 Stanislav Ievlev <inger@altlinux.org> 1.0-alt1
 - little interface improvements
 - use alterator-sh-functions and libshell
