@@ -14,7 +14,7 @@
  ;;
  (spacer)
  (label (_ "Interface") align "right")
- (document:id ifaces (combobox layout-policy 20 -1))
+ (document:id ifaces (combobox))
  (spacer)
 
  ;;
@@ -62,8 +62,7 @@
 (or (global 'frame:next)
     (hbox align "center"
           (document:id c-button (button (_ "Apply")))
-          (document:id r-button (button (_ "Reset")))
-          (document:id q-button (button (_ "Quit")))))
+          (document:id r-button (button (_ "Reset")))))
 
 ;;;;;;;;;;;;;;;;;;
 (common-behaviour)

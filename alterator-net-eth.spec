@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 1.0
-Release: alt2
+Release: alt3
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -54,6 +54,10 @@ alterator module for tcp/ip connections configuration
 %_alterator_backend3dir/*
 
 %changelog
+* Mon Mar 24 2008 Vladislav Zavjalov <slazav@altlinux.org> 1.0-alt3
+- remove layout-policy attribute (bug #14945)
+- remove quit button from UI
+
 * Fri Feb 29 2008 Vladislav Zavjalov <slazav@altlinux.org> 1.0-alt2
 - removed () in ifaceinfo
 
