@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-14 12:34+0300\n"
+"POT-Creation-Date: 2008-04-24 12:23+0400\n"
 "PO-Revision-Date: 2007-08-13 20:57+0300\n"
 "Last-Translator: Michael Shigorin <mike@altlinux.org>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -15,39 +15,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ui/net-eth/html-messages.scm:1 backend3/template-net-eth:30
-msgid "IP interfaces"
-msgstr "IP-інтерфейси"
-
-#: ui/net-eth/html-messages.scm:2 ui/net-eth/index.scm:16
+#: ui/net-eth/index.scm:16 стандартный ввод:2
 msgid "Interface"
 msgstr "Інтерфейс"
 
-#: ui/net-eth/html-messages.scm:3
-msgid "Select"
-msgstr "Вибрати"
-
-#: ui/net-eth/html-messages.scm:4 ui/net-eth/index.scm:55
-msgid "Wireless settings"
-msgstr "Налаштування бездротових інтерфейсів"
-
-#: ui/net-eth/html-messages.scm:5 ui/net-eth/index.scm:65
-msgid "Reset"
-msgstr "Скинути"
-
-#: ui/net-eth/html-messages.scm:6 ui/net-eth/index.scm:64
-msgid "Apply"
-msgstr "Застосувати"
-
-#: ui/net-eth/html-messages.scm:7
-msgid "apply current settings and restart interface"
-msgstr "застосувати поточні налаштування та рестартувати інтерфейс"
-
-#: ui/net-eth/index.scm:28 backend3/net-eth:210
+#: ui/net-eth/index.scm:29 backend3/net-eth:183
 msgid "Use DHCP"
 msgstr "Використовувати DHCP"
 
-#: ui/net-eth/index.scm:33 backend3/net-eth:212
+#: ui/net-eth/index.scm:33 backend3/net-eth:185
 msgid "IP address"
 msgstr "IP-адреса"
 
@@ -55,59 +31,79 @@ msgstr "IP-адреса"
 msgid "Netmask"
 msgstr "Мережева маска"
 
-#: ui/net-eth/index.scm:43 backend3/net-eth:214
+#: ui/net-eth/index.scm:43 backend3/net-eth:187
 msgid "Default gateway"
 msgstr "Шлюз по змовчуванню"
 
-#: ui/net-eth/index.scm:49 backend3/net-eth:218
+#: ui/net-eth/index.scm:49 backend3/net-eth:191
 msgid "Hardware binding"
 msgstr ""
 
-#: ui/net-eth/index.scm:66
-msgid "Quit"
-msgstr "Вихід"
+#: ui/net-eth/index.scm:56 стандартный ввод:4
+msgid "Wireless settings"
+msgstr "Налаштування бездротових інтерфейсів"
 
-#: backend3/net-eth:57
+#: ui/net-eth/index.scm:64 стандартный ввод:5
+msgid "Apply"
+msgstr "Застосувати"
+
+#: ui/net-eth/index.scm:65 стандартный ввод:6
+msgid "Reset"
+msgstr "Скинути"
+
+#: backend3/net-eth:32
 msgid "missing"
 msgstr ""
 
-#: backend3/net-eth:58
+#: backend3/net-eth:33
 #, fuzzy
 msgid "by MAC address"
 msgstr "IP-адреса"
 
-#: backend3/net-eth:59
+#: backend3/net-eth:34
 msgid "by bus location"
 msgstr ""
 
-#: backend3/net-eth:98
+#: backend3/net-eth:73
 msgid "interface is up"
 msgstr "інтерфейс піднято"
 
-#: backend3/net-eth:98
+#: backend3/net-eth:73
 msgid "interface is down"
 msgstr "інтерфейс опущено"
 
-#: backend3/net-eth:103
+#: backend3/net-eth:78
 msgid "plugged"
 msgstr "увімкнуто"
 
-#: backend3/net-eth:104
+#: backend3/net-eth:79
 msgid "unplugged"
 msgstr "вимкнуто"
 
-#: backend3/net-eth:208
+#: backend3/net-eth:181
 msgid "Interface state"
 msgstr "Стан інтерфейсу"
 
-#: backend3/net-eth:216
+#: backend3/net-eth:189
 msgid "NetMask"
 msgstr "Мережева маска"
 
-#: backend3/template-net-eth:31
-msgid "IP interfaces administration"
-msgstr "Керування IP-інтерфейсами"
+#: стандартный ввод:1
+msgid "IP interfaces"
+msgstr "IP-інтерфейси"
 
-#: backend3/template-net-eth:32
-msgid "Network"
-msgstr "Мережа"
+#: стандартный ввод:3
+msgid "Select"
+msgstr "Вибрати"
+
+#~ msgid "apply current settings and restart interface"
+#~ msgstr "застосувати поточні налаштування та рестартувати інтерфейс"
+
+#~ msgid "Quit"
+#~ msgstr "Вихід"
+
+#~ msgid "IP interfaces administration"
+#~ msgstr "Керування IP-інтерфейсами"
+
+#~ msgid "Network"
+#~ msgstr "Мережа"

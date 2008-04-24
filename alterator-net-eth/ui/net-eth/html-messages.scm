@@ -1,7 +1,0 @@
-(_ "IP interfaces")
-(_ "Interface")
-(_ "Select")
-(_ "Wireless settings")
-(_ "Reset")
-(_ "Apply")
-(_ "apply current settings and restart interface")
