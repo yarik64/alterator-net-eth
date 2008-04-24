@@ -1,14 +1,45 @@
 #!/bin/sh
 
+cachedir="/var/cache/alterator/net-eth"
 po_domain="alterator-net-eth"
-iftab_file="/etc/iftab"
 
 . alterator-sh-functions
 . shell-config
 
 PATH="/usr/lib/alterator-net-common:$PATH"
 
-################### interface modificators
+### cache
+init_cache()
+{
+    local ifacedir="/etc/net/ifaces/$1"
+
+    if [ ! -d "$cachedir/$1" ] ;then
+	[ -d "$ifacedir" ] && cp -a "$ifacedir" "$cachedir"
+	mkdir -p "$cachedir/$1"
+    fi
+
+    [ -f "$cachedir/iftab" ] || cp /etc/iftab "$cachedir/iftab"
+}
+
+clear_cache()
+{
+    rm -rf "$cachedir"
+    mkdir "$cachedir"
+}
+
+commit_cache()
+{
+    [ -f "$cachedir/iftab" ] && mv -f "$cachedir/iftab" /etc/iftab
+    find $cachedir -maxdepth 1 -mindepth 1 -type d|
+	while read iface; do
+	    [ -n "$iface" ] || exit
+	    rm -rf "/etc/net/ifaces/${iface##*/}"
+	    mv -f "$iface" "/etc/net/ifaces/${iface##*/}"
+	done
+    clear_cache
+}
+
+### interface work
 
 list_mask()
 {
@@ -34,21 +65,17 @@ list_hw_binding()
     printf '("businfo" label "%s")' "`_ "by bus location"`"
 }
 
-restart_iface()
-{
-    ifdown "$1" && ifup "$1"
-}
-
-restart_all_ifaces() {
-    iflist|
-        while read iface mac; do
-		restart_iface "$iface"
-        done >&2
-}
-
 read_hw_binding()
 {
-    local line="$(grep "^[[:space:]]*$1[[:space:]]" "$iftab_file")"
+    local config=
+
+    if [ -f "$cachedir/iftab" ];then
+	config="$cachedir/iftab"
+    else
+	config="/etc/iftab"
+    fi
+
+    local line="$(grep "^[[:space:]]*$1[[:space:]]" "$config")"
 
     if [ -z "$line" ]; then
 	echo "missing"
@@ -63,12 +90,8 @@ read_hw_binding()
     fi
 }
 
-read_iface()
+read_info()
 {
-	local name="$1" && shift
-	echo "("
-	
-	#collect general information
 	local info=
 	ifcheckup "$name" && info="`_ "interface is up"`" || info="`_ "interface is down"`"
 	
@@ -79,14 +102,29 @@ read_iface()
 		3) info="$info, `_ "unplugged"`" ;;
 	    esac
 	fi
+	echo "$info"
+}
 
-	printf 'info "%s" ' "$info"
+read_iface()
+{
+	local name="$1"; shift
+	local ifacedir=
+
+	if [ -d "$cachedir/$name" ];then
+	    ifacedir="$cachedir/$name"
+	else
+	    ifacedir="/etc/net/ifaces/$name"
+	fi
+
+	#collect general information
+
+	printf 'info "%s" ' "$(read_info)"
 	printf 'wireless %s ' "$(ifcheckwireless "$name" && echo "#t" || echo "#f")"
 	printf 'hw_binding "%s" ' "$(read_hw_binding "$name")"
 
 	local addr= ip= mask= bootproto=
-	[ ! -s "/etc/net/ifaces/$name/ipv4address" ] ||
-		addr=$(grep '^[0-9]' "/etc/net/ifaces/$name/ipv4address" | head -n1 || echo "")
+	[ ! -s "/$ifacedir/ipv4address" ] ||
+		addr=$(grep '^[0-9]' "$ifacedir/ipv4address" | head -n1 || echo "")
 
 	if [ -n "$addr" ]; then
 		ip="${addr%%/*}"
@@ -95,39 +133,43 @@ read_iface()
 		printf 'ip "%s" mask "%s"\n' "$ip" "${mask:-32}"
 	fi
 
-	[ ! -s "/etc/net/ifaces/$name/ipv4route" ] ||
+	[ ! -s "/$ifacedir/ipv4route" ] ||
 		printf 'default "%s"\n' \
-			$(grep '^default' "/etc/net/ifaces/$name/ipv4route" | sed -r 's,default[[:space:]]+via[[:space:]],,' || echo "")
+			$(grep '^default' "$ifacedir/ipv4route" | sed -r 's,default[[:space:]]+via[[:space:]],,' || echo "")
 
-	bootproto="$(ifvar "$name" "BOOTPROTO")"
-	[ "$bootproto" = "dhcp" ] && echo "dhcp #t" || echo "dhcp #f"
-
-	echo ")"
+	local bootproto="$(ifvar "$name" "BOOTPROTO")"
+	case "$bootproto" in
+	    dhcp) echo "dhcp #t" ;;
+	    static) echo "dhcp #f" ;;
+	    *) echo 'dhcp #t' ;;
+	esac
 }
+
 
 write_hw_binding()
 {
     local name="$1";shift
     local value="$1";shift
+    local config="$cachedir/iftab"
 
     local mac="$(ifread "$name"|cut -f1)"
     local businfo="$(ifread "$name"|cut -f2)"
 
-    if [ -s "$iftab_file" ]; then
+    if [ -s "$config" ]; then
 	sed -r \
 	    -e "/^$name[[:space:]]/ d" \
-	    -i "$iftab_file"
+	    -i "$config"
 
 	[ -z "$mac" ] ||
 	[ "$mac" = "00:00:00:00:00:00" ] ||
 	    sed -r \
 		-e "/[[:space:]]mac[[:space:]]+$mac([[:space:]]|\$)/ d" \
-	        -i "$iftab_file"
+	        -i "$config"
 
 	[ -z "$businfo" ] ||
 	    sed -r \
 		-e "/[[:space:]]businfo[[:space:]]+$businfo([[:space:]]|\$)/ d" \
-	    	-i "$iftab_file"
+	    	-i "$config"
     fi
 
     case "$value" in
@@ -135,34 +177,34 @@ write_hw_binding()
 	mac)
 	    [ -z "$mac" ] ||
 	    [ "$mac" = "00:00:00:00:00:00" ] ||
-	    printf "%s\tmac %s\n" "$name" "$mac" >>"$iftab_file"
+	    printf "%s\tmac %s\n" "$name" "$mac" >>"$config"
 	    ;;
 	businfo)
 	    [ -z "$businfo" ] ||
-	    printf "%s\tbusinfo %s\n" "$name" "$businfo" >>"$iftab_file"
+	    printf "%s\tbusinfo %s\n" "$name" "$businfo" >>"$config"
 	    ;;
     esac
 }
 
+
 write_iface()
 {
 	local name="$1" && shift
-	local ifacedir="/etc/net/ifaces/$name"
-	local options="$ifacedir/options"
+	local ifacedir="$cachedir/$name"
 
-	[ -d "$ifacedir" ] || mkdir "$ifacedir"
+	init_cache "$name"
 	
 	[ -n "$in_mask" ] && [ -n "$in_ip" ] && \
-		printf '%s/%s\n' "$in_ip" "$in_mask" >"/etc/net/ifaces/$name/ipv4address"
+		printf '%s/%s\n' "$in_ip" "$in_mask" >"/$ifacedir/ipv4address"
 
-	[ -n "$in_default" ] && [ -s "/etc/net/ifaces/$name/ipv4address" ] && \
-		printf 'default via %s\n' "$in_default" >"/etc/net/ifaces/$name/ipv4route"
+	[ -n "$in_default" ] && [ -s "/$ifacedir/ipv4address" ] && \
+		printf 'default via %s\n' "$in_default" >"/$ifacedir/ipv4route"
 
-	shell_config_set "$options" TYPE eth
+	shell_config_set "$ifacedir/options" TYPE eth
 
 	[ -n "$in_dhcp" ] &&
 		shell_config_set \
-			"$options" \
+			"$ifacedir/options" \
 			BOOTPROTO \
 			$(test_bool "$in_dhcp" && echo "dhcp" || echo "static")
 
@@ -170,25 +212,42 @@ write_iface()
 	    write_hw_binding "$name" "$in_hw_binding"
 }
 
+commit_iface()
+{
+    commit_cache
+    iflist|
+        while read iface rest; do
+    		ifdown "$iface" && ifup "$iface"
+        done >&2
+}
+
+reset_iface()
+{
+    clear_cache
+}
+
 #initial actions
 ifup lo
+clear_cache
 
 on_message()
 {
 	case "$in_action" in
 		constraints)
 			echo '('
-			printf 'info (label "%s")' "`_ "Interface state"`"
-			printf 'dhcp (exclude (#t ip) exclude (#t default) exclude (#t mask) default #f label "%s")' \
-				"`_ "Use DHCP"`"
-			printf 'ip (required #t ipv4-address #t label "%s")' \
-				"`_ "IP address"`"
-			printf 'default (ipv4-address #t label "%s")' \
-				"`_ "Default gateway"`"
-			printf 'mask (label "%s")' \
-				"`_ "NetMask"`"
-			printf 'hw_binding (label "%s")' \
-				"`_ "Hardware binding"`"
+			if [ "$in__objects" != "/" ];then
+    			    printf 'info (label "%s")' "`_ "Interface state"`"
+			    printf 'dhcp (exclude (#t ip) exclude (#t default) exclude (#t mask) default #f label "%s")' \
+				    "`_ "Use DHCP"`"
+			    printf 'ip (required #t ipv4-address #t label "%s")' \
+				    "`_ "IP address"`"
+			    printf 'default (ipv4-address #t label "%s")' \
+				    "`_ "Default gateway"`"
+			    printf 'mask (label "%s")' \
+				    "`_ "NetMask"`"
+			    printf 'hw_binding (label "%s")' \
+				    "`_ "Hardware binding"`"
+			fi
 			echo ')'
 			;;
 		list)
@@ -201,19 +260,16 @@ on_message()
 			echo ')'
 			;;
 		read) 
-			if [ "$in__objects" == "/" ];then
-				write_nop
-			else
-				read_iface "${in__objects}"
-			fi
+			echo "("
+			local name="$in__objects"
+			[ "$name" == "/" ] || read_iface "$name"
+			echo ")"
 			;;
 		write)
-			write_iface "${in__objects}"
-			[ "$in_restart" = "#f" ] || restart_iface "$in__objects"
-			write_nop
-			;;
-		restart)
-			restart_all_ifaces
+			local name="${in__objects}"
+			[ "$name" == "/" ] || write_iface "$name"
+			test_bool "$in_commit" && commit_iface
+			test_bool "$in_reset" && reset_iface
 			write_nop
 			;;
 		*)
