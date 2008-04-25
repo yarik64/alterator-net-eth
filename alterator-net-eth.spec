@@ -54,6 +54,9 @@ alterator module for tcp/ip connections configuration
 %_alterator_backend3dir/*
 
 %changelog
+* Fri Apr 25 2008 Stanislav Ievlev <inger@altlinux.org> 1.0-alt5
+- improve qt UI
+
 * Thu Apr 24 2008 Stanislav Ievlev <inger@altlinux.org> 1.0-alt4
 - remove html-messages
 - create common behaviour both for installer and acc
