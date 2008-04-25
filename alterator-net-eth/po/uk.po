@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-24 12:23+0400\n"
+"POT-Creation-Date: 2008-04-25 16:30+0400\n"
 "PO-Revision-Date: 2007-08-13 20:57+0300\n"
 "Last-Translator: Michael Shigorin <mike@altlinux.org>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -15,86 +15,132 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ui/net-eth/index.scm:16 стандартный ввод:2
-msgid "Interface"
+#: ui/net-eth/index.scm:96
+#, fuzzy
+msgid "Interfaces"
 msgstr "Інтерфейс"
 
-#: ui/net-eth/index.scm:29 backend3/net-eth:183
-msgid "Use DHCP"
-msgstr "Використовувати DHCP"
-
-#: ui/net-eth/index.scm:33 backend3/net-eth:185
-msgid "IP address"
-msgstr "IP-адреса"
-
-#: ui/net-eth/index.scm:38
-msgid "Netmask"
-msgstr "Мережева маска"
-
-#: ui/net-eth/index.scm:43 backend3/net-eth:187
-msgid "Default gateway"
-msgstr "Шлюз по змовчуванню"
-
-#: ui/net-eth/index.scm:49 backend3/net-eth:191
-msgid "Hardware binding"
+#.
+#: ui/net-eth/index.scm:111
+msgid "Status:"
 msgstr ""
 
-#: ui/net-eth/index.scm:56 стандартный ввод:4
+#.
+#: ui/net-eth/index.scm:115
+msgid "Configuration:"
+msgstr ""
+
+#.
+#: ui/net-eth/index.scm:125
+#, fuzzy
+msgid "IP address:"
+msgstr "IP-адреса"
+
+#.
+#: ui/net-eth/index.scm:129
+#, fuzzy
+msgid "Netmask:"
+msgstr "Мережева маска"
+
+#.
+#: ui/net-eth/index.scm:133
+#, fuzzy
+msgid "Default gateway:"
+msgstr "Шлюз по змовчуванню"
+
+#.
+#: ui/net-eth/index.scm:137
+msgid "Hardware binding:"
+msgstr ""
+
+#: ui/net-eth/index.scm:142 стандартный ввод:4
 msgid "Wireless settings"
 msgstr "Налаштування бездротових інтерфейсів"
 
-#: ui/net-eth/index.scm:64 стандартный ввод:5
+#: ui/net-eth/index.scm:157 стандартный ввод:5
 msgid "Apply"
 msgstr "Застосувати"
 
-#: ui/net-eth/index.scm:65 стандартный ввод:6
+#: ui/net-eth/index.scm:158 стандартный ввод:6
 msgid "Reset"
 msgstr "Скинути"
 
-#: backend3/net-eth:32
+#: backend3/net-eth:63
 msgid "missing"
 msgstr ""
 
-#: backend3/net-eth:33
+#: backend3/net-eth:64
 #, fuzzy
 msgid "by MAC address"
 msgstr "IP-адреса"
 
-#: backend3/net-eth:34
+#: backend3/net-eth:65
 msgid "by bus location"
 msgstr ""
 
-#: backend3/net-eth:73
+#: backend3/net-eth:70
+msgid "Turned off"
+msgstr ""
+
+#: backend3/net-eth:71 backend3/net-eth:270
+msgid "Use DHCP"
+msgstr "Використовувати DHCP"
+
+#: backend3/net-eth:72
+msgid "Manually"
+msgstr ""
+
+#: backend3/net-eth:103
 msgid "interface is up"
 msgstr "інтерфейс піднято"
 
-#: backend3/net-eth:73
+#: backend3/net-eth:103
 msgid "interface is down"
 msgstr "інтерфейс опущено"
 
-#: backend3/net-eth:78
+#: backend3/net-eth:108
 msgid "plugged"
 msgstr "увімкнуто"
 
-#: backend3/net-eth:79
+#: backend3/net-eth:109
 msgid "unplugged"
 msgstr "вимкнуто"
 
-#: backend3/net-eth:181
+#: backend3/net-eth:268
 msgid "Interface state"
 msgstr "Стан інтерфейсу"
 
-#: backend3/net-eth:189
+#: backend3/net-eth:272
+msgid "IP address"
+msgstr "IP-адреса"
+
+#: backend3/net-eth:274
+msgid "Default gateway"
+msgstr "Шлюз по змовчуванню"
+
+#: backend3/net-eth:276
 msgid "NetMask"
 msgstr "Мережева маска"
+
+#: backend3/net-eth:278
+msgid "Hardware binding"
+msgstr ""
 
 #: стандартный ввод:1
 msgid "IP interfaces"
 msgstr "IP-інтерфейси"
 
+#: стандартный ввод:2
+msgid "Interface"
+msgstr "Інтерфейс"
+
 #: стандартный ввод:3
 msgid "Select"
 msgstr "Вибрати"
+
+#, fuzzy
+#~ msgid "DHCP"
+#~ msgstr "Використовувати DHCP"
 
 #~ msgid "apply current settings and restart interface"
 #~ msgstr "застосувати поточні налаштування та рестартувати інтерфейс"

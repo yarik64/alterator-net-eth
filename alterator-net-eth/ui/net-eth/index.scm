@@ -39,7 +39,7 @@
 (define (read-interface name)
   (and (not-empty-string? name)
        (let ((cmd (woo-read-first "/net-eth" 'ifname name)))
-	 (iface-info text (string-append "<small>(" (woo-get-option cmd 'info) ")</small>"))
+	 (iface-info text (woo-get-option cmd 'info))
 	 (iface-ip text (woo-get-option cmd 'ip))
 	 (iface-mask current (param-index cmd 'mask *avail-masks*))
 	 (iface-hw-binding current (param-index cmd 'hw_binding *avail-hw-bindings*))
@@ -81,7 +81,7 @@
 
       (let ((avail-ifaces (woo-list/name+label "/net-eth")))
 	(cell-set! *avail-ifaces* avail-ifaces)
-	(ifaces rows (map cdr avail-ifaces))
+	(ifaces rows (map car avail-ifaces))
 	(or (null? avail-ifaces)
 	    (begin (ifaces current 0)
 	           (cell-set! *prev-current* 0)
@@ -90,11 +90,13 @@
 ;;; UI
 
 (gridbox
-  columns "20;20;40;20"
-  ;;
+  columns "0;100"
+  margin 20
+
+  (label text (bold (_ "Interfaces")))
   (spacer)
-  (label (_ "Interface") align "right")
-  (document:id ifaces (combobox
+
+  (document:id ifaces (listbox
 			(when selected
 			  (or (woo-catch/message
 				(thunk
@@ -103,68 +105,62 @@
 				  (read-interface (current-interface))
 				  (cell-set! *prev-current* (ifaces current))))
 			      (ifaces current (cell-ref *prev-current*))))))
-  (spacer)
+  (gridbox
+    columns "0;100"
+    ;;
+    (label text (_ "Status:") align "right")
+    (document:id iface-info (label))
 
-  ;;
-  (spacer)
-  (spacer)
-  (document:id iface-info (label ""))
-  (spacer)
+    ;;
+    (label text (_ "Configuration:") align "right")
+    (document:id iface-configuration (combobox
+				       (when selected
+					 ((widgets iface-ip
+						   iface-mask
+						   iface-gw)
+					  activity (string=? (param-value iface-configuration *avail-configurations*)
+							     "static")))))
 
-  ;;
-  (spacer)
-  (label (_ "Configuration") align "right")
-  (document:id iface-configuration (combobox
-				     (when selected
-				       ((widgets iface-ip
-						 iface-mask
-						 iface-gw)
-					activity (string=? (param-value iface-configuration *avail-configurations*)
-							   "static")))))
-  (spacer)
+    ;;
+    (label text (_ "IP address:") align "right")
+    (document:id iface-ip (edit))
 
-  ;;
-  (spacer)
-  (label (_ "IP address") align "right")
-  (document:id iface-ip (edit ""))
-  (spacer)
+    ;;
+    (label text (_ "Netmask:") align "right")
+    (document:id iface-mask (combobox))
 
-  ;;
-  (spacer)
-  (label (_ "Netmask") align "right")
-  (document:id iface-mask (combobox))
-  (spacer)
+    ;;
+    (label text (_ "Default gateway:") align "right")
+    (document:id iface-gw (edit))
 
-  ;;
-  (spacer)
-  (label (_ "Default gateway") align "right")
-  (document:id iface-gw (edit ""))
-  (spacer)
+    ;;
+    (label text (_ "Hardware binding:") align "right")
+    (document:id iface-hw-binding (combobox))
 
-  ;;
-  (spacer)
-  (label (_ "Hardware binding") align "right")
-  (document:id iface-hw-binding (combobox))
+    ;;
+    (spacer)
+    (document:id w-button (button text (_ "Wireless settings")
+				  activity #f
+				  (when clicked
+				    (let ((name (current-interface)))
+				      (and (not-empty-string? name)
+					   (document:popup "/net-wifi/" 'interface name))))))
 
-  ;;
-  (spacer)
-  (spacer)
-  (spacer)
-  (document:id w-button (button (_ "Wireless settings")
-				activity #f
-				(when clicked
-				  (let ((name (current-interface)))
-				    (and (not-empty-string? name)
-					 (document:popup "/net-wifi/" 'interface name))))))
-  )
+    ;;
+    (label colspan 2)
+
+    ;;
+    (spacer)
+    (if (global 'frame:next)
+      (label)
+      (hbox align "left"
+	    (button (_ "Apply") (when clicked (commit-interface)))
+	    (button (_ "Reset") (when clicked (reset-interface)))))
+    ))
 
 
 ;;;;;;;;;;;;;;;
 
-(or (global 'frame:next)
-    (hbox align "center"
-	  (document:id c-button (button (_ "Apply") (when clicked (commit-interface))))
-	  (document:id r-button (button (_ "Reset") (when clicked (reset-interface))))))
 
 ;;;;;;;;;;;;;;;;;;
 

@@ -68,8 +68,8 @@ list_hw_binding()
 list_configuration()
 {
     printf '("off" label "%s")' "`_ "Turned off"`"
-    printf '("dhcp" label "%s")' "`_ "DHCP"`"
-    printf '("static" label "%s")' "`_ "Manual"`"
+    printf '("dhcp" label "%s")' "`_ "Use DHCP"`"
+    printf '("static" label "%s")' "`_ "Manually"`"
 }
 
 read_hw_binding()
