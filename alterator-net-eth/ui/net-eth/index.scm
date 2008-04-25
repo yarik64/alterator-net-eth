@@ -8,20 +8,12 @@
 (define *avail-ifaces* (make-cell '()))
 (define *avail-masks* (make-cell '()))
 (define *avail-hw-bindings* (make-cell '()))
+(define *avail-configurations* (make-cell '()))
 
 (define *prev-current* (make-cell 0))
 
 (define (prev-interface)
   (car (list-ref (cell-ref *avail-ifaces*) (cell-ref *prev-current*))))
-
-(define (mask-index cmd)
-  (or (string-list-index (woo-get-option cmd 'mask "24") (map car (cell-ref *avail-masks*)))
-      0))
-
-(define (hw-binding-index cmd)
-  (format #t "cmd=~S,list=~S~%" (woo-get-option cmd 'hw_binding) (map car (cell-ref *avail-hw-bindings*)))
-  (or (string-list-index (woo-get-option cmd 'hw_binding) (map car (cell-ref *avail-hw-bindings*)))
-      0))
 
 (define (current-interface)
   (let ((c (ifaces current)))
@@ -29,37 +21,42 @@
 	 (>= c 0)
 	 (car (list-ref (cell-ref *avail-ifaces*) c)))))
 
-(define (current-mask)
-  (let ((c (iface-mask current)))
+(define (param-index cmd param list)
+  (or (string-list-index (woo-get-option cmd param) (map car (cell-ref list)))
+      0))
+
+(define (param-value w list)
+  (let ((c (w current)))
     (if (>= c 0)
-      (car (list-ref (cell-ref *avail-masks*) c))
+      (car (list-ref (cell-ref list) c))
       "")))
 
-(define (current-hw-binding)
-  (let ((c (iface-hw-binding current)))
-    (if (>= c 0)
-      (car (list-ref (cell-ref *avail-hw-bindings*) c))
-      "")))
+(define (param-init path widget list)
+  (let ((data (woo-list/name+label path)))
+    (cell-set! list data)
+    (widget rows (map cdr data))))
 
 (define (read-interface name)
   (and (not-empty-string? name)
-       (let ((cmd (woo-read-first (string-append "/net-eth" "/" name))))
+       (let ((cmd (woo-read-first "/net-eth" 'ifname name)))
 	 (iface-info text (string-append "<small>(" (woo-get-option cmd 'info) ")</small>"))
-	 (iface-dhcp state (woo-get-option cmd 'dhcp #f) toggled)
 	 (iface-ip text (woo-get-option cmd 'ip))
-	 (iface-mask current (mask-index cmd))
-	 (iface-hw-binding current (hw-binding-index cmd))
+	 (iface-mask current (param-index cmd 'mask *avail-masks*))
+	 (iface-hw-binding current (param-index cmd 'hw_binding *avail-hw-bindings*))
+	 (iface-configuration current (param-index cmd 'configuration *avail-configurations*))
+	 (iface-configuration selected)
 	 (w-button activity (woo-get-option cmd 'wireless))
 	 (iface-gw text (woo-get-option cmd 'default)))))
 
 (define (write-interface path name)
     (and (not-empty-string? name)
-	 (woo-write/constraints 
-	   (string-append path "/" name)
-	   'dhcp  (iface-dhcp state)
+	 (woo-write/constraints
+	   path
+	   'ifname name
 	   'ip    (iface-ip text)
-	   'mask  (current-mask)
-	   'hw_binding (current-hw-binding)
+	   'mask  (param-value iface-mask *avail-masks*)
+	   'hw_binding (param-value iface-hw-binding *avail-hw-bindings*)
+	   'configuration (param-value iface-configuration *avail-configurations*)
 	   'default (iface-gw text))))
 
 (define (commit-interface)
@@ -76,14 +73,12 @@
   (woo-catch/message
     (thunk
       (woo-write "/net-eth" 'reset #t)
-      (and (global 'frame:next)
-	   (woo-write "/net-eth" 'reset #t))
-       (let ((avail-masks (woo-list/name+label "/net-eth/eth0/avail_masks")))
-	(cell-set! *avail-masks* avail-masks)
-	(iface-mask rows (map cdr avail-masks)))
-       (let ((avail-hw-bindings (woo-list/name+label "/net-eth/eth0/avail_hw_bindings")))
-         (cell-set! *avail-hw-bindings* avail-hw-bindings)
-         (iface-hw-binding rows (map cdr avail-hw-bindings)))
+      (and (global 'frame:next) (woo-write "/net-eth" 'reset #t))
+
+      (param-init "/net-eth/avail_masks" iface-mask *avail-masks*)
+      (param-init "/net-eth/avail_hw_bindings" iface-hw-binding *avail-hw-bindings*)
+      (param-init "/net-eth/avail_configurations" iface-configuration *avail-configurations*)
+
       (let ((avail-ifaces (woo-list/name+label "/net-eth")))
 	(cell-set! *avail-ifaces* avail-ifaces)
 	(ifaces rows (map cdr avail-ifaces))
@@ -118,15 +113,16 @@
 
   ;;
   (spacer)
+  (label (_ "Configuration") align "right")
+  (document:id iface-configuration (combobox
+				     (when selected
+				       ((widgets iface-ip
+						 iface-mask
+						 iface-gw)
+					activity (string=? (param-value iface-configuration *avail-configurations*)
+							   "static")))))
   (spacer)
-  (document:id iface-dhcp (checkbox (_ "Use DHCP")
-				    (when toggled
-				      ((widgets iface-ip
-						iface-gw
-						iface-mask)
-				       activity (not (iface-dhcp state))))))
-  (spacer)
- 
+
   ;;
   (spacer)
   (label (_ "IP address") align "right")

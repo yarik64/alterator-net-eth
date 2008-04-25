@@ -65,6 +65,13 @@ list_hw_binding()
     printf '("businfo" label "%s")' "`_ "by bus location"`"
 }
 
+list_configuration()
+{
+    printf '("off" label "%s")' "`_ "Turned off"`"
+    printf '("dhcp" label "%s")' "`_ "DHCP"`"
+    printf '("static" label "%s")' "`_ "Manual"`"
+}
+
 read_hw_binding()
 {
     local config=
@@ -105,6 +112,27 @@ read_info()
 	echo "$info"
 }
 
+read_variable()
+{
+    local var="$(shell_config_get "$1/options" "$3")"
+    [ -n "$var" ] || var="$(ifvar "$2")"
+    echo "$var"
+}
+
+read_configuration()
+{
+    local disabled="$(read_variable "$1" "$2" DISABLED)"
+    local bootproto="$(read_variable "$1" "$2" BOOTPROTO)"
+
+    if [ "$(write_bool "$disabled")" = "#t" ];then
+        echo 'off'
+    elif [ "$bootproto" = "static" ];then
+	echo 'static'
+    else #dhcp by default
+	echo 'dhcp'
+    fi
+}
+
 read_iface()
 {
 	local name="$1"; shift
@@ -121,6 +149,7 @@ read_iface()
 	printf 'info "%s" ' "$(read_info)"
 	printf 'wireless %s ' "$(ifcheckwireless "$name" && echo "#t" || echo "#f")"
 	printf 'hw_binding "%s" ' "$(read_hw_binding "$name")"
+	printf 'configuration "%s"' "$(read_configuration "$ifacedir" "$name")"
 
 	local addr= ip= mask= bootproto=
 	[ ! -s "/$ifacedir/ipv4address" ] ||
@@ -136,13 +165,6 @@ read_iface()
 	[ ! -s "/$ifacedir/ipv4route" ] ||
 		printf 'default "%s"\n' \
 			$(grep '^default' "$ifacedir/ipv4route" | sed -r 's,default[[:space:]]+via[[:space:]],,' || echo "")
-
-	local bootproto="$(ifvar "$name" "BOOTPROTO")"
-	case "$bootproto" in
-	    dhcp) echo "dhcp #t" ;;
-	    static) echo "dhcp #f" ;;
-	    *) echo 'dhcp #t' ;;
-	esac
 }
 
 
@@ -186,7 +208,6 @@ write_hw_binding()
     esac
 }
 
-
 write_iface()
 {
 	local name="$1" && shift
@@ -202,11 +223,19 @@ write_iface()
 
 	shell_config_set "$ifacedir/options" TYPE eth
 
-	[ -n "$in_dhcp" ] &&
-		shell_config_set \
-			"$ifacedir/options" \
-			BOOTPROTO \
-			$(test_bool "$in_dhcp" && echo "dhcp" || echo "static")
+	case "$in_configuration" in
+	    off)
+		shell_config_set "$ifacedir/options" DISABLED yes
+		;;
+	    static)
+		shell_config_set "$ifacedir/options" DISABLED no
+		shell_config_set "$ifacedir/options" BOOTPROTO static
+		;;
+	    dhcp)
+		shell_config_set "$ifacedir/options" DISABLED no
+		shell_config_set "$ifacedir/options" BOOTPROTO dhcp
+		;;
+	esac
 
 	[ -n "$in_hw_binding" ] &&
 	    write_hw_binding "$name" "$in_hw_binding"
@@ -255,21 +284,24 @@ on_message()
 			case "${in__objects##*/}" in
 			    avail_masks) list_mask ;;
 			    avail_hw_bindings) list_hw_binding ;;
+			    avail_configurations) list_configuration ;;
 			    *) list_iface;;
 			esac
 			echo ')'
 			;;
 		read) 
 			echo "("
-			local name="$in__objects"
-			[ "$name" == "/" ] || read_iface "$name"
+			local name="${in_ifname}"
+			[ -n "$name" ] || name="$(iflist|cut -f1 -d' '|head -n1)"
+			printf 'ifname "%s"' "$name"
+			read_iface "$name"
 			echo ")"
 			;;
 		write)
-			local name="${in__objects}"
-			[ "$name" == "/" ] || write_iface "$name"
-			test_bool "$in_commit" && commit_iface
-			test_bool "$in_reset" && reset_iface
+			local name="${in_ifname}"
+			write_iface "$name"
+			[ -n "$in_commit" ] && commit_iface
+			[ -n "$in_reset" ] && reset_iface
 			write_nop
 			;;
 		*)
