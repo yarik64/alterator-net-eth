@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-25 16:30+0400\n"
+"POT-Creation-Date: 2008-04-26 12:04+0400\n"
 "PO-Revision-Date: 2007-08-13 20:57+0300\n"
 "Last-Translator: Michael Shigorin <mike@altlinux.org>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -15,53 +15,54 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ui/net-eth/index.scm:96
+#: ui/net-eth/index.scm:96 стандартный ввод:2
 #, fuzzy
 msgid "Interfaces"
 msgstr "Інтерфейс"
 
 #.
-#: ui/net-eth/index.scm:111
+#: ui/net-eth/index.scm:111 стандартный ввод:4
 msgid "Status:"
 msgstr ""
 
 #.
-#: ui/net-eth/index.scm:115
+#: ui/net-eth/index.scm:115 стандартный ввод:5
 msgid "Configuration:"
 msgstr ""
 
 #.
-#: ui/net-eth/index.scm:125
+#: ui/net-eth/index.scm:125 стандартный ввод:6
 #, fuzzy
 msgid "IP address:"
 msgstr "IP-адреса"
 
 #.
-#: ui/net-eth/index.scm:129
+#: ui/net-eth/index.scm:129 стандартный ввод:7
 #, fuzzy
 msgid "Netmask:"
 msgstr "Мережева маска"
 
 #.
-#: ui/net-eth/index.scm:133
+#: ui/net-eth/index.scm:133 стандартный ввод:8
 #, fuzzy
 msgid "Default gateway:"
 msgstr "Шлюз по змовчуванню"
 
 #.
-#: ui/net-eth/index.scm:137
+#: ui/net-eth/index.scm:137 стандартный ввод:9
 msgid "Hardware binding:"
 msgstr ""
 
-#: ui/net-eth/index.scm:142 стандартный ввод:4
-msgid "Wireless settings"
+#: ui/net-eth/index.scm:142 стандартный ввод:10
+#, fuzzy
+msgid "Wireless settings..."
 msgstr "Налаштування бездротових інтерфейсів"
 
-#: ui/net-eth/index.scm:157 стандартный ввод:5
+#: ui/net-eth/index.scm:158 стандартный ввод:11
 msgid "Apply"
 msgstr "Застосувати"
 
-#: ui/net-eth/index.scm:158 стандартный ввод:6
+#: ui/net-eth/index.scm:159 стандартный ввод:12
 msgid "Reset"
 msgstr "Скинути"
 
@@ -82,7 +83,7 @@ msgstr ""
 msgid "Turned off"
 msgstr ""
 
-#: backend3/net-eth:71 backend3/net-eth:270
+#: backend3/net-eth:71 backend3/net-eth:264
 msgid "Use DHCP"
 msgstr "Використовувати DHCP"
 
@@ -106,23 +107,23 @@ msgstr "увімкнуто"
 msgid "unplugged"
 msgstr "вимкнуто"
 
-#: backend3/net-eth:268
+#: backend3/net-eth:262
 msgid "Interface state"
 msgstr "Стан інтерфейсу"
 
-#: backend3/net-eth:272
+#: backend3/net-eth:266
 msgid "IP address"
 msgstr "IP-адреса"
 
-#: backend3/net-eth:274
+#: backend3/net-eth:268
 msgid "Default gateway"
 msgstr "Шлюз по змовчуванню"
 
-#: backend3/net-eth:276
+#: backend3/net-eth:270
 msgid "NetMask"
 msgstr "Мережева маска"
 
-#: backend3/net-eth:278
+#: backend3/net-eth:272
 msgid "Hardware binding"
 msgstr ""
 
@@ -130,13 +131,15 @@ msgstr ""
 msgid "IP interfaces"
 msgstr "IP-інтерфейси"
 
-#: стандартный ввод:2
-msgid "Interface"
-msgstr "Інтерфейс"
-
 #: стандартный ввод:3
 msgid "Select"
 msgstr "Вибрати"
+
+#~ msgid "Wireless settings"
+#~ msgstr "Налаштування бездротових інтерфейсів"
+
+#~ msgid "Interface"
+#~ msgstr "Інтерфейс"
 
 #, fuzzy
 #~ msgid "DHCP"

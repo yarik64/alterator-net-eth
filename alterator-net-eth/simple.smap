@@ -1,4 +1,0 @@
-(include "*.map")
-
-(/ view /net-eth)
-(/std/frame view /standalone/frame)

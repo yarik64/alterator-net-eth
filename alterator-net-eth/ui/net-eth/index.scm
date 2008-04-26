@@ -139,7 +139,8 @@
 
     ;;
     (spacer)
-    (document:id w-button (button text (_ "Wireless settings")
+    (document:id w-button (button text (_ "Wireless settings...")
+				  align "left"
 				  activity #f
 				  (when clicked
 				    (let ((name (current-interface)))

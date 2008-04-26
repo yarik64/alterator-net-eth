@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<!-- tcp connections module -->
+<html wf="net-eth">
+  <head>
+    <title>IP interfaces - ALT Linux Console</title>
+
+    <script src="/fbi/scripts/submit.js"/>
+  </head>
+  <body>
+	  <h1><span translate="_">IP interfaces</span></h1>
+	  <form method="POST">
+		  <table>
+			  <tr>
+				  <td colspan="2"><strong><span translate="_">Interfaces</span></strong></td>
+			  </tr>
+			  <tr>
+				  <td>
+				      <select name="name" optionlist="" size="10" style="width:150px"/>
+				      <br/>
+				      <input type="submit" class="btn" value="Select"/>
+				  </td>
+				  <td>
+					  <table class="form-table">
+						  <tr>
+							  <td><span translate="_">Status:</span></td>
+							  <td><span class="alterator-label" name="info"></span></td>
+						  </tr>
+						  <tr>
+							  <td><span translate="_">Configuration:</span></td>
+							  <td><select name="configuration" optionlist="avail_configurations"></select></td>
+						  </tr>
+						  <tr>
+							  <td><span translate="_">IP address:</span></td>
+							  <td><input type="text" class="text" name="ip"></input></td>
+						  </tr>
+						  <tr>
+							  <td><span translate="_">Netmask:</span></td>
+							  <td><select name="mask" optionlist="avail_masks"></select></td>
+						  </tr>
+						  <tr>
+							  <td><span translate="_">Default gateway:</span></td>
+							  <td><input type="text" class="text" name="default"></input></td>
+						  </tr>
+						  <tr>
+							  <td><span translate="_">Hardware binding:</span></td>
+							  <td><select name="hw_binding" optionlist="avail_hw_bindings"></select></td>
+						  </tr>
+						  <tr>
+							  <td>&nbsp;</td>
+							  <td><a href="/net-wifi/" class="alterator-ref2">
+							      <span translate="_">Wireless settings...</span>
+							      </a>
+							   </td>
+						  </tr>
+						  <tr>
+							<td colspan="2">&nbsp;</td>
+						  </tr>
+						  <tr>
+						        <td>&nbsp;</td>
+						        <td>
+							  <input type="submit" name="commit" value="Apply" class="btn"/>
+							  &nbsp;
+							  <input type="submit" name="reset" value="Reset" class="btn"/>
+							</td>
+						  </tr>
+					  </table>
+				  </td>
+			  </tr>
+
+		  </table>
+	  </form>
+   </body>
+</html>

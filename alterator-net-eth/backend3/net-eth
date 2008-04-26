@@ -54,7 +54,7 @@ list_iface()
         while read iface mac; do
     	    local v="$(ifaceinfo "$iface")"
 	    [ -z "$v" ] || v="($v)"
-            printf '("%s" label "%s %s")' "$iface" "$iface" "$v"
+            printf '("%s" label "%s")' "$iface" "$iface"
         done
 }
 
@@ -144,16 +144,17 @@ read_iface()
 	printf 'hw_binding "%s" ' "$(read_hw_binding "$name")"
 	printf 'configuration "%s"' "$(read_configuration "$ifacedir")"
 
-	local addr= ip= mask= bootproto=
+	local addr= ip= mask=
 	[ ! -s "/$ifacedir/ipv4address" ] ||
 		addr=$(grep '^[0-9]' "$ifacedir/ipv4address" | head -n1 || echo "")
 
 	if [ -n "$addr" ]; then
 		ip="${addr%%/*}"
 		mask="${addr#$ip}"; mask="${mask#/}"
-		
-		printf 'ip "%s" mask "%s"\n' "$ip" "${mask:-32}"
 	fi
+
+	printf 'ip "%s"' "$ip"
+	printf 'mask "%s"' "${mask:-24}"
 
 	[ ! -s "/$ifacedir/ipv4route" ] ||
 		printf 'default "%s"\n' \
@@ -286,12 +287,15 @@ on_message()
 			echo "("
 			local name="${in_ifname}"
 			[ -n "$name" ] || name="$(iflist|cut -f1 -d' '|head -n1)"
-			printf 'ifname "%s"' "$name"
+
+			printf 'name "%s"' "$name"
 			read_iface "$name"
 			echo ")"
 			;;
 		write)
 			local name="${in_ifname}"
+			[ -n "$name" ] || name="$(iflist|cut -f1 -d' '|head -n1)"
+
 			write_iface "$name"
 			[ -n "$in_commit" ] && commit_iface
 			[ -n "$in_reset" ] && reset_iface

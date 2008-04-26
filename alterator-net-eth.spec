@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 1.0
-Release: alt5
+Release: alt6
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -48,12 +48,17 @@ alterator module for tcp/ip connections configuration
 
 %files -f %name.lang
 %_altdata_dir/applications/*
+%_altdata_dir/templates/*
 %_altdata_dir/ui/*/
 %_altdata_dir/help/*/*
-%_var/www/html/*
 %_alterator_backend3dir/*
+%_alterator_backend2dir/*
 
 %changelog
+* Sat Apr 26 2008 Stanislav Ievlev <inger@altlinux.org> 1.0-alt6
+- html UI: remove template-*, sync with qt UI
+- backend: don't use ifvar utility, simplify list_iface result
+
 * Fri Apr 25 2008 Stanislav Ievlev <inger@altlinux.org> 1.0-alt5
 - improve qt UI
 

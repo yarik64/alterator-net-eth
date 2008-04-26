@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-25 16:30+0400\n"
+"POT-Creation-Date: 2008-04-26 12:10+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,49 +16,49 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ui/net-eth/index.scm:96
+#: ui/net-eth/index.scm:96 стандартный ввод:2
 msgid "Interfaces"
 msgstr ""
 
 #.
-#: ui/net-eth/index.scm:111
+#: ui/net-eth/index.scm:111 стандартный ввод:4
 msgid "Status:"
 msgstr ""
 
 #.
-#: ui/net-eth/index.scm:115
+#: ui/net-eth/index.scm:115 стандартный ввод:5
 msgid "Configuration:"
 msgstr ""
 
 #.
-#: ui/net-eth/index.scm:125
+#: ui/net-eth/index.scm:125 стандартный ввод:6
 msgid "IP address:"
 msgstr ""
 
 #.
-#: ui/net-eth/index.scm:129
+#: ui/net-eth/index.scm:129 стандартный ввод:7
 msgid "Netmask:"
 msgstr ""
 
 #.
-#: ui/net-eth/index.scm:133
+#: ui/net-eth/index.scm:133 стандартный ввод:8
 msgid "Default gateway:"
 msgstr ""
 
 #.
-#: ui/net-eth/index.scm:137
+#: ui/net-eth/index.scm:137 стандартный ввод:9
 msgid "Hardware binding:"
 msgstr ""
 
-#: ui/net-eth/index.scm:142 стандартный ввод:4
-msgid "Wireless settings"
+#: ui/net-eth/index.scm:142 стандартный ввод:10
+msgid "Wireless settings..."
 msgstr ""
 
-#: ui/net-eth/index.scm:157 стандартный ввод:5
+#: ui/net-eth/index.scm:158 стандартный ввод:11
 msgid "Apply"
 msgstr ""
 
-#: ui/net-eth/index.scm:158 стандартный ввод:6
+#: ui/net-eth/index.scm:159 стандартный ввод:12
 msgid "Reset"
 msgstr ""
 
@@ -78,7 +78,7 @@ msgstr ""
 msgid "Turned off"
 msgstr ""
 
-#: backend3/net-eth:71 backend3/net-eth:270
+#: backend3/net-eth:71 backend3/net-eth:264
 msgid "Use DHCP"
 msgstr ""
 
@@ -102,32 +102,28 @@ msgstr ""
 msgid "unplugged"
 msgstr ""
 
-#: backend3/net-eth:268
+#: backend3/net-eth:262
 msgid "Interface state"
 msgstr ""
 
-#: backend3/net-eth:272
+#: backend3/net-eth:266
 msgid "IP address"
 msgstr ""
 
-#: backend3/net-eth:274
+#: backend3/net-eth:268
 msgid "Default gateway"
 msgstr ""
 
-#: backend3/net-eth:276
+#: backend3/net-eth:270
 msgid "NetMask"
 msgstr ""
 
-#: backend3/net-eth:278
+#: backend3/net-eth:272
 msgid "Hardware binding"
 msgstr ""
 
 #: стандартный ввод:1
 msgid "IP interfaces"
-msgstr ""
-
-#: стандартный ввод:2
-msgid "Interface"
 msgstr ""
 
 #: стандартный ввод:3

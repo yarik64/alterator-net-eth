@@ -1,0 +1,19 @@
+(use-modules (alterator configd html)
+             (alterator configd form))
+
+(lambda (self objects options)
+  (let ((url (string-append "/" (string-join objects "/")))
+        (url-args (cond-plistq 'url-args options))
+        (template-args (cond-plistq 'template-args options))
+        (action (cond-plistq 'action options)))
+    (list
+     'scm
+     (woo-catch
+      (thunk (let ((result (workflow-form url action url-args template-args))
+                   (name (cond-assoc "name" url-args "")))
+                  (if (and (eq? (car result) 'redirect)
+                         (not-empty-string? name))
+                      (html:redirect (string-append "/net-eth?ifname=" name))
+                      result)))
+      (lambda(reason)
+        (html:error (workflow-form url "read" url-args template-args) reason))))))
