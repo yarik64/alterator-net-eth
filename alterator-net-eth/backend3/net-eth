@@ -112,17 +112,10 @@ read_info()
 	echo "$info"
 }
 
-read_variable()
-{
-    local var="$(shell_config_get "$1/options" "$3")"
-    [ -n "$var" ] || var="$(ifvar "$2")"
-    echo "$var"
-}
-
 read_configuration()
 {
-    local disabled="$(read_variable "$1" "$2" DISABLED)"
-    local bootproto="$(read_variable "$1" "$2" BOOTPROTO)"
+    local disabled="$(shell_config_get "$1/options" DISABLED)"
+    local bootproto="$(shell_config_get "$1/options" BOOTPROTO)"
 
     if [ "$(write_bool "$disabled")" = "#t" ];then
         echo 'off'
@@ -149,7 +142,7 @@ read_iface()
 	printf 'info "%s" ' "$(read_info)"
 	printf 'wireless %s ' "$(ifcheckwireless "$name" && echo "#t" || echo "#f")"
 	printf 'hw_binding "%s" ' "$(read_hw_binding "$name")"
-	printf 'configuration "%s"' "$(read_configuration "$ifacedir" "$name")"
+	printf 'configuration "%s"' "$(read_configuration "$ifacedir")"
 
 	local addr= ip= mask= bootproto=
 	[ ! -s "/$ifacedir/ipv4address" ] ||
