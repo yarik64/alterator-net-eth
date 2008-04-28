@@ -3,6 +3,9 @@
 cachedir="/var/cache/alterator/net-eth"
 po_domain="alterator-net-eth"
 
+rdelim='[[:space:]]\+'
+wdelim=' '
+
 . alterator-sh-functions
 . shell-config
 
@@ -19,6 +22,8 @@ init_cache()
     fi
 
     [ -f "$cachedir/iftab" ] || cp /etc/iftab "$cachedir/iftab"
+    [ -f "$cachedir/resolv.conf" ] || cp /etc/resolv.conf "$cachedir/resolv.conf"
+    [ -f "$cachedir/network" ] || cp /etc/sysconfig/network "$cachedir/network"
 }
 
 clear_cache()
@@ -27,16 +32,95 @@ clear_cache()
     mkdir "$cachedir"
 }
 
+commit_hostname()
+{
+    local value="$(shell_config_get /etc/sysconfig/network HOSTNAME)"
+    [ -n "$value" ] || return
+
+    hostname "$value"
+    printf %s\\n "$value" >/etc/HOSTNAME
+
+    #bind hostname
+    grep -qs "^[^#]*\<$value\>" /etc/hosts ||
+	printf '127.0.0.1\t%s %s\n' "$value" "${value%%.*}" >> /etc/hosts
+}
+
 commit_cache()
 {
     [ -f "$cachedir/iftab" ] && mv -f "$cachedir/iftab" /etc/iftab
+    [ -f "$cachedir/resolv.conf" ] && mv -f "$cachedir/resolv.conf" /etc/resolv.conf
+    [ -f "$cachedir/network" ] && mv -f "$cachedir/network" /etc/sysconfig/network
+    commit_hostname
+
     find $cachedir -maxdepth 1 -mindepth 1 -type d|
 	while read iface; do
 	    [ -n "$iface" ] || exit
 	    rm -rf "/etc/net/ifaces/${iface##*/}"
 	    mv -f "$iface" "/etc/net/ifaces/${iface##*/}"
 	done
+
     clear_cache
+}
+
+### dns
+
+read_dns()
+{
+	local resolv_conf="/etc/resolv.conf"
+	[ -f "$cachedir/resolv.conf" ] && resolv_conf="$cachedir/resolv.conf"
+
+	shell_config_get "$resolv_conf" nameserver "$rdelim"| tr '\n' ' '
+}
+
+write_dns()
+{
+	local resolv_conf="$cachedir/resolv.conf"
+
+	shell_config_del "$resolv_conf" nameserver "$rdelim"
+
+	local IFS=' '
+	for i in $1;do
+	    printf 'nameserver %s\n' "$i" >>"$resolv_conf"
+	done
+}
+
+read_search()
+{
+	local resolv_conf="/etc/resolv.conf"
+	[ -f "$cachedir/resolv.conf" ] && resolv_conf="$cachedir/resolv.conf"
+
+	shell_config_get "$resolv_conf" search "$rdelim"|
+	    tail -n1
+}
+
+write_search()
+{
+	local resolv_conf="$cachedir/resolv.conf"
+	local IFS=' '
+
+	shell_config_del "$resolv_conf" search "$rdelim"
+	shell_config_set "$resolv_conf" search "$1" "$rdelim" "$wdelim"
+}
+
+### hostname
+
+read_hostname()
+{
+	local netconfig="/etc/sysconfig/network"
+	[ -f "$cachedir/network" ] && netconfig="$cachedir/network"
+	
+	local value="$(shell_config_get "$netconfig" HOSTNAME)"
+
+	[ -n "$value" ] || value="localhost.localdomain"
+	echo "$value"
+}
+
+write_hostname()
+{
+	local netconfig="$cachedir/network"
+
+	shell_config_set "$netconfig" HOSTNAME "$1"
+	shell_config_del "$netconfig" DOMAINNAME
 }
 
 ### interface work
@@ -259,17 +343,18 @@ on_message()
 		constraints)
 			echo '('
 			if [ "$in__objects" != "/" ];then
-    			    printf 'info (label "%s")' "`_ "Interface state"`"
+			    printf 'hostname (required #t hostname #t label "%s" default "localhost.localdomain")\n' \
+				"`_ "Host name"`"
+			     printf 'search (hostname #t label "%s")\n' \
+                               "`_ "Search domains"`"
+			    printf 'dns (ipv4-address #t label "%s")' \
+                               "`_ "DNS servers"`"
 			    printf 'dhcp (exclude (#t ip) exclude (#t default) exclude (#t mask) default #f label "%s")' \
 				    "`_ "Use DHCP"`"
 			    printf 'ip (required #t ipv4-address #t label "%s")' \
 				    "`_ "IP address"`"
 			    printf 'default (ipv4-address #t label "%s")' \
 				    "`_ "Default gateway"`"
-			    printf 'mask (label "%s")' \
-				    "`_ "NetMask"`"
-			    printf 'hw_binding (label "%s")' \
-				    "`_ "Hardware binding"`"
 			fi
 			echo ')'
 			;;
@@ -287,16 +372,24 @@ on_message()
 			echo "("
 			local name="${in_ifname}"
 			[ -n "$name" ] || name="$(iflist|cut -f1 -d' '|head -n1)"
-
 			printf 'name "%s"' "$name"
-			read_iface "$name"
+			[ -n "$name" ] && read_iface "$name"
+
+			printf "hostname \"%s\"\n" "$(read_hostname)"
+			printf "dns \"%s\"\n" "$(read_dns)"
+			printf "search \"%s\"\n" "$(read_search)"
+
 			echo ")"
 			;;
 		write)
 			local name="${in_ifname}"
 			[ -n "$name" ] || name="$(iflist|cut -f1 -d' '|head -n1)"
+			[ -n "$name" ] && write_iface "$name"
 
-			write_iface "$name"
+			[ -n "$in_hostname" ] && write_hostname "$in_hostname"
+			[ -n "$in_dns" ] && write_dns "$in_dns"
+			[ -n "$in_search" ] && write_search "$in_search"
+
 			[ -n "$in_commit" ] && commit_iface
 			[ -n "$in_reset" ] && reset_iface
 			write_nop

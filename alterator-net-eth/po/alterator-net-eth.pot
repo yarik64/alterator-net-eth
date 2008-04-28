@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-26 12:10+0400\n"
+"POT-Creation-Date: 2008-04-28 16:32+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,110 +16,129 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ui/net-eth/index.scm:96 стандартный ввод:2
+#.
+#: ui/net-eth/index.scm:112
+msgid "Host name:"
+msgstr ""
+
+#.
+#: ui/net-eth/index.scm:120
+msgid "DNS servers:"
+msgstr ""
+
+#.
+#: ui/net-eth/index.scm:125
+msgid "Search domains:"
+msgstr ""
+
+#: ui/net-eth/index.scm:131
+msgid "multiple values should be space separated"
+msgstr ""
+
+#: ui/net-eth/index.scm:139 стандартный ввод:2
 msgid "Interfaces"
 msgstr ""
 
 #.
-#: ui/net-eth/index.scm:111 стандартный ввод:4
+#: ui/net-eth/index.scm:154 стандартный ввод:4
 msgid "Status:"
 msgstr ""
 
 #.
-#: ui/net-eth/index.scm:115 стандартный ввод:5
+#: ui/net-eth/index.scm:158 стандартный ввод:5
 msgid "Configuration:"
 msgstr ""
 
 #.
-#: ui/net-eth/index.scm:125 стандартный ввод:6
+#: ui/net-eth/index.scm:168 стандартный ввод:6
 msgid "IP address:"
 msgstr ""
 
 #.
-#: ui/net-eth/index.scm:129 стандартный ввод:7
+#: ui/net-eth/index.scm:172 стандартный ввод:7
 msgid "Netmask:"
 msgstr ""
 
 #.
-#: ui/net-eth/index.scm:133 стандартный ввод:8
+#: ui/net-eth/index.scm:176 стандартный ввод:8
 msgid "Default gateway:"
 msgstr ""
 
 #.
-#: ui/net-eth/index.scm:137 стандартный ввод:9
+#: ui/net-eth/index.scm:180 стандартный ввод:9
 msgid "Hardware binding:"
 msgstr ""
 
-#: ui/net-eth/index.scm:142 стандартный ввод:10
+#: ui/net-eth/index.scm:185 стандартный ввод:10
 msgid "Wireless settings..."
 msgstr ""
 
-#: ui/net-eth/index.scm:158 стандартный ввод:11
+#: ui/net-eth/index.scm:203 стандартный ввод:11
 msgid "Apply"
 msgstr ""
 
-#: ui/net-eth/index.scm:159 стандартный ввод:12
+#: ui/net-eth/index.scm:204 стандартный ввод:12
 msgid "Reset"
 msgstr ""
 
-#: backend3/net-eth:63
+#: backend3/net-eth:147
 msgid "missing"
 msgstr ""
 
-#: backend3/net-eth:64
+#: backend3/net-eth:148
 msgid "by MAC address"
 msgstr ""
 
-#: backend3/net-eth:65
+#: backend3/net-eth:149
 msgid "by bus location"
 msgstr ""
 
-#: backend3/net-eth:70
+#: backend3/net-eth:154
 msgid "Turned off"
 msgstr ""
 
-#: backend3/net-eth:71 backend3/net-eth:264
+#: backend3/net-eth:155 backend3/net-eth:353
 msgid "Use DHCP"
 msgstr ""
 
-#: backend3/net-eth:72
+#: backend3/net-eth:156
 msgid "Manually"
 msgstr ""
 
-#: backend3/net-eth:103
+#: backend3/net-eth:187
 msgid "interface is up"
 msgstr ""
 
-#: backend3/net-eth:103
+#: backend3/net-eth:187
 msgid "interface is down"
 msgstr ""
 
-#: backend3/net-eth:108
+#: backend3/net-eth:192
 msgid "plugged"
 msgstr ""
 
-#: backend3/net-eth:109
+#: backend3/net-eth:193
 msgid "unplugged"
 msgstr ""
 
-#: backend3/net-eth:262
-msgid "Interface state"
+#: backend3/net-eth:347
+msgid "Host name"
 msgstr ""
 
-#: backend3/net-eth:266
+#: backend3/net-eth:349
+msgid "Search domains"
+msgstr ""
+
+#: backend3/net-eth:351
+msgid "DNS servers"
+msgstr ""
+
+#: backend3/net-eth:355
 msgid "IP address"
 msgstr ""
 
-#: backend3/net-eth:268
+#: backend3/net-eth:357
 msgid "Default gateway"
-msgstr ""
-
-#: backend3/net-eth:270
-msgid "NetMask"
-msgstr ""
-
-#: backend3/net-eth:272
-msgid "Hardware binding"
 msgstr ""
 
 #: стандартный ввод:1

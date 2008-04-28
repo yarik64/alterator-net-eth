@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 1.0
-Release: alt6
+Version: 2.0
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -15,6 +15,11 @@ Requires: alterator >= 2.9 alterator-sh-functions libshell >= 0.0.1-alt4
 Requires: alterator-net-common >= 0.2-alt3
 Requires: alterator-net-wifi
 Conflicts: alterator-fbi < 0.15-alt2
+
+Provides: alterator-net-general = %version
+Obsoletes: alterator-net-general
+
+%add_findreq_skiplist %_datadir/install2/preinstall.d/*
 
 BuildPreReq: alterator >= 3.1 alterator-fbi >= 0.7-alt1
 
@@ -53,8 +58,13 @@ alterator module for tcp/ip connections configuration
 %_altdata_dir/help/*/*
 %_alterator_backend3dir/*
 %_alterator_backend2dir/*
+%_datadir/install2/preinstall.d/*
+
 
 %changelog
+* Mon Apr 28 2008 Stanislav Ievlev <inger@altlinux.org> 2.0-alt1
+- merge with alterator-net-general
+
 * Sat Apr 26 2008 Stanislav Ievlev <inger@altlinux.org> 1.0-alt6
 - html UI: remove template-*, sync with qt UI
 - backend: don't use ifvar utility, simplify list_iface result

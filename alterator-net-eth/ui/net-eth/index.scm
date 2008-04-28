@@ -37,21 +37,32 @@
     (widget rows (map cdr data))))
 
 (define (read-interface name)
-  (and (not-empty-string? name)
+  (and (string? name)
        (let ((cmd (woo-read-first "/net-eth" 'ifname name)))
+
+         (hostname text (woo-get-option cmd 'hostname))
+         (dns text (woo-get-option cmd 'dns))
+         (search text (woo-get-option cmd 'search))
+
 	 (iface-info text (woo-get-option cmd 'info))
 	 (iface-ip text (woo-get-option cmd 'ip))
 	 (iface-mask current (param-index cmd 'mask *avail-masks*))
+	 (iface-gw text (woo-get-option cmd 'default)
 	 (iface-hw-binding current (param-index cmd 'hw_binding *avail-hw-bindings*))
+
 	 (iface-configuration current (param-index cmd 'configuration *avail-configurations*))
 	 (iface-configuration selected)
-	 (w-button activity (woo-get-option cmd 'wireless))
-	 (iface-gw text (woo-get-option cmd 'default)))))
+
+	 (w-button activity (woo-get-option cmd 'wireless))))))
 
 (define (write-interface path name)
-    (and (not-empty-string? name)
+    (and (string? name)
 	 (woo-write/constraints
 	   path
+	   'hostname (hostname text)
+	   'dns (dns text)
+	   'search (search text)
+
 	   'ifname name
 	   'ip    (iface-ip text)
 	   'mask  (param-value iface-mask *avail-masks*)
@@ -60,14 +71,15 @@
 	   'default (iface-gw text))))
 
 (define (commit-interface)
-  (woo-catch/message
-    (thunk
-      (write-interface "/net-eth/" (current-interface))
-      (and (global 'frame:next)
-	   (write-interface "/autoinstall/net-eth/" (current-interface)))
-      (woo-write "/net-eth" 'commit #t)
-      (and (global 'frame:next)
-	   (woo-write "/net-eth" 'commit #t)))))
+  (let ((name (or (current-interface) "")))
+    (woo-catch/message
+      (thunk
+       (write-interface "/net-eth/" name)
+       (and (global 'frame:next)
+          (write-interface "/autoinstall/net-eth/" name))
+       (woo-write "/net-eth" 'commit #t)
+       (and (global 'frame:next)
+          (woo-write "/net-eth" 'commit #t))))))
 
 (define (reset-interface)
   (woo-catch/message
@@ -78,20 +90,49 @@
       (param-init "/net-eth/avail_masks" iface-mask *avail-masks*)
       (param-init "/net-eth/avail_hw_bindings" iface-hw-binding *avail-hw-bindings*)
       (param-init "/net-eth/avail_configurations" iface-configuration *avail-configurations*)
+      (param-init "/net-eth/avail_ifaces" ifaces *avail-ifaces*)
 
-      (let ((avail-ifaces (woo-list/name+label "/net-eth")))
-	(cell-set! *avail-ifaces* avail-ifaces)
-	(ifaces rows (map car avail-ifaces))
-	(or (null? avail-ifaces)
-	    (begin (ifaces current 0)
-	           (cell-set! *prev-current* 0)
-	           (read-interface (current-interface))))))))
+      (read-interface "")
+      (cell-set! *prev-current* 0)
+      (or (null? (cell-ref *avail-ifaces*)) (ifaces current 0)))))
 
 ;;; UI
 
 (gridbox
   columns "0;100"
   margin 20
+
+  (gridbox
+    colspan 2
+    columns "0;40;60"
+
+    ;;
+    (label text (_ "Host name:") align "right")
+    (document:id hostname (edit))
+    (spacer)
+
+    ;;
+     (label colspan 3)
+
+     ;;
+     (label text (_ "DNS servers:") align "right")
+     (document:id dns (edit))
+     (spacer)
+
+     ;;
+     (label text (_ "Search domains:") align "right")
+     (document:id search (edit))
+     (spacer)
+
+     (spacer)
+     (label text (string-append "<small>("
+				(_ "multiple values should be space separated")
+				")<small>"))
+     (spacer)
+     )
+
+
+  (separator colspan 2)
 
   (label text (bold (_ "Interfaces")))
   (spacer)
@@ -147,17 +188,20 @@
 				      (and (not-empty-string? name)
 					   (document:popup "/net-wifi/" 'interface name))))))
 
+
+    )
+
     ;;
     (label colspan 2)
 
     ;;
-    (spacer)
     (if (global 'frame:next)
       (label)
       (hbox align "left"
 	    (button (_ "Apply") (when clicked (commit-interface)))
 	    (button (_ "Reset") (when clicked (reset-interface)))))
-    ))
+    (spacer)
+    )
 
 
 ;;;;;;;;;;;;;;;
