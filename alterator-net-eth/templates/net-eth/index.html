@@ -1,15 +1,40 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
 <!-- tcp connections module -->
-<html wf="net-eth">
+<html wf="form?name-attribute=ifname">
   <head>
     <title>IP interfaces - ALT Linux Console</title>
-
-    <script src="/fbi/scripts/submit.js"/>
+    <script src="/design/scripts/submit.js"/>
+    <script src="/design/scripts/net-eth/select.js"/>
   </head>
   <body>
 	  <h1><span translate="_">IP interfaces</span></h1>
-	  <form method="POST">
+	  <form method="POST" id="ajax-select">
+	          <input type="hidden" name="ifname"/>
 		  <table>
+			  <tr>
+			    <td colspan="2">
+				<table class="form-table">
+				    <tr>
+					<td><span translate="_">Host name:</span></td>
+					<td><input type="text" class="text" name="hostname"/></td>
+				    </tr>
+				    <tr>
+					<td colspan="2">&nbsp;</td>
+				    </tr>
+				    <tr>
+					<td><span translate="_">DNS servers:</span></td>
+					<td><input type="text" class="text" name="dns"/></td>
+				    </tr>
+				    <tr>
+					<td><span translate="_">Search domains:</span></td>
+					<td><input type="text" class="text" name="search"/></td>
+				    </tr>
+				</table>
+			    </td>
+			  </tr>
+			  <tr>
+			    <td colspan="2"><hr/></td>
+			  </tr>
 			  <tr>
 				  <td colspan="2"><strong><span translate="_">Interfaces</span></strong></td>
 			  </tr>
@@ -17,7 +42,7 @@
 				  <td>
 				      <select name="name" optionlist="" size="10" style="width:150px"/>
 				      <br/>
-				      <input type="submit" class="btn" value="Select"/>
+				      <input type="submit" class="btn" value="Select" name="select"/>
 				  </td>
 				  <td>
 					  <table class="form-table">
@@ -52,21 +77,19 @@
 							      </a>
 							   </td>
 						  </tr>
-						  <tr>
-							<td colspan="2">&nbsp;</td>
-						  </tr>
-						  <tr>
-						        <td>&nbsp;</td>
-						        <td>
-							  <input type="submit" name="commit" value="Apply" class="btn"/>
-							  &nbsp;
-							  <input type="submit" name="reset" value="Reset" class="btn"/>
-							</td>
-						  </tr>
 					  </table>
 				  </td>
 			  </tr>
-
+			  <tr>
+			    <td colspan="2">&nbsp;</td>
+			  </tr>
+			  <tr>
+			    <td colspan="2">
+				<input type="submit" name="commit" value="Apply" class="btn"/>
+				&nbsp;
+				<input type="submit" name="reset" value="Reset" class="btn"/>
+			    </td>
+			  </tr>
 		  </table>
 	  </form>
    </body>

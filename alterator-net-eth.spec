@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 2.0
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -54,14 +54,17 @@ alterator module for tcp/ip connections configuration
 %files -f %name.lang
 %_altdata_dir/applications/*
 %_altdata_dir/templates/*
+%_altdata_dir/design/*/*
 %_altdata_dir/ui/*/
 %_altdata_dir/help/*/*
 %_alterator_backend3dir/*
-%_alterator_backend2dir/*
 %_datadir/install2/preinstall.d/*
 
 
 %changelog
+* Tue Apr 29 2008 Stanislav Ievlev <inger@altlinux.org> 2.0-alt2
+- update html UI for latest changes
+
 * Mon Apr 28 2008 Stanislav Ievlev <inger@altlinux.org> 2.0-alt1
 - merge with alterator-net-general
 

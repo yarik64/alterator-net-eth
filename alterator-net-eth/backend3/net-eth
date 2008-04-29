@@ -136,8 +136,6 @@ list_iface()
 {
     iflist|
         while read iface mac; do
-    	    local v="$(ifaceinfo "$iface")"
-	    [ -z "$v" ] || v="($v)"
             printf '("%s" label "%s")' "$iface" "$iface"
         done
 }
@@ -372,8 +370,10 @@ on_message()
 			echo "("
 			local name="${in_ifname}"
 			[ -n "$name" ] || name="$(iflist|cut -f1 -d' '|head -n1)"
-			printf 'name "%s"' "$name"
 			[ -n "$name" ] && read_iface "$name"
+
+			printf 'name "%s"' "$name"
+			printf 'ifname "%s"' "$name"
 
 			printf "hostname \"%s\"\n" "$(read_hostname)"
 			printf "dns \"%s\"\n" "$(read_dns)"
