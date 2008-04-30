@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 2.0
-Release: alt2
+Release: alt3
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -21,7 +21,7 @@ Obsoletes: alterator-net-general
 
 %add_findreq_skiplist %_datadir/install2/preinstall.d/*
 
-BuildPreReq: alterator >= 3.1 alterator-fbi >= 0.7-alt1
+BuildPreReq: alterator >= 3.1 alterator-fbi >= 0.7-alt1, alterator-l10n
 
 BuildArch: noarch
 
@@ -62,6 +62,10 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Wed Apr 30 2008 Stanislav Ievlev <inger@altlinux.org> 2.0-alt3
+- join to common translation database
+- call update_chrooted on commit
+
 * Tue Apr 29 2008 Stanislav Ievlev <inger@altlinux.org> 2.0-alt2
 - update html UI for latest changes
 

@@ -324,6 +324,8 @@ commit_iface()
         while read iface rest; do
     		ifdown "$iface" && ifup "$iface"
         done >&2
+
+    /sbin/update_chrooted conf >&2 || :
 }
 
 reset_iface()
