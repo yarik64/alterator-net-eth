@@ -128,7 +128,7 @@ write_hostname()
 list_mask()
 {
     for i in `seq 32 -1 0`; do 
-        printf '("%s" label "/%s (%s)")' "$i" "$i" "$(maskname "$i")"
+	write_enum_item "$i" "/$i ($(maskname "$i"))"
     done
 }
 
@@ -136,22 +136,22 @@ list_iface()
 {
     iflist|
         while read iface mac; do
-            printf '("%s" label "%s")' "$iface" "$iface"
+	    write_enum_item "$iface"
         done
 }
 
 list_hw_binding()
 {
-    printf '("missing" label "%s")' "`_ "missing"`"
-    printf '("mac" label "%s")' "`_ "by MAC address"`"
-    printf '("businfo" label "%s")' "`_ "by bus location"`"
+    write_enum_item "missing" "`_ "missing"`"
+    write_enum_item "mac" "`_ "by MAC address"`"
+    write_enum_item "businfo" "`_ "by bus location"`"
 }
 
 list_configuration()
 {
-    printf '("off" label "%s")' "`_ "Turned off"`"
-    printf '("dhcp" label "%s")' "`_ "Use DHCP"`"
-    printf '("static" label "%s")' "`_ "Manually"`"
+    write_enum_item "off" "`_ "Turned off"`"
+    write_enum_item "dhcp" "`_ "Use DHCP"`"
+    write_enum_item "static" "`_ "Manually"`"
 }
 
 read_hw_binding()
@@ -342,20 +342,17 @@ on_message()
 	case "$in_action" in
 		constraints)
 			echo '('
-			if [ "$in__objects" != "/" ];then
-			    printf 'hostname (required #t hostname #t label "%s" default "localhost.localdomain")\n' \
+			printf 'hostname (required #t hostname #t label "%s" default "localhost.localdomain")\n' \
 				"`_ "Host name"`"
-			     printf 'search (hostname #t label "%s")\n' \
-                               "`_ "Search domains"`"
-			    printf 'dns (ipv4-address #t label "%s")' \
-                               "`_ "DNS servers"`"
-			    printf 'dhcp (exclude (#t ip) exclude (#t default) exclude (#t mask) default #f label "%s")' \
-				    "`_ "Use DHCP"`"
-			    printf 'ip (required #t ipv4-address #t label "%s")' \
-				    "`_ "IP address"`"
-			    printf 'default (ipv4-address #t label "%s")' \
-				    "`_ "Default gateway"`"
-			fi
+			 printf 'search (hostname #t label "%s")\n' \
+				"`_ "Search domains"`"
+			printf 'dns (ipv4-address #t label "%s")' \
+				"`_ "DNS servers"`"
+			printf 'configuration (exclude ("dhcp" ip) exclude ("off" ip))'
+			printf 'ip (required #t ipv4-address #t label "%s")' \
+				"`_ "IP address"`"
+			printf 'default (ipv4-address #t label "%s")' \
+				"`_ "Default gateway"`"
 			echo ')'
 			;;
 		list)

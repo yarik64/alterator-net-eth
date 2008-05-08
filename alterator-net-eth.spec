@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 2.0
-Release: alt3
+Version: 2.1
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -62,6 +62,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Thu May 08 2008 Stanislav Ievlev <inger@altlinux.org> 2.1-alt1
+- use enumref, fix constraints
+
 * Wed Apr 30 2008 Stanislav Ievlev <inger@altlinux.org> 2.0-alt3
 - join to common translation database
 - call update_chrooted on commit

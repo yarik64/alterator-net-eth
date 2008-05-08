@@ -5,36 +5,7 @@
 
 ;;; Functions
 
-(define *avail-ifaces* (make-cell '()))
-(define *avail-masks* (make-cell '()))
-(define *avail-hw-bindings* (make-cell '()))
-(define *avail-configurations* (make-cell '()))
-
 (define *prev-current* (make-cell 0))
-
-(define (prev-interface)
-  (car (list-ref (cell-ref *avail-ifaces*) (cell-ref *prev-current*))))
-
-(define (current-interface)
-  (let ((c (ifaces current)))
-    (and (number? c)
-	 (>= c 0)
-	 (car (list-ref (cell-ref *avail-ifaces*) c)))))
-
-(define (param-index cmd param list)
-  (or (string-list-index (woo-get-option cmd param) (map car (cell-ref list)))
-      0))
-
-(define (param-value w list)
-  (let ((c (w current)))
-    (if (>= c 0)
-      (car (list-ref (cell-ref list) c))
-      "")))
-
-(define (param-init path widget list)
-  (let ((data (woo-list/name+label path)))
-    (cell-set! list data)
-    (widget rows (map cdr data))))
 
 (define (read-interface name)
   (and (string? name)
@@ -46,14 +17,14 @@
 
 	 (iface-info text (woo-get-option cmd 'info))
 	 (iface-ip text (woo-get-option cmd 'ip))
-	 (iface-mask current (param-index cmd 'mask *avail-masks*))
-	 (iface-gw text (woo-get-option cmd 'default)
-	 (iface-hw-binding current (param-index cmd 'hw_binding *avail-hw-bindings*))
+	 (iface-mask value (woo-get-option cmd 'mask))
+	 (iface-gw text (woo-get-option cmd 'default))
+	 (iface-hw-binding value (woo-get-option cmd 'hw_binding))
 
-	 (iface-configuration current (param-index cmd 'configuration *avail-configurations*))
+	 (iface-configuration value (woo-get-option cmd 'configuration))
 	 (iface-configuration selected)
 
-	 (w-button activity (woo-get-option cmd 'wireless))))))
+	 (w-button activity (woo-get-option cmd 'wireless)))))
 
 (define (write-interface path name)
     (and (string? name)
@@ -65,13 +36,13 @@
 
 	   'ifname name
 	   'ip    (iface-ip text)
-	   'mask  (param-value iface-mask *avail-masks*)
-	   'hw_binding (param-value iface-hw-binding *avail-hw-bindings*)
-	   'configuration (param-value iface-configuration *avail-configurations*)
+	   'mask  (iface-mask value)
+	   'hw_binding (iface-hw-binding value)
+	   'configuration (iface-configuration value)
 	   'default (iface-gw text))))
 
 (define (commit-interface)
-  (let ((name (or (current-interface) "")))
+  (let ((name (or (ifaces value) "")))
     (woo-catch/message
       (thunk
        (write-interface "/net-eth/" name)
@@ -87,14 +58,14 @@
       (woo-write "/net-eth" 'reset #t)
       (and (global 'frame:next) (woo-write "/net-eth" 'reset #t))
 
-      (param-init "/net-eth/avail_masks" iface-mask *avail-masks*)
-      (param-init "/net-eth/avail_hw_bindings" iface-hw-binding *avail-hw-bindings*)
-      (param-init "/net-eth/avail_configurations" iface-configuration *avail-configurations*)
-      (param-init "/net-eth/avail_ifaces" ifaces *avail-ifaces*)
+      (iface-mask enumref "/net-eth/avail_masks")
+      (iface-hw-binding enumref "/net-eth/avail_hw_bindings")
+      (iface-configuration enumref "/net-eth/avail_configurations")
+      (ifaces enumref "/net-eth/avail_ifaces")
 
       (read-interface "")
-      (cell-set! *prev-current* 0)
-      (or (null? (cell-ref *avail-ifaces*)) (ifaces current 0)))))
+      (cell-set! *prev-current* "")
+      (or (zero? (ifaces count)) (ifaces current 0)))))
 
 ;;; UI
 
@@ -141,11 +112,11 @@
 			(when selected
 			  (or (woo-catch/message
 				(thunk
-				  (write-interface "/net-eth" (prev-interface))
-				  (and (global 'frame:next) (write-interface "/autoinstall/net-eth" (prev-interface)))
-				  (read-interface (current-interface))
-				  (cell-set! *prev-current* (ifaces current))))
-			      (ifaces current (cell-ref *prev-current*))))))
+				  (write-interface "/net-eth" (cell-ref *prev-current*))
+				  (and (global 'frame:next) (write-interface "/autoinstall/net-eth" (cell-ref *prev-current*)))
+				  (read-interface (ifaces value))
+				  (cell-set! *prev-current* (ifaces value))))
+			      (ifaces value (cell-ref *prev-current*))))))
   (gridbox
     columns "0;100"
     ;;
@@ -159,8 +130,7 @@
 					 ((widgets iface-ip
 						   iface-mask
 						   iface-gw)
-					  activity (string=? (param-value iface-configuration *avail-configurations*)
-							     "static")))))
+					  activity (string=? (iface-configuration value) "static")))))
 
     ;;
     (label text (_ "IP address:") align "right")
@@ -184,7 +154,7 @@
 				  align "left"
 				  activity #f
 				  (when clicked
-				    (let ((name (current-interface)))
+				    (let ((name (ifaces value)))
 				      (and (not-empty-string? name)
 					   (document:popup "/net-wifi/" 'interface name))))))
 
