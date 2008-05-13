@@ -221,10 +221,11 @@ read_iface()
 
 	#collect general information
 
-	printf 'info "%s" ' "$(read_info)"
+	write_string_param info "$(read_info)"
+	write_string_param hw_binding "$(read_hw_binding "$name")"
+	write_string_param configuration "$(read_configuration "$ifacedir")"
+
 	printf 'wireless %s ' "$(ifcheckwireless "$name" && echo "#t" || echo "#f")"
-	printf 'hw_binding "%s" ' "$(read_hw_binding "$name")"
-	printf 'configuration "%s"' "$(read_configuration "$ifacedir")"
 
 	local addr= ip= mask=
 	[ ! -s "/$ifacedir/ipv4address" ] ||
@@ -235,11 +236,12 @@ read_iface()
 		mask="${addr#$ip}"; mask="${mask#/}"
 	fi
 
-	printf 'ip "%s"' "$ip"
-	printf 'mask "%s"' "${mask:-24}"
+	write_string_param ip "$ip"
+	write_string_param mask "${mask:-24}"
 
 	[ ! -s "/$ifacedir/ipv4route" ] ||
-		printf 'default "%s"\n' \
+		write_string_param \
+			default \
 			$(grep '^default' "$ifacedir/ipv4route" | sed -r 's,default[[:space:]]+via[[:space:]],,' || echo "")
 }
 
@@ -342,14 +344,13 @@ on_message()
 	case "$in_action" in
 		constraints)
 			echo '('
-			printf 'hostname (required #t hostname #t label "%s" default "localhost.localdomain")\n' \
+			printf 'hostname (hostname #t label "%s" default "localhost.localdomain")\n' \
 				"`_ "Host name"`"
 			 printf 'search (hostname #t label "%s")\n' \
 				"`_ "Search domains"`"
 			printf 'dns (ipv4-address #t label "%s")' \
 				"`_ "DNS servers"`"
-			printf 'configuration (exclude ("dhcp" ip) exclude ("off" ip))'
-			printf 'ip (required #t ipv4-address #t label "%s")' \
+			printf 'ip (ipv4-address #t label "%s")' \
 				"`_ "IP address"`"
 			printf 'default (ipv4-address #t label "%s")' \
 				"`_ "Default gateway"`"
@@ -371,12 +372,12 @@ on_message()
 			[ -n "$name" ] || name="$(iflist|cut -f1 -d' '|head -n1)"
 			[ -n "$name" ] && read_iface "$name"
 
-			printf 'name "%s"' "$name"
-			printf 'ifname "%s"' "$name"
+			write_string_param name "$name"
+			write_string_param ifname "$name"
 
-			printf "hostname \"%s\"\n" "$(read_hostname)"
-			printf "dns \"%s\"\n" "$(read_dns)"
-			printf "search \"%s\"\n" "$(read_search)"
+			write_string_param hostname "$(read_hostname)"
+			write_string_param dns "$(read_dns)"
+			write_string_param search "$(read_search)"
 
 			echo ")"
 			;;

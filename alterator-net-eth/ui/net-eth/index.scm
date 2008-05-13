@@ -11,12 +11,12 @@
   (and (string? name)
        (let ((cmd (woo-read-first "/net-eth" 'ifname name)))
 
-         (hostname text (woo-get-option cmd 'hostname))
-         (dns text (woo-get-option cmd 'dns))
-         (search text (woo-get-option cmd 'search))
+         (hostname value (woo-get-option cmd 'hostname))
+         (dns value (woo-get-option cmd 'dns))
+         (search value (woo-get-option cmd 'search))
 
 	 (iface-info text (woo-get-option cmd 'info))
-	 (iface-ip text (woo-get-option cmd 'ip))
+	 (iface-ip value (woo-get-option cmd 'ip))
 	 (iface-mask value (woo-get-option cmd 'mask))
 	 (iface-gw text (woo-get-option cmd 'default))
 	 (iface-hw-binding value (woo-get-option cmd 'hw_binding))
@@ -30,16 +30,16 @@
     (and (string? name)
 	 (woo-write/constraints
 	   path
-	   'hostname (hostname text)
-	   'dns (dns text)
-	   'search (search text)
+	   'hostname (hostname value)
+	   'dns (dns value)
+	   'search (search value)
 
 	   'ifname name
-	   'ip    (iface-ip text)
+	   'ip    (iface-ip value)
 	   'mask  (iface-mask value)
 	   'hw_binding (iface-hw-binding value)
 	   'configuration (iface-configuration value)
-	   'default (iface-gw text))))
+	   'default (iface-gw value))))
 
 (define (commit-interface)
   (let ((name (or (ifaces value) "")))

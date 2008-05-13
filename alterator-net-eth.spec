@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 2.1
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -11,10 +11,11 @@ Source:%name-%version.tar
 Summary: alterator module for tcp/ip connections configuration
 License: GPL
 Group: System/Configuration/Other
-Requires: alterator >= 2.9 alterator-sh-functions libshell >= 0.0.1-alt4
+Requires: alterator >= 2.9 alterator-sh-functions >= 0.3-alt2 libshell >= 0.0.1-alt4
 Requires: alterator-net-common >= 0.2-alt3
 Requires: alterator-net-wifi
-Conflicts: alterator-fbi < 0.15-alt2
+Conflicts: alterator-fbi < 2.4-alt3
+Conflicts: alterator-browser-qt < 2.9.76-alt1
 
 Provides: alterator-net-general = %version
 Obsoletes: alterator-net-general
@@ -54,7 +55,6 @@ alterator module for tcp/ip connections configuration
 %files -f %name.lang
 %_altdata_dir/applications/*
 %_altdata_dir/templates/*
-%_altdata_dir/design/*/*
 %_altdata_dir/ui/*/
 %_altdata_dir/help/*/*
 %_alterator_backend3dir/*
@@ -62,6 +62,11 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Tue May 13 2008 Stanislav Ievlev <inger@altlinux.org> 2.1-alt2
+- use write_string_param
+- remove po files
+- use common select.js from alterator-fbi
+
 * Thu May 08 2008 Stanislav Ievlev <inger@altlinux.org> 2.1-alt1
 - use enumref, fix constraints
 
