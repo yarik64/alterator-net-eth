@@ -291,8 +291,6 @@ write_iface()
 	local name="$1" && shift
 	local ifacedir="$cachedir/$name"
 
-	init_cache "$name"
-	
 	[ -n "$in_mask" ] && [ -n "$in_ip" ] && \
 		printf '%s/%s\n' "$in_ip" "$in_mask" >"/$ifacedir/ipv4address"
 
@@ -384,6 +382,9 @@ on_message()
 		write)
 			local name="${in_ifname}"
 			[ -n "$name" ] || name="$(iflist|cut -f1 -d' '|head -n1)"
+
+			init_cache "$name"
+
 			[ -n "$name" ] && write_iface "$name"
 
 			[ -n "$in_hostname" ] && write_hostname "$in_hostname"

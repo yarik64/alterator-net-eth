@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 2.1
-Release: alt2
+Release: alt3
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -62,6 +62,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Thu May 15 2008 Stanislav Ievlev <inger@altlinux.org> 2.1-alt3
+- fix cache initialization
+
 * Tue May 13 2008 Stanislav Ievlev <inger@altlinux.org> 2.1-alt2
 - use write_string_param
 - remove po files
