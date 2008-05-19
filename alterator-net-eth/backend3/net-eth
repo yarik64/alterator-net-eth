@@ -322,7 +322,12 @@ commit_iface()
     commit_cache
     iflist|
         while read iface rest; do
+          if [ -z "$DURING_INSTALL" ] || ! `ifcheckup eth0`; then
+#    		echo "commit_cache: restarting $iface" >> /var/log/alterator-net-eth.tmp.log
     		ifdown "$iface" && ifup "$iface"
+#    	  else
+#    		echo "commit_cache: skipping $iface" >> /var/log/alterator-net-eth.tmp.log
+    	  fi
         done >&2
 
     /sbin/update_chrooted conf >&2 || :

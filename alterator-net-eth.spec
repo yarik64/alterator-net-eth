@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 2.1
-Release: alt3
+Release: alt4
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -62,6 +62,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Mon May 19 2008 Vladislav Zavjalov <slazav@altlinux.org> 2.1-alt4
+- don't restart interface used in installer
+
 * Thu May 15 2008 Stanislav Ievlev <inger@altlinux.org> 2.1-alt3
 - fix cache initialization
 
