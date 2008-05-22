@@ -322,7 +322,7 @@ commit_iface()
     commit_cache
     iflist|
         while read iface rest; do
-          if [ -z "$DURING_INSTALL" ] || ! `ifcheckup eth0`; then
+          if [ -z "$DURING_INSTALL" ] || ! ifcheckup $iface; then
 #    		echo "commit_cache: restarting $iface" >> /var/log/alterator-net-eth.tmp.log
     		ifdown "$iface" && ifup "$iface"
 #    	  else

@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 2.1
-Release: alt4
+Release: alt5
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -62,6 +62,10 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Thu May 22 2008 Vladislav Zavjalov <slazav@altlinux.org> 2.1-alt5
+- fix prev change
+- add help from alterator-net-general
+
 * Mon May 19 2008 Vladislav Zavjalov <slazav@altlinux.org> 2.1-alt4
 - don't restart interface used in installer
 
