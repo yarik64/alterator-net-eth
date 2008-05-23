@@ -46,11 +46,7 @@
     (woo-catch/message
       (thunk
        (write-interface "/net-eth/" name)
-       (and (global 'frame:next)
-          (write-interface "/autoinstall/net-eth/" name))
-       (woo-write "/net-eth" 'commit #t)
-       (and (global 'frame:next)
-          (woo-write "/net-eth" 'commit #t))))))
+       (woo-write "/net-eth" 'commit #t)))))
 
 (define (reset-interface)
   (woo-catch/message
@@ -113,7 +109,6 @@
 			  (or (woo-catch/message
 				(thunk
 				  (write-interface "/net-eth" (cell-ref *prev-current*))
-				  (and (global 'frame:next) (write-interface "/autoinstall/net-eth" (cell-ref *prev-current*)))
 				  (read-interface (ifaces value))
 				  (cell-set! *prev-current* (ifaces value))))
 			      (ifaces value (cell-ref *prev-current*))))))

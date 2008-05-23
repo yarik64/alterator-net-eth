@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 2.1
-Release: alt5
+Release: alt6
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -62,6 +62,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Fri May 23 2008 Stanislav Ievlev <inger@altlinux.org> 2.1-alt6
+- remove autoinstall backend usage
+
 * Thu May 22 2008 Vladislav Zavjalov <slazav@altlinux.org> 2.1-alt5
 - fix prev change
 - add help from alterator-net-general
