@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 2.1
-Release: alt8
+Release: alt10
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -14,7 +14,7 @@ Group: System/Configuration/Other
 Requires: alterator >= 2.9 alterator-sh-functions >= 0.3-alt2 libshell >= 0.0.1-alt4
 Requires: alterator-net-common >= 0.2-alt3
 Requires: alterator-net-wifi >= 0.5-alt1
-Conflicts: alterator-fbi < 2.4-alt6
+Conflicts: alterator-fbi < 2.5-alt1
 Conflicts: alterator-browser-qt < 2.9.76-alt1
 
 Provides: alterator-net-general = %version
@@ -22,7 +22,7 @@ Obsoletes: alterator-net-general
 
 %add_findreq_skiplist %_datadir/install2/preinstall.d/*
 
-BuildPreReq: alterator >= 3.1 alterator-fbi >= 2.4-alt6, alterator-l10n
+BuildPreReq: alterator >= 3.1 alterator-fbi >= 2.5-alt1, alterator-l10n
 
 BuildArch: noarch
 
@@ -62,6 +62,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Wed May 28 2008 Vladislav Zavjalov <slazav@altlinux.org> 2.1-alt10
+- remove  "hrefarg" attr in href to net-wifi
+
 * Wed May 28 2008 Vladislav Zavjalov <slazav@altlinux.org> 2.1-alt8
 - change "target" attr to "hrefarg" in href to net-wifi 
   (see alterator-fbi-2.4-alt6)
