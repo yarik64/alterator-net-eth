@@ -151,6 +151,7 @@ list_configuration()
 {
     write_enum_item "off" "`_ "Turned off"`"
     write_enum_item "dhcp" "`_ "Use DHCP"`"
+    write_enum_item "ipv4ll" "`_ "Use IPv4LL"`"
     write_enum_item "static" "`_ "Manually"`"
 }
 
@@ -203,6 +204,8 @@ read_configuration()
         echo 'off'
     elif [ "$bootproto" = "static" ];then
 	echo 'static'
+    elif [ "$bootproto" = "ipv4ll" ];then
+	echo 'ipv4ll'
     else #dhcp by default
 	echo 'dhcp'
     fi
@@ -310,6 +313,10 @@ write_iface()
 	    dhcp)
 		shell_config_set "$ifacedir/options" DISABLED no
 		shell_config_set "$ifacedir/options" BOOTPROTO dhcp
+		;;
+	    ipv4ll)
+		shell_config_set "$ifacedir/options" DISABLED no
+		shell_config_set "$ifacedir/options" BOOTPROTO ipv4ll
 		;;
 	esac
 
