@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 2.2
-Release: alt10
+Release: alt11
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -63,6 +63,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Tue Jun 03 2008 Vladislav Zavjalov <slazav@altlinux.org> 2.2-alt11
+- fix label
+
 * Mon Jun 02 2008 Vladislav Zavjalov <slazav@altlinux.org> 2.2-alt10
 - add zeroconf
 - Requires: avahi-autoipd
