@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 2.2
-Release: alt11
+Release: alt12
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -23,7 +23,7 @@ Obsoletes: alterator-net-general
 
 %add_findreq_skiplist %_datadir/install2/preinstall.d/*
 
-BuildPreReq: alterator >= 3.1 alterator-fbi >= 2.5-alt1, alterator-l10n
+BuildPreReq: alterator >= 3.5-alt1 alterator-fbi >= 2.5-alt1, alterator-l10n
 
 BuildArch: noarch
 
@@ -63,6 +63,11 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Mon Jun 09 2008 Stanislav Ievlev <inger@altlinux.org> 2.2-alt12
+- remove translations for desktop file
+- remove po-file
+- use common module.mak
+
 * Tue Jun 03 2008 Vladislav Zavjalov <slazav@altlinux.org> 2.2-alt11
 - fix label
 

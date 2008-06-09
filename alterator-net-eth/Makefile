@@ -1,15 +1,11 @@
 NAME=net-eth
-DESCRIPTION="IP interfaces"
-
 INSTALL=/usr/bin/install
 
 all:
-clean: clean-po 
-install: install-backend install-ui install-po install-data
+clean: clean-po
+install: install-module install-data
 
-include /usr/share/alterator/build/po.mak
-include /usr/share/alterator/build/ui2.mak
-include /usr/share/alterator/build/backend.mak
+include /usr/share/alterator/build/module.mak
 
 install-data:
 	install -d $(datadir)/install2
