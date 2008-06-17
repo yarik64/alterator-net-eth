@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 2.2
-Release: alt12
+Version: 3.0
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -12,7 +12,7 @@ Summary: alterator module for tcp/ip connections configuration
 License: GPL
 Group: System/Configuration/Other
 Requires: alterator >= 2.9 alterator-sh-functions >= 0.3-alt2 libshell >= 0.0.1-alt4
-Requires: alterator-net-common >= 0.2-alt3
+Requires: alterator-net-common >= 0.3-alt1
 Requires: alterator-net-wifi >= 0.5-alt1
 Requires: avahi-autoipd
 Conflicts: alterator-fbi < 2.5-alt1
@@ -63,6 +63,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Tue Jun 17 2008 Stanislav Ievlev <inger@altlinux.org> 3.0-alt1
+- more functions from alterator-net-common
+
 * Mon Jun 09 2008 Stanislav Ievlev <inger@altlinux.org> 2.2-alt12
 - remove translations for desktop file
 - remove po-file
