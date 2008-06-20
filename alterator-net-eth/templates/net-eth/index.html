@@ -5,6 +5,19 @@
     <title>IP interfaces - ALT Linux Console</title>
     <script src="/design/scripts/submit.js"/>
     <script src="/design/scripts/select.js"/>
+    <script>
+	effectDisable("ip", "configuration", "off");
+	effectDisable("ip", "configuration", "dhcp");
+	effectDisable("ip", "configuration", "ipv4ll");
+
+	effectDisable("mask", "configuration", "off");
+	effectDisable("mask", "configuration", "dhcp");
+	effectDisable("mask", "configuration", "ipv4ll");
+
+	effectDisable("default", "configuration", "off");
+	effectDisable("default", "configuration", "dhcp");
+	effectDisable("default", "configuration", "ipv4ll");
+    </script>
   </head>
   <body>
 	  <h1><span translate="_">IP interfaces</span></h1>
@@ -55,15 +68,15 @@
 							  <td><select name="configuration" enumref="/net-eth/avail_configurations"></select></td>
 						  </tr>
 						  <tr>
-							  <td><span translate="_">IP address:</span></td>
+							  <td><span translate="_" name="ip">IP address:</span></td>
 							  <td><input type="text" class="text" name="ip"></input></td>
 						  </tr>
 						  <tr>
-							  <td><span translate="_">Netmask:</span></td>
+							  <td><span translate="_" name="mask">Netmask:</span></td>
 							  <td><select name="mask" enumref="/net-eth/avail_masks"></select></td>
 						  </tr>
 						  <tr>
-							  <td><span translate="_">Default gateway:</span></td>
+							  <td><span translate="_" name="default">Default gateway:</span></td>
 							  <td><input type="text" class="text" name="default"></input></td>
 						  </tr>
 						  <tr>

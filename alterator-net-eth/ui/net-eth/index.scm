@@ -110,7 +110,8 @@
 				(thunk
 				  (write-interface "/net-eth" (cell-ref *prev-current*))
 				  (read-interface (ifaces value))
-				  (cell-set! *prev-current* (ifaces value))))
+				  (cell-set! *prev-current* (ifaces value))
+				  (effect-update)))
 			      (ifaces value (cell-ref *prev-current*))))))
   (gridbox
     columns "0;100"
@@ -119,25 +120,19 @@
     (document:id iface-info (label))
 
     ;;
-    (label text (_ "Configuration:") align "right")
-    (document:id iface-configuration (combobox
-				       (when selected
-					 ((widgets iface-ip
-						   iface-mask
-						   iface-gw)
-					  activity (string=? (iface-configuration value) "static")))))
+    (label text (_ "Configuration:") align "right" name "configuration")
+    (document:id iface-configuration (combobox name "configuration"))
+    ;;
+    (label text (_ "IP address:") align "right" name "ip")
+    (document:id iface-ip (edit name "ip"))
 
     ;;
-    (label text (_ "IP address:") align "right")
-    (document:id iface-ip (edit))
+    (label text (_ "Netmask:") align "right" name "mask")
+    (document:id iface-mask (combobox name "mask"))
 
     ;;
-    (label text (_ "Netmask:") align "right")
-    (document:id iface-mask (combobox))
-
-    ;;
-    (label text (_ "Default gateway:") align "right")
-    (document:id iface-gw (edit))
+    (label text (_ "Default gateway:") align "right" name "default")
+    (document:id iface-gw (edit name "default"))
 
     ;;
     (label text (_ "Hardware binding:") align "right")
@@ -164,18 +159,31 @@
       (label)
       (hbox align "left"
 	    (button (_ "Apply") (when clicked (commit-interface)))
-	    (button (_ "Reset") (when clicked (reset-interface)))))
+	    (button (_ "Reset") (when clicked (reset-interface) (effect-update)))))
     (spacer)
     )
 
 
 ;;;;;;;;;;;;;;;
 
+;; TODO: replace with effect-enable
+(effect-disable "ip" "configuration" "off")
+(effect-disable "ip" "configuration" "dhcp")
+(effect-disable "ip" "configuration" "ipv4ll")
+
+(effect-disable "mask" "configuration" "off")
+(effect-disable "mask" "configuration" "dhcp")
+(effect-disable "mask" "configuration" "ipv4ll")
+
+(effect-disable "default" "configuration" "off")
+(effect-disable "default" "configuration" "dhcp")
+(effect-disable "default" "configuration" "ipv4ll")
 
 ;;;;;;;;;;;;;;;;;;
 
 (document:root
-  (when loaded (reset-interface)))
+  (when loaded (reset-interface)
+               (effect-init)))
 
 (frame:on-back (thunk (or (commit-interface) 'cancel)))
 (frame:on-next (thunk (or (commit-interface) 'cancel)))

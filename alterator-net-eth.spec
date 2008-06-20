@@ -1,7 +1,7 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 3.0
+Version: 3.1
 Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
@@ -15,7 +15,8 @@ Requires: alterator >= 2.9 alterator-sh-functions >= 0.3-alt2 libshell >= 0.0.1-
 Requires: alterator-net-common >= 0.3-alt1
 Requires: alterator-net-wifi >= 0.5-alt1
 Requires: avahi-autoipd
-Conflicts: alterator-fbi < 2.5-alt1
+Conflicts: alterator-lookout < 1.1-alt7
+Conflicts: alterator-fbi < 2.6-alt7
 Conflicts: alterator-browser-qt < 2.9.76-alt1
 
 Provides: alterator-net-general = %version
@@ -63,6 +64,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Fri Jun 20 2008 Stanislav Ievlev <inger@altlinux.org> 3.1-alt1
+- use effect-disable
+
 * Tue Jun 17 2008 Stanislav Ievlev <inger@altlinux.org> 3.0-alt1
 - more functions from alterator-net-common
 
