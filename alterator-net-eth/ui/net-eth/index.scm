@@ -111,7 +111,7 @@
 				  (write-interface "/net-eth" (cell-ref *prev-current*))
 				  (read-interface (ifaces value))
 				  (cell-set! *prev-current* (ifaces value))
-				  (effect-update)))
+				  (update-effect)))
 			      (ifaces value (cell-ref *prev-current*))))))
   (gridbox
     columns "0;100"
@@ -159,7 +159,7 @@
       (label)
       (hbox align "left"
 	    (button (_ "Apply") (when clicked (commit-interface)))
-	    (button (_ "Reset") (when clicked (reset-interface) (effect-update)))))
+	    (button (_ "Reset") (when clicked (reset-interface) (update-effect)))))
     (spacer)
     )
 
@@ -183,7 +183,7 @@
 
 (document:root
   (when loaded (reset-interface)
-               (effect-init)))
+               (init-effect)))
 
 (frame:on-back (thunk (or (commit-interface) 'cancel)))
 (frame:on-next (thunk (or (commit-interface) 'cancel)))
