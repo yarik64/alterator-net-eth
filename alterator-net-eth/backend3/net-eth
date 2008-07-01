@@ -1,7 +1,6 @@
 #!/bin/sh
 
 cachedir="/var/cache/alterator/net-eth"
-po_domain="alterator-net-eth"
 
 rdelim='[[:space:]]\+'
 wdelim=' '

@@ -1,8 +1,6 @@
 (document:surround "/std/frame")
 (document:insert "/std/functions")
 
-(document:envelop with-translation _ "alterator-net-eth")
-
 ;;; Functions
 
 (define *prev-current* (make-cell 0))
@@ -167,17 +165,9 @@
 ;;;;;;;;;;;;;;;
 
 ;; TODO: replace with effect-enable
-(effect-disable "ip" "configuration" "off")
-(effect-disable "ip" "configuration" "dhcp")
-(effect-disable "ip" "configuration" "ipv4ll")
-
-(effect-disable "mask" "configuration" "off")
-(effect-disable "mask" "configuration" "dhcp")
-(effect-disable "mask" "configuration" "ipv4ll")
-
-(effect-disable "default" "configuration" "off")
-(effect-disable "default" "configuration" "dhcp")
-(effect-disable "default" "configuration" "ipv4ll")
+(effect-enable "ip" "configuration" "static")
+(effect-enable "mask" "configuration" "static")
+(effect-enable "default" "configuration" "static")
 
 ;;;;;;;;;;;;;;;;;;
 

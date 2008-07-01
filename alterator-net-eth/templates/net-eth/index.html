@@ -2,25 +2,15 @@
 <!-- tcp connections module -->
 <html wf="form?name-attribute=ifname">
   <head>
-    <title>IP interfaces - ALT Linux Console</title>
     <script src="/design/scripts/submit.js"/>
     <script src="/design/scripts/select.js"/>
     <script>
-	effectDisable("ip", "configuration", "off");
-	effectDisable("ip", "configuration", "dhcp");
-	effectDisable("ip", "configuration", "ipv4ll");
-
-	effectDisable("mask", "configuration", "off");
-	effectDisable("mask", "configuration", "dhcp");
-	effectDisable("mask", "configuration", "ipv4ll");
-
-	effectDisable("default", "configuration", "off");
-	effectDisable("default", "configuration", "dhcp");
-	effectDisable("default", "configuration", "ipv4ll");
+	effectEnable("ip", "configuration", "static");
+	effectEnable("mask", "configuration", "static");
+	effectEnable("default", "configuration", "static");
     </script>
   </head>
   <body>
-	  <h1><span translate="_">IP interfaces</span></h1>
 	  <form method="POST" id="ajax-select">
 	          <input type="hidden" name="ifname"/>
 		  <table>
