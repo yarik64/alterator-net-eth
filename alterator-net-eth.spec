@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 3.1
-Release: alt3
+Release: alt4
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -64,6 +64,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Fri Aug 29 2008 Stanislav Ievlev <inger@altlinux.org> 3.1-alt4
+- workaround: shutdown interface if we disable it
+
 * Tue Jul 01 2008 Stanislav Ievlev <inger@altlinux.org> 3.1-alt3
 - simplify i18n declarations
 - replace effect-enable with effect-disable

@@ -54,6 +54,8 @@ commit_cache()
     find $cachedir -maxdepth 1 -mindepth 1 -type d|
 	while read iface; do
 	    [ -n "$iface" ] || exit
+	    [ "$(read_iface_option "$iface" DISABLED)" != "yes" ] || ifdown "${iface##*/}"
+
 	    rm -rf "/etc/net/ifaces/${iface##*/}"
 	    mv -f "$iface" "/etc/net/ifaces/${iface##*/}"
 	done
