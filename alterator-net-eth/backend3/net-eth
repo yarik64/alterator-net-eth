@@ -54,7 +54,7 @@ commit_cache()
     find $cachedir -maxdepth 1 -mindepth 1 -type d|
 	while read iface; do
 	    [ -n "$iface" ] || exit
-	    [ "$(read_iface_option "$iface" DISABLED)" != "yes" ] || ifdown "${iface##*/}"
+	    [ "$in_restart" = '#f' -o "$(read_iface_option "$iface" DISABLED)" != "yes" ] || ifdown "${iface##*/}"
 
 	    rm -rf "/etc/net/ifaces/${iface##*/}"
 	    mv -f "$iface" "/etc/net/ifaces/${iface##*/}"
@@ -320,16 +320,15 @@ write_iface()
 commit_iface()
 {
     commit_cache
-    iflist|
-        while read iface rest; do
-          if [ -z "$DURING_INSTALL" ] || ! ifcheckup $iface; then
-#    		echo "commit_cache: restarting $iface" >> /var/log/alterator-net-eth.tmp.log
-    		ifdown "$iface" && ifup "$iface"
-#    	  else
-#    		echo "commit_cache: skipping $iface" >> /var/log/alterator-net-eth.tmp.log
-    	  fi
-        done >&2
-
+    [ "$in_restart" = '#f' ] ||
+	iflist|
+	    while read iface rest; do
+		[ -d "/etc/net/ifaces/$iface" ] || continue
+		if [ -z "$DURING_INSTALL" ] || ! ifcheckup $iface; then
+#		    echo "commit_cache: restarting $iface"
+		    ifdown "$iface" && ifup "$iface"
+		fi
+	    done >&2
     /sbin/update_chrooted conf >&2 || :
 }
 

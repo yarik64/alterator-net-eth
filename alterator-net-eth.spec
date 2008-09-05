@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 3.1
-Release: alt4
+Release: alt5
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -64,6 +64,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Fri Sep 05 2008 Stanislav Ievlev <inger@altlinux.org> 3.1-alt5
+- add ability to skip interface restart on commit (parameter restart)
+
 * Fri Aug 29 2008 Stanislav Ievlev <inger@altlinux.org> 3.1-alt4
 - workaround: shutdown interface if we disable it
 
