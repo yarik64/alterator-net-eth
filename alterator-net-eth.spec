@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 3.1
-Release: alt5
+Release: alt6
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -64,6 +64,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Mon Sep 08 2008 Stanislav Ievlev <inger@altlinux.org> 3.1-alt6
+- new configuration 'Managed by user (NetworkManager)'
+
 * Fri Sep 05 2008 Stanislav Ievlev <inger@altlinux.org> 3.1-alt5
 - add ability to skip interface restart on commit (parameter restart)
 

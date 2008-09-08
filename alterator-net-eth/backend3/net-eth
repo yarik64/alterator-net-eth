@@ -143,6 +143,7 @@ list_hw_binding()
 list_configuration()
 {
     write_enum_item "off" "`_ "Turned off"`"
+    write_enum_item "networkmanager" "`_ "Managed by user (NetworkManager)"`"
     write_enum_item "dhcp" "`_ "Use DHCP"`"
     write_enum_item "ipv4ll" "`_ "Use Zeroconf"`"
     write_enum_item "static" "`_ "Manually"`"
@@ -191,9 +192,12 @@ read_info()
 read_configuration()
 {
     local disabled="$(read_iface_option "$1" DISABLED)"
+    local nm_controlled="$(read_iface_option "$1" NM_CONTROLLED)"
     local bootproto="$(read_iface_option "$1" BOOTPROTO)"
 
-    if [ "$(write_bool "$disabled")" = "#t" ];then
+    if [ "$(write_bool "$nm_controlled")" = "#t" ];then
+	echo 'networkmanager'
+    elif [ "$(write_bool "$disabled")" = "#t" ];then
         echo 'off'
     elif [ "$bootproto" = "static" ];then
 	echo 'static'
@@ -298,17 +302,25 @@ write_iface()
 	case "$in_configuration" in
 	    off)
 		write_iface_option "$ifacedir" DISABLED yes
+		write_iface_option "$ifacedir" NM_CONTROLLED no
+		;;
+	    networkmanager)
+		write_iface_option "$ifacedir" DISABLED yes
+		write_iface_option "$ifacedir" NM_CONTROLLED yes
 		;;
 	    static)
 		write_iface_option "$ifacedir" DISABLED no
+		write_iface_option "$ifacedir" NM_CONTROLLED no
 		write_iface_option "$ifacedir" BOOTPROTO static
 		;;
 	    dhcp)
 		write_iface_option "$ifacedir" DISABLED no
+		write_iface_option "$ifacedir" NM_CONTROLLED no
 		write_iface_option "$ifacedir" BOOTPROTO dhcp
 		;;
 	    ipv4ll)
 		write_iface_option "$ifacedir" DISABLED no
+		write_iface_option "$ifacedir" NM_CONTROLLED no
 		write_iface_option "$ifacedir" BOOTPROTO ipv4ll
 		;;
 	esac
