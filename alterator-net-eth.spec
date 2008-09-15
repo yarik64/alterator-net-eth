@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 3.1
-Release: alt6
+Version: 3.2
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -15,8 +15,8 @@ Requires: alterator >= 2.9 alterator-sh-functions >= 0.3-alt2 libshell >= 0.0.1-
 Requires: alterator-net-common >= 0.3-alt1
 Requires: alterator-net-wifi >= 0.5-alt1
 Requires: avahi-autoipd
-Conflicts: alterator-lookout < 1.2-alt1
-Conflicts: alterator-fbi < 2.8-alt1
+Conflicts: alterator-lookout < 1.3-alt3
+Conflicts: alterator-fbi < 5.0-alt4
 Conflicts: alterator-browser-qt < 2.9.76-alt1
 
 Provides: alterator-net-general = %version
@@ -64,6 +64,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Mon Sep 15 2008 Stanislav Ievlev <inger@altlinux.org> 3.2-alt1
+- replace constraints with types
+
 * Mon Sep 08 2008 Stanislav Ievlev <inger@altlinux.org> 3.1-alt6
 - new configuration 'Managed by user (NetworkManager)'
 
