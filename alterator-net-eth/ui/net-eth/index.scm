@@ -41,13 +41,13 @@
 
 (define (commit-interface)
   (let ((name (or (ifaces value) "")))
-    (woo-catch/message
+    (catch/message
       (thunk
        (write-interface "/net-eth/" name)
        (woo-write "/net-eth" 'commit #t)))))
 
 (define (reset-interface)
-  (woo-catch/message
+  (catch/message
     (thunk
       (woo-write "/net-eth" 'reset #t)
       (and (global 'frame:next) (woo-write "/net-eth" 'reset #t))
@@ -72,7 +72,7 @@
     columns "0;40;60"
 
     ;;
-    (label text (_ "Host name:") align "right")
+    (label text (_ "Host name:") name "hostname" align "right")
     (document:id hostname (edit))
     (spacer)
 
@@ -80,12 +80,12 @@
      (label colspan 3)
 
      ;;
-     (label text (_ "DNS servers:") align "right")
+     (label text (_ "DNS servers:") name "dns" align "right")
      (document:id dns (edit))
      (spacer)
 
      ;;
-     (label text (_ "Search domains:") align "right")
+     (label text (_ "Search domains:") name "search" align "right")
      (document:id search (edit))
      (spacer)
 
@@ -104,7 +104,7 @@
 
   (document:id ifaces (listbox
 			(when selected
-			  (or (woo-catch/message
+			  (or (catch/message
 				(thunk
 				  (write-interface "/net-eth" (cell-ref *prev-current*))
 				  (read-interface (ifaces value))
