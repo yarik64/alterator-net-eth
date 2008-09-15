@@ -26,7 +26,7 @@
 
 (define (write-interface path name)
     (and (string? name)
-	 (woo-write/constraints
+	 (woo-write
 	   path
 	   'hostname (hostname value)
 	   'dns (dns value)
