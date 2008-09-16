@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 3.2
-Release: alt2
+Release: alt3
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -11,7 +11,7 @@ Source:%name-%version.tar
 Summary: alterator module for tcp/ip connections configuration
 License: GPL
 Group: System/Configuration/Other
-Requires: alterator >= 2.9 alterator-sh-functions >= 0.3-alt2 libshell >= 0.0.1-alt4
+Requires: alterator >= 2.9 alterator-sh-functions >= 0.6-alt5 libshell >= 0.0.1-alt4
 Requires: alterator-net-common >= 0.3-alt1
 Requires: alterator-net-wifi >= 0.5-alt1
 Requires: avahi-autoipd
@@ -64,6 +64,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Tue Sep 16 2008 Vladislav Zavjalov <slazav@altlinux.org> 3.2-alt3
+- add Requires: alterator-sh-functions >= 0.6-alt5 (write_type_item)
+
 * Tue Sep 16 2008 Vladislav Zavjalov <slazav@altlinux.org> 3.2-alt2
 - don't show NM item when NM isn't installed
 
