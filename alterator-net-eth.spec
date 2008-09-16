@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 3.2
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -64,6 +64,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Tue Sep 16 2008 Vladislav Zavjalov <slazav@altlinux.org> 3.2-alt2
+- don't show NM item when NM isn't installed
+
 * Mon Sep 15 2008 Stanislav Ievlev <inger@altlinux.org> 3.2-alt1
 - replace constraints with types
 
