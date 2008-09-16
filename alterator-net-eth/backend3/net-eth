@@ -143,7 +143,7 @@ list_hw_binding()
 list_configuration()
 {
     write_enum_item "off" "`_ "Turned off"`"
-    write_enum_item "networkmanager" "`_ "Managed by user (NetworkManager)"`"
+    [ ! -f "/usr/sbin/NetworkManager" ] || write_enum_item "networkmanager" "`_ "Managed by user (NetworkManager)"`"
     write_enum_item "dhcp" "`_ "Use DHCP"`"
     write_enum_item "ipv4ll" "`_ "Use Zeroconf"`"
     write_enum_item "static" "`_ "Manually"`"
