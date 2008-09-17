@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 3.2
-Release: alt3
+Release: alt4
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -64,6 +64,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Wed Sep 17 2008 Vladislav Zavjalov <slazav@altlinux.org> 3.2-alt4
+- fix help and desktop-file (by mike@)
+
 * Tue Sep 16 2008 Vladislav Zavjalov <slazav@altlinux.org> 3.2-alt3
 - add Requires: alterator-sh-functions >= 0.6-alt5 (write_type_item)
 
