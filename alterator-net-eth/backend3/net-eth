@@ -224,8 +224,7 @@ read_iface()
 	write_string_param info "$(read_info)"
 	write_string_param hw_binding "$(read_hw_binding "$name")"
 	write_string_param configuration "$(read_configuration "$ifacedir")"
-
-	printf 'wireless %s ' "$(ifcheckwireless "$name" && echo "#t" || echo "#f")"
+	write_bool_param wireless "$(ifcheckwireless "$name" && echo "yes" || echo "no")"
 
 	local addr= ip= mask=
 	[ ! -s "/$ifacedir/ipv4address" ] ||
