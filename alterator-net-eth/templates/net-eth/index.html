@@ -8,6 +8,7 @@
 	effectEnable("ip", "configuration", "static");
 	effectEnable("mask", "configuration", "static");
 	effectEnable("default", "configuration", "static");
+	effectShow("wirless_settings", "wireless", true);
     </script>
   </head>
   <body>
@@ -75,8 +76,10 @@
 						  </tr>
 						  <tr>
 							  <td>&nbsp;</td>
-							  <td><a href="/net-wifi?iface=" class="alterator-ref2">
-							      <span translate="_">Wireless settings...</span>
+							  <td>
+							      <input type="checkbox" name="wireless" style="display:none"/>
+							      <a href="/net-wifi?iface=" class="alterator-ref2">
+							      <span translate="_" name="wirless_settings">Wireless settings...</span>
 							      </a>
 							   </td>
 						  </tr>
