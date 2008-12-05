@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 3.2
-Release: alt7
+Release: alt8
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -64,6 +64,10 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Fri Dec 05 2008 Vladislav Zavjalov <slazav@altlinux.org> 3.2-alt8
+- use help from l10n
+- rebuild
+
 * Thu Nov 13 2008 Vladislav Zavjalov <slazav@altlinux.org> 3.2-alt7
 - hide "Wireless settings" ref for non-w/l ifaces
 - printf -> write_bool_param in backend
