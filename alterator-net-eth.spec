@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 3.2
-Release: alt9
+Version: 3.3
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -65,6 +65,10 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Thu Jan 15 2009 Stanislav Ievlev <inger@altlinux.org> 3.3-alt1
+- don't setup /etc/HOSTNAME
+- use help directly from alterator-l10n
+
 * Tue Dec 09 2008 Vladislav Zavjalov <slazav@altlinux.org> 3.2-alt9
 - rebuild with new alterator-l10n (fix help)
 
