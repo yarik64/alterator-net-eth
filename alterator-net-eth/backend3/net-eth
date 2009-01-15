@@ -37,7 +37,6 @@ commit_hostname()
     [ -n "$value" ] || return
 
     hostname "$value"
-    printf %s\\n "$value" >/etc/HOSTNAME
 
     #bind hostname
     grep -qs "^[^#]*\<$value\>" /etc/hosts ||

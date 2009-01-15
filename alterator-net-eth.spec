@@ -15,7 +15,7 @@ Requires: alterator >= 2.9 alterator-sh-functions >= 0.6-alt5 libshell >= 0.0.1-
 Requires: alterator-l10n >= 0.14-alt1
 Requires: alterator-net-common >= 0.3-alt1
 Requires: alterator-net-wifi >= 0.5-alt1
-Requires: avahi-autoipd
+Requires: avahi-autoipd startup >= 0.9.8.21-alt1
 Conflicts: alterator-lookout < 1.3-alt3
 Conflicts: alterator-fbi < 5.0-alt4
 Conflicts: alterator-browser-qt < 2.9.76-alt1
