@@ -12,6 +12,7 @@ Summary: alterator module for tcp/ip connections configuration
 License: GPL
 Group: System/Configuration/Other
 Requires: alterator >= 2.9 alterator-sh-functions >= 0.6-alt5 libshell >= 0.0.1-alt4
+Requires: alterator-l10n >= 0.14-alt1
 Requires: alterator-net-common >= 0.3-alt1
 Requires: alterator-net-wifi >= 0.5-alt1
 Requires: avahi-autoipd
@@ -19,8 +20,6 @@ Conflicts: alterator-lookout < 1.3-alt3
 Conflicts: alterator-fbi < 5.0-alt4
 Conflicts: alterator-browser-qt < 2.9.76-alt1
 
-Provides: alterator-net-general = %version
-Obsoletes: alterator-net-general
 
 %add_findreq_skiplist %_datadir/install2/preinstall.d/*
 
@@ -37,6 +36,9 @@ Obsoletes: alterator-net-tcp
 
 Provides: alterator-backend-simple_etcnet = %version
 Obsoletes: alterator-backend-simple_etcnet
+
+Provides: alterator-net-general = %version
+Obsoletes: alterator-net-general
 
 # Automatically added by buildreq on Mon Jul 11 2005 (-bi)
 BuildRequires: alterator
@@ -58,7 +60,6 @@ alterator module for tcp/ip connections configuration
 %_altdata_dir/applications/*
 %_altdata_dir/templates/*
 %_altdata_dir/ui/*/
-%_altdata_dir/help/*/*
 %_alterator_backend3dir/*
 %_datadir/install2/preinstall.d/*
 
