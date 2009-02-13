@@ -1,9 +1,6 @@
 (document:surround "/std/frame")
-(document:insert "/std/functions")
 
 ;;; Functions
-
-(define *prev-current* (make-cell ""))
 
 (define (update-configuration configuration)
     (form-update-activity
@@ -52,23 +49,24 @@
       (form-update-enum "name" (woo-list "/net-eth/avail_ifaces"))
 
       (read-interface "")
-      (cell-set! *prev-current* ""))))
+      (form-update-value "prev_name" ""))))
 
 (define (update-interface)
   (or (catch/message
 	(lambda()
 	  (let ((name (form-value "name")))
-	    (write-interface (cell-ref *prev-current*))
+	    (write-interface (form-value "prev_name"))
 	    (read-interface name)
-	    (cell-set! *prev-current* name)
+	    (form-update-value "prev_name" name)
 	    (update-effect))))
-      (form-update-value "name" (cell-ref *prev-current*))))
+      (form-update-value "name" (form-value "prev_name"))))
 
 (define (wireless-interface)
  (form-popup "/net-wifi/" 'interface (form-value "name")))
 
 ;;; UI
 
+(edit name "prev_name" text "" visibility #f)
 (gridbox
   columns "0;100"
   margin 20
@@ -163,4 +161,3 @@
 
 (frame:on-back (lambda() (or (commit-interface) 'cancel)))
 (frame:on-next (lambda() (or (commit-interface) 'cancel)))
-
