@@ -5,43 +5,46 @@
 
 (define *prev-current* (make-cell ""))
 
+(define (update-configuration configuration)
+    (form-update-activity
+      '("ip" "mask" "default")
+      (string=? configuration "static")))
+
 (define (read-interface name)
-  (and (string? name)
-       (let ((cmd (woo-read-first "/net-eth" 'ifname name)))
+  (let ((cmd (woo-read-first "/net-eth" 'ifname name)))
 
-         (form-update-value-list
-	   '("name")
-	   cmd)
-         (form-update-value-list
-	   '("hostname" "dns" "search")
-	   cmd)
-	 (form-update-value-list
-	   '("info" "ip" "mask" "default" "hw_binding" "configuration")
-	   cmd)
+    (form-update-value-list
+      '("name")
+      cmd)
+    (form-update-value-list
+      '("hostname" "dns" "search")
+      cmd)
+    (form-update-value-list
+      '("info" "ip" "mask" "default" "hw_binding" "configuration")
+      cmd)
 
-	 (form-apply "configuration" selected)
+    (form-update-activity
+      "wireless"
+      (woo-get-option cmd 'wireless))
 
-	 (w-button activity (woo-get-option cmd 'wireless)))))
+    (update-configuration (woo-get-option cmd 'configuration))))
 
 (define (write-interface name)
-    (and (string? name)
-	 (apply woo-write
-		"/net-eth"
-		'ifname name
-		(form-value-list))))
+  (apply woo-write
+	 "/net-eth"
+	 'ifname name
+	 (form-value-list)))
 
 (define (commit-interface)
-  (let ((name (or (form-value "name") "")))
-    (catch/message
-      (thunk
-       (write-interface name)
-       (woo-write "/net-eth" 'commit #t)))))
+  (catch/message
+    (lambda()
+      (write-interface (or (form-value "name") ""))
+      (woo-write "/net-eth" 'commit #t))))
 
 (define (reset-interface)
   (catch/message
     (lambda()
       (woo-write "/net-eth" 'reset #t)
-      (and (global 'frame:next) (woo-write "/net-eth" 'reset #t))
 
       (form-update-enum "mask" (woo-list "/net-eth/avail_masks"))
       (form-update-enum "hw_binding" (woo-list "/net-eth/avail_hw_bindings"))
@@ -50,6 +53,19 @@
 
       (read-interface "")
       (cell-set! *prev-current* ""))))
+
+(define (update-interface)
+  (or (catch/message
+	(lambda()
+	  (let ((name (form-value "name")))
+	    (write-interface (cell-ref *prev-current*))
+	    (read-interface name)
+	    (cell-set! *prev-current* name)
+	    (update-effect))))
+      (form-update-value "name" (cell-ref *prev-current*))))
+
+(define (wireless-interface)
+ (form-popup "/net-wifi/" 'interface (form-value "name")))
 
 ;;; UI
 
@@ -67,42 +83,30 @@
     (spacer)
 
     ;;
-     (label colspan 3)
+    (label colspan 3)
 
-     ;;
-     (label text (_ "DNS servers:") name "dns" align "right")
-     (edit name "dns")
-     (spacer)
+    ;;
+    (label text (_ "DNS servers:") name "dns" align "right")
+    (edit name "dns")
+    (spacer)
 
-     ;;
-     (label text (_ "Search domains:") name "search" align "right")
-     (edit name "search")
-     (spacer)
+    ;;
+    (label text (_ "Search domains:") name "search" align "right")
+    (edit name "search")
+    (spacer)
 
-     (spacer)
-     (label text (string-append "<small>("
-				(_ "multiple values should be space separated")
-				")<small>"))
-     (spacer)
-     )
-
+    (spacer)
+    (label text (string-append "<small>("
+			       (_ "multiple values should be space separated")
+			       ")<small>"))
+    (spacer))
 
   (separator colspan 2)
 
   (label text (bold (_ "Interfaces")))
   (spacer)
 
-  (listbox
-    name "name"
-    (when selected
-      (or (catch/message
-	    (lambda()
-	      (let ((name (form-value "name")))
-		(write-interface (cell-ref *prev-current*))
-		(read-interface name)
-		(cell-set! *prev-current* name)
-		(update-effect))))
-	  (form-update-value "name" (cell-ref *prev-current*)))))
+  (listbox name "name")
   (gridbox
     columns "0;100"
     ;;
@@ -130,12 +134,10 @@
 
     ;;
     (spacer)
-    (document:id w-button (button text (_ "Wireless settings...")
-				  align "left"
-				  activity #f
-				  (when clicked
-					   (document:popup "/net-wifi/" 'interface (form-value "name")))))
-    )
+    (button text (_ "Wireless settings...")
+	    name "wireless"
+	    align "left"
+	    activity #f))
 
     ;;
     (label colspan 2)
@@ -144,24 +146,21 @@
     (if (global 'frame:next)
       (label)
       (hbox align "left"
-	    (button (_ "Apply") (when clicked (commit-interface)))
-	    (button (_ "Reset") (when clicked (reset-interface) (update-effect)))))
-    (spacer)
-    )
-
-
-;;;;;;;;;;;;;;;
-
-;; TODO: replace with effect-enable
-(effect-enable "ip" "configuration" "static")
-(effect-enable "mask" "configuration" "static")
-(effect-enable "default" "configuration" "static")
+	    (button (_ "Apply") name "apply")
+	    (button (_ "Reset") name "reset")))
+    (spacer))
 
 ;;;;;;;;;;;;;;;;;;
 
 (document:root
-  (when loaded (reset-interface)
-               (init-effect)))
+  (when loaded
+    (reset-interface)
+    (form-bind "name" "change" update-interface)
+    (form-bind "configuration" "change" (lambda() (update-configuration (form-value "configuration"))))
+    (form-bind "apply" "click" commit-interface)
+    (form-bind "reset" "click" reset-interface)
+    (form-bind "wireless" "click" wireless-interface)))
 
-(frame:on-back (thunk (or (commit-interface) 'cancel)))
-(frame:on-next (thunk (or (commit-interface) 'cancel)))
+(frame:on-back (lambda() (or (commit-interface) 'cancel)))
+(frame:on-next (lambda() (or (commit-interface) 'cancel)))
+
