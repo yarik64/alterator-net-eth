@@ -9,39 +9,29 @@
   (and (string? name)
        (let ((cmd (woo-read-first "/net-eth" 'ifname name)))
 
-         (form-update-value-list '("hostname" "dns" "search") cmd)
+         (form-update-value-list
+	   '("hostname" "dns" "search")
+	   cmd)
+	 (form-update-value-list
+	   '("info" "ip" "mask" "default" "hw_binding" "configuration")
+	   cmd)
 
-	 (iface-info text (woo-get-option cmd 'info))
-	 (iface-ip value (woo-get-option cmd 'ip))
-	 (iface-mask value (woo-get-option cmd 'mask))
-	 (iface-gw text (woo-get-option cmd 'default))
-	 (iface-hw-binding value (woo-get-option cmd 'hw_binding))
-
-	 (iface-configuration value (woo-get-option cmd 'configuration))
-	 (iface-configuration selected)
+	 (form-apply "configuration" selected)
 
 	 (w-button activity (woo-get-option cmd 'wireless)))))
 
-(define (write-interface path name)
+(define (write-interface name)
     (and (string? name)
-	 (woo-write
-	   path
-	   'hostname (form-value "hostname")
-	   'dns (form-value "dns")
-	   'search (form-value "search")
-
-	   'ifname name
-	   'ip    (iface-ip value)
-	   'mask  (iface-mask value)
-	   'hw_binding (iface-hw-binding value)
-	   'configuration (iface-configuration value)
-	   'default (iface-gw value))))
+	 (apply woo-write
+		"/net-eth"
+		'ifname name
+		(form-value-list))))
 
 (define (commit-interface)
   (let ((name (or (ifaces value) "")))
     (catch/message
       (thunk
-       (write-interface "/net-eth/" name)
+       (write-interface name)
        (woo-write "/net-eth" 'commit #t)))))
 
 (define (reset-interface)
@@ -50,10 +40,11 @@
       (woo-write "/net-eth" 'reset #t)
       (and (global 'frame:next) (woo-write "/net-eth" 'reset #t))
 
-      (iface-mask enumref "/net-eth/avail_masks")
-      (iface-hw-binding enumref "/net-eth/avail_hw_bindings")
-      (iface-configuration enumref "/net-eth/avail_configurations")
-      (ifaces enumref "/net-eth/avail_ifaces")
+      (form-update-enum "mask" (woo-list "/net-eth/avail_masks"))
+      (form-update-enum "hw_binding" (woo-list "/net-eth/avail_hw_bindings"))
+      (form-update-enum "configuration" (woo-list "/net-eth/avail_configurations"))
+      (form-update-enum "name" (woo-list "/net-eth/avail_ifaces"))
+
 
       (read-interface "")
       (cell-set! *prev-current* "")
@@ -101,10 +92,11 @@
   (spacer)
 
   (document:id ifaces (listbox
+			name "name"
 			(when selected
 			  (or (catch/message
 				(thunk
-				  (write-interface "/net-eth" (cell-ref *prev-current*))
+				  (write-interface (cell-ref *prev-current*))
 				  (read-interface (ifaces value))
 				  (cell-set! *prev-current* (ifaces value))
 				  (update-effect)))
@@ -113,26 +105,26 @@
     columns "0;100"
     ;;
     (label text (_ "Status:") align "right")
-    (document:id iface-info (label))
+    (label name "info")
 
     ;;
     (label text (_ "Configuration:") align "right" name "configuration")
-    (document:id iface-configuration (combobox name "configuration"))
+    (combobox name "configuration")
     ;;
     (label text (_ "IP address:") align "right" name "ip")
-    (document:id iface-ip (edit name "ip"))
+    (edit name "ip")
 
     ;;
     (label text (_ "Netmask:") align "right" name "mask")
-    (document:id iface-mask (combobox name "mask"))
+    (combobox name "mask")
 
     ;;
     (label text (_ "Default gateway:") align "right" name "default")
-    (document:id iface-gw (edit name "default"))
+    (edit name "default")
 
     ;;
     (label text (_ "Hardware binding:") align "right")
-    (document:id iface-hw-binding (combobox))
+    (combobox name "hw_binding")
 
     ;;
     (spacer)
