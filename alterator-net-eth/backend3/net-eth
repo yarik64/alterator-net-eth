@@ -5,6 +5,8 @@ cachedir="/var/cache/alterator/net-eth"
 rdelim='[[:space:]]\+'
 wdelim=' '
 
+alterator_api_version=1
+
 . alterator-sh-functions
 . alterator-net-functions
 . shell-config
@@ -355,27 +357,22 @@ on_message()
 {
 	case "$in_action" in
 		type)
-		    echo '('
 		    write_type_item hostname hostname
 		    write_type_item ip ipv4-address
 		    write_type_item default ipv4-address
 
 		    write_type_item search hostname-list
 		    write_type_item dns ipv4-address-list
-		    echo ')'
 		    ;;
 		list)
-			echo '('
 			case "${in__objects##*/}" in
 			    avail_masks) list_mask ;;
 			    avail_hw_bindings) list_hw_binding ;;
 			    avail_configurations) list_configuration ;;
 			    *) list_eth|write_enum ;;
 			esac
-			echo ')'
 			;;
-		read) 
-			echo "("
+		read)
 			local name="${in_ifname}"
 			[ -n "$name" ] || name="$(iflist|cut -f1 -d' '|head -n1)"
 			[ -n "$name" ] && read_iface "$name"
@@ -386,8 +383,6 @@ on_message()
 			write_string_param hostname "$(read_hostname)"
 			write_string_param dns "$(read_dns)"
 			write_string_param search "$(read_search)"
-
-			echo ")"
 			;;
 		write)
 			local name="${in_ifname}"
@@ -403,10 +398,6 @@ on_message()
 
 			[ -n "$in_commit" ] && commit_iface
 			[ -n "$in_reset" ] && reset_iface
-			write_nop
-			;;
-		*)
-			echo '#f'
 			;;
 	esac
 }
