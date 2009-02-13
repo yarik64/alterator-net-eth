@@ -9,7 +9,7 @@
   (and (string? name)
        (let ((cmd (woo-read-first "/net-eth" 'ifname name)))
 
-         (hostname value (woo-get-option cmd 'hostname))
+         (form-update-value "hostname" (woo-get-option cmd 'hostname))
          (dns value (woo-get-option cmd 'dns))
          (search value (woo-get-option cmd 'search))
 
@@ -28,7 +28,7 @@
     (and (string? name)
 	 (woo-write
 	   path
-	   'hostname (hostname value)
+	   'hostname (form-value "hostname")
 	   'dns (dns value)
 	   'search (search value)
 
@@ -73,7 +73,7 @@
 
     ;;
     (label text (_ "Host name:") name "hostname" align "right")
-    (document:id hostname (edit))
+    (edit name "hostname")
     (spacer)
 
     ;;
