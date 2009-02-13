@@ -3,12 +3,15 @@
 
 ;;; Functions
 
-(define *prev-current* (make-cell 0))
+(define *prev-current* (make-cell ""))
 
 (define (read-interface name)
   (and (string? name)
        (let ((cmd (woo-read-first "/net-eth" 'ifname name)))
 
+         (form-update-value-list
+	   '("name")
+	   cmd)
          (form-update-value-list
 	   '("hostname" "dns" "search")
 	   cmd)
@@ -28,7 +31,7 @@
 		(form-value-list))))
 
 (define (commit-interface)
-  (let ((name (or (ifaces value) "")))
+  (let ((name (or (form-value "name") "")))
     (catch/message
       (thunk
        (write-interface name)
@@ -36,7 +39,7 @@
 
 (define (reset-interface)
   (catch/message
-    (thunk
+    (lambda()
       (woo-write "/net-eth" 'reset #t)
       (and (global 'frame:next) (woo-write "/net-eth" 'reset #t))
 
@@ -45,10 +48,8 @@
       (form-update-enum "configuration" (woo-list "/net-eth/avail_configurations"))
       (form-update-enum "name" (woo-list "/net-eth/avail_ifaces"))
 
-
       (read-interface "")
-      (cell-set! *prev-current* "")
-      (or (zero? (ifaces count)) (ifaces current 0)))))
+      (cell-set! *prev-current* ""))))
 
 ;;; UI
 
@@ -91,16 +92,17 @@
   (label text (bold (_ "Interfaces")))
   (spacer)
 
-  (document:id ifaces (listbox
-			name "name"
-			(when selected
-			  (or (catch/message
-				(thunk
-				  (write-interface (cell-ref *prev-current*))
-				  (read-interface (ifaces value))
-				  (cell-set! *prev-current* (ifaces value))
-				  (update-effect)))
-			      (ifaces value (cell-ref *prev-current*))))))
+  (listbox
+    name "name"
+    (when selected
+      (or (catch/message
+	    (lambda()
+	      (let ((name (form-value "name")))
+		(write-interface (cell-ref *prev-current*))
+		(read-interface name)
+		(cell-set! *prev-current* name)
+		(update-effect))))
+	  (form-update-value "name" (cell-ref *prev-current*)))))
   (gridbox
     columns "0;100"
     ;;
@@ -132,11 +134,7 @@
 				  align "left"
 				  activity #f
 				  (when clicked
-				    (let ((name (ifaces value)))
-				      (and (not-empty-string? name)
-					   (document:popup "/net-wifi/" 'interface name))))))
-
-
+					   (document:popup "/net-wifi/" 'interface (form-value "name")))))
     )
 
     ;;
