@@ -20,7 +20,7 @@
       '("info" "ip" "mask" "default" "hw_binding" "configuration")
       cmd)
 
-    (form-update-activity
+    (form-update-visibility
       "wireless"
       (woo-get-option cmd 'wireless))
 
@@ -135,7 +135,7 @@
     (button text (_ "Wireless settings...")
 	    name "wireless"
 	    align "left"
-	    activity #f))
+	    visibility #f))
 
     ;;
     (label colspan 2)
