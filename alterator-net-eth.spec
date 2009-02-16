@@ -1,7 +1,7 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 3.3
+Version: 4.0
 Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
@@ -11,19 +11,19 @@ Source:%name-%version.tar
 Summary: alterator module for tcp/ip connections configuration
 License: GPL
 Group: System/Configuration/Other
-Requires: alterator >= 2.9 alterator-sh-functions >= 0.6-alt5 libshell >= 0.0.1-alt4
-Requires: alterator-l10n >= 0.14-alt1
+Requires: alterator >= 4.7-alt3 alterator-sh-functions >= 0.6-alt5 libshell >= 0.0.1-alt4
+Requires: alterator-l10n >= 1.6-alt5
 Requires: alterator-net-common >= 0.3-alt1
 Requires: alterator-net-wifi >= 0.5-alt1
 Requires: avahi-autoipd startup >= 0.9.8.21-alt1
-Conflicts: alterator-lookout < 1.3-alt3
-Conflicts: alterator-fbi < 5.0-alt4
+Conflicts: alterator-lookout < 1.6-alt6
+Conflicts: alterator-fbi < 5.7-alt3
 Conflicts: alterator-browser-qt < 2.9.76-alt1
 
 
 %add_findreq_skiplist %_datadir/install2/preinstall.d/*
 
-BuildPreReq: alterator >= 3.5-alt1 alterator-fbi >= 2.5-alt1, alterator-l10n
+BuildPreReq: alterator >= 4.7-alt3
 
 BuildArch: noarch
 
@@ -50,21 +50,24 @@ alterator module for tcp/ip connections configuration
 %setup -q
 
 %build
-%make_build libdir=%_libdir
+%make_build
 
 %install
-%makeinstall HTMLROOT=%buildroot%_var/www/
-%find_lang %name
+%makeinstall
 
-%files -f %name.lang
+%files
 %_altdata_dir/applications/*
-%_altdata_dir/templates/*
 %_altdata_dir/ui/*/
 %_alterator_backend3dir/*
 %_datadir/install2/preinstall.d/*
 
 
 %changelog
+* Mon Feb 16 2009 Stanislav Ievlev <inger@altlinux.org> 4.0-alt1
+- new ajax based html interface, use new form API
+- improve UI: add network adaptor name
+- use translations directly from alterator-l10n
+
 * Thu Jan 15 2009 Stanislav Ievlev <inger@altlinux.org> 3.3-alt1
 - don't setup /etc/HOSTNAME
 - use help directly from alterator-l10n

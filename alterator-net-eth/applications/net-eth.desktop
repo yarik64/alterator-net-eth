@@ -7,3 +7,5 @@ Name=Ethernet interfaces
 X-Alterator-URI=/net-eth
 X-Alterator-Weight=30
 X-Alterator-Help=net-eth
+Name[ru]=Ethernet-интерфейсы
+Name[uk]=Ethernet-інтерфейси
