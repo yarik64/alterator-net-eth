@@ -9,7 +9,7 @@
       (string=? configuration "static")))
 
 (define (read-interface name)
-  (let ((cmd (woo-read-first "/net-eth" 'name name)))
+  (let ((cmd (woo-read-first "/net-eth" 'name name 'language (form-value "language"))))
 
     (form-update-value-list
       '("name")
