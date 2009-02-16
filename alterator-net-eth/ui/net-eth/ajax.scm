@@ -9,7 +9,7 @@
       (string=? configuration "static")))
 
 (define (read-interface name)
-  (let ((cmd (woo-read-first "/net-eth" 'ifname name)))
+  (let ((cmd (woo-read-first "/net-eth" 'name name)))
 
     (form-update-value-list
       '("name")
@@ -18,7 +18,7 @@
       '("hostname" "dns" "search")
       cmd)
     (form-update-value-list
-      '("info" "ip" "mask" "default" "hw_binding" "configuration")
+      '("adaptor" "info" "ip" "mask" "default" "hw_binding" "configuration")
       cmd)
 
     (form-update-visibility
@@ -30,7 +30,7 @@
 (define (write-interface name)
   (apply woo-write
 	 "/net-eth"
-	 'ifname name
+	 'name name
 	 (form-value-list '("language"
 			    "hostname" "dns" "search"
 			    "ip" "mask" "default" "hw_binding" "configuration"))))
