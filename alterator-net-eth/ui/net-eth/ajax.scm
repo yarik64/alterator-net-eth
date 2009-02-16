@@ -35,6 +35,9 @@
 			    "hostname" "dns" "search"
 			    "ip" "mask" "default" "hw_binding" "configuration"))))
 
+(define (wireless-interface)
+ (form-replace (format #f "/net-wifi?iface=~A" (form-value "name"))))
+
 (define (update-interface)
   (or (catch
         #t
@@ -53,4 +56,5 @@
  (form-update-value "prev_name" (form-value "name"))
 
  (form-bind "name" "change" update-interface)
- (form-bind "configuration" "change" (lambda() (update-configuration (form-value "configuration")))))
+ (form-bind "configuration" "change" (lambda() (update-configuration (form-value "configuration"))))
+ (form-bind "wireless" "click" wireless-interface))
