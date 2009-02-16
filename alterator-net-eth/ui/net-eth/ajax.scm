@@ -39,16 +39,12 @@
  (form-replace (format #f "/net-wifi?iface=~A" (form-value "name"))))
 
 (define (update-interface)
-  (or (catch
-        #t
+  (or (catch/message
 	(lambda()
 	  (let ((name (form-value "name")))
 	    (write-interface (form-value "prev_name"))
 	    (read-interface name)
-	    (form-update-value "prev_name" name)))
-	(lambda args
-	  (format #t "args=~S~%" args)
-	  #f))
+	    (form-update-value "prev_name" name))))
       (form-update-value "name" (form-value "prev_name"))))
 
 (define (init)
