@@ -30,7 +30,9 @@
   (apply woo-write
 	 "/net-eth"
 	 'ifname name
-	 (form-value-list)))
+	 (form-value-list '("hostname" "dns" "search"
+			    "ip" "mask" "default" "hw_binding" "configuration"))))
+
 
 (define (commit-interface)
   (catch/message
@@ -49,7 +51,7 @@
       (form-update-enum "name" (woo-list "/net-eth/avail_ifaces"))
 
       (read-interface "")
-      (form-update-value "prev_name" ""))))
+      (form-update-value "prev_name" (form-value "name")))))
 
 (define (update-interface)
   (or (catch/message
@@ -57,8 +59,7 @@
 	  (let ((name (form-value "name")))
 	    (write-interface (form-value "prev_name"))
 	    (read-interface name)
-	    (form-update-value "prev_name" name)
-	    (update-effect))))
+	    (form-update-value "prev_name" name))))
       (form-update-value "name" (form-value "prev_name"))))
 
 (define (wireless-interface)

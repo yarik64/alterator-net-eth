@@ -1,16 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
 <!-- tcp connections module -->
-<html wf="form?name-attribute=ifname">
-  <head>
-    <script src="/design/scripts/submit.js"/>
-    <script src="/design/scripts/select.js"/>
-    <script>
-	effectEnable("ip", "configuration", "static");
-	effectEnable("mask", "configuration", "static");
-	effectEnable("default", "configuration", "static");
-	effectShow("wirless_settings", "wireless", true);
-    </script>
-  </head>
+<html wf="form">
   <body>
 	  <form method="POST" id="ajax-select">
 	          <input type="hidden" name="ifname"/>
@@ -45,8 +35,7 @@
 			  <tr>
 				  <td>
 				      <select name="name" enumref="/net-eth" size="10" style="width:150px"/>
-				      <br/>
-				      <input type="submit" class="btn" value="Select" name="select"/>
+				      <input type="hidden" name="prev_name"/>
 				  </td>
 				  <td>
 					  <table class="form-table">
@@ -77,10 +66,7 @@
 						  <tr>
 							  <td>&nbsp;</td>
 							  <td>
-							      <input type="checkbox" name="wireless" style="display:none"/>
-							      <a href="/net-wifi?iface=" class="alterator-ref2">
-							      <span translate="_" name="wirless_settings">Wireless settings...</span>
-							      </a>
+							      <input type="button" class="btn" name="wireless" style="display:none" value="Wireless settings..."/>
 							   </td>
 						  </tr>
 					  </table>
