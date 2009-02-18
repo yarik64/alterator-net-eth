@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.0
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -63,6 +63,9 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Wed Feb 18 2009 Stanislav Ievlev <inger@altlinux.org> 4.0-alt2
+- fix work in wizardface
+
 * Mon Feb 16 2009 Stanislav Ievlev <inger@altlinux.org> 4.0-alt1
 - new ajax based html interface, use new form API
 - improve UI: add network adaptor name

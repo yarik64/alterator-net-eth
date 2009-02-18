@@ -159,9 +159,10 @@
     (reset-interface)
     (form-bind "name" "change" update-interface)
     (form-bind "configuration" "change" (lambda() (update-configuration (form-value "configuration"))))
-    (form-bind "apply" "click" commit-interface)
-    (form-bind "reset" "click" reset-interface)
-    (form-bind "wireless" "click" wireless-interface)))
+    (form-bind "wireless" "click" wireless-interface)
+    (or (global 'frame:next)
+      (begin (form-bind "apply" "click" commit-interface)
+	     (form-bind "reset" "click" reset-interface)))))
 
 (frame:on-back (lambda() (or (commit-interface) 'cancel)))
 (frame:on-next (lambda() (or (commit-interface) 'cancel)))
