@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.0
-Release: alt2
+Release: alt3
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -63,6 +63,10 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Wed Feb 25 2009 Stanislav Ievlev <inger@altlinux.org> 4.0-alt3
+- run /etc/hooks/hostname.d instead of hostname binding to 127.0.0.1
+- improve UI horizontal size
+
 * Wed Feb 18 2009 Stanislav Ievlev <inger@altlinux.org> 4.0-alt2
 - fix work in wizardface
 
