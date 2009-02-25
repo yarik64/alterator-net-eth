@@ -174,14 +174,15 @@ read_hw_binding()
 
 read_info()
 {
-	local info=
-	ifcheckup "$name" && info="`_ "interface is up"`" || info="`_ "interface is down"`"
-	
+	local info="$(ifaceinfo "$name")"
+
 	if ! ifcheckwireless "$name"; then
 	    ifcheckplug "$name"
 	    case "$?" in
-		2) info="$info, `_ "plugged"`"   ;;
-		3) info="$info, `_ "unplugged"`" ;;
+		2) info="$info
+`_ "plugged"`"   ;;
+		3) info="$info
+`_ "unplugged"`" ;;
 	    esac
 	fi
 	echo "$info"
@@ -219,8 +220,7 @@ read_iface()
 
 	#collect general information
 
-	write_string_param adaptor "$(ifaceinfo "$name")"
-	write_string_param info "$(read_info)"
+	write_string_param adaptor "$(read_info)"
 	write_string_param hw_binding "$(read_hw_binding "$name")"
 	write_string_param configuration "$(read_configuration "$ifacedir")"
 	write_bool_param wireless "$(ifcheckwireless "$name" && echo "yes" || echo "no")"

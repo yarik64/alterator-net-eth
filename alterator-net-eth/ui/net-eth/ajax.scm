@@ -18,7 +18,7 @@
       '("hostname" "dns" "search")
       cmd)
     (form-update-value-list
-      '("adaptor" "info" "ip" "mask" "default" "hw_binding" "configuration")
+      '("adaptor" "ip" "mask" "default" "hw_binding" "configuration")
       cmd)
 
     (form-update-visibility

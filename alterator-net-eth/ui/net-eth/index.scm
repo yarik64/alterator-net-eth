@@ -17,7 +17,7 @@
       '("hostname" "dns" "search")
       cmd)
     (form-update-value-list
-      '("adaptor" "info" "ip" "mask" "default" "hw_binding" "configuration")
+      '("adaptor" "ip" "mask" "default" "hw_binding" "configuration")
       cmd)
 
     (form-update-visibility
@@ -102,18 +102,14 @@
 
   (separator colspan 2)
 
-  (label text (bold (_ "Interfaces")))
-  (spacer)
+  (label colspan 2 text (bold (_ "Interfaces")))
 
   (listbox name "name")
   (gridbox
     columns "0;100"
 
     ;;
-    (textbox colspan 2 name "adaptor" max-height 40 alterability #f)
-    ;;
-    (label text (_ "Status:") align "right")
-    (label name "info")
+    (textbox colspan 2 name "adaptor" max-height 60 alterability #f)
 
     ;;
     (label text (_ "Configuration:") align "right" name "configuration")
@@ -146,11 +142,11 @@
 
     ;;
     (if (global 'frame:next)
-      (label)
+      (label colspan 2)
       (hbox align "left"
+            colspan 2
 	    (button (_ "Apply") name "apply")
-	    (button (_ "Reset") name "reset")))
-    (spacer))
+	    (button (_ "Reset") name "reset"))))
 
 ;;;;;;;;;;;;;;;;;;
 
