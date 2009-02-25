@@ -39,10 +39,7 @@ commit_hostname()
     [ -n "$value" ] || return
 
     hostname "$value"
-
-    #bind hostname
-    grep -qs "^[^#]*\<$value\>" /etc/hosts ||
-	printf '127.0.0.1\t%s %s\n' "$value" "${value%%.*}" >> /etc/hosts
+    run-parts /etc/hooks/hostname.d
 }
 
 commit_cache()
