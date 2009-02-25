@@ -17,8 +17,9 @@ Requires: alterator-net-common >= 0.3-alt1
 Requires: alterator-net-wifi >= 0.5-alt1
 Requires: avahi-autoipd startup >= 0.9.8.21-alt1
 Conflicts: alterator-lookout < 1.6-alt6
-Conflicts: alterator-fbi < 5.7-alt3
+Conflicts: alterator-fbi < 5.9-alt1
 Conflicts: alterator-browser-qt < 2.9.76-alt1
+Conflicts: filesystem < 2.3.4-alt1
 
 
 %add_findreq_skiplist %_datadir/install2/preinstall.d/*
