@@ -15,7 +15,7 @@
       '("name")
       cmd)
     (form-update-value-list
-      '("hostname" "dns" "search")
+      '("computer_name" "dns" "search")
       cmd)
     (form-update-value-list
       '("adaptor" "ip" "mask" "default" "hw_binding" "configuration")
@@ -32,7 +32,7 @@
 	 "/net-eth"
 	 'name name
 	 (form-value-list '("language"
-			    "hostname" "dns" "search"
+			    "computer_name" "dns" "search"
 			    "ip" "mask" "default" "hw_binding" "configuration"))))
 
 (define (wireless-interface)

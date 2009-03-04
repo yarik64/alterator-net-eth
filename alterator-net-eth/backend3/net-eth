@@ -102,7 +102,6 @@ write_search()
 }
 
 ### hostname
-
 read_hostname()
 {
 	local netconfig="/etc/sysconfig/network"
@@ -120,6 +119,27 @@ write_hostname()
 
 	shell_config_set "$netconfig" HOSTNAME "$1"
 	shell_config_del "$netconfig" DOMAINNAME
+}
+
+### computer name
+
+read_computer_name()
+{
+	local value="$(read_hostname)"
+	echo "${value%%.*}"
+}
+
+read_computer_domain()
+{
+	local value="$(read_hostname)"
+	local domain="${value#*.}"
+	[ "$value" != "$domain" ] || domain="localdomain"
+	echo "$domain"
+}
+
+write_computer_name()
+{
+    write_hostname "$1.$(read_computer_domain)"
 }
 
 ### interface work
@@ -355,7 +375,7 @@ on_message()
 {
 	case "$in_action" in
 		type)
-		    write_type_item hostname hostname
+		    write_type_item computer_name system-computer-name
 		    write_type_item ip ipv4-address
 		    write_type_item default ipv4-address
 
@@ -377,7 +397,8 @@ on_message()
 
 			write_string_param name "$name"
 
-			write_string_param hostname "$(read_hostname)"
+			write_string_param computer_name "$(read_computer_name)"
+			write_string_param computer_domain "$(read_computer_domain)"
 			write_string_param dns "$(read_dns)"
 			write_string_param search "$(read_search)"
 			;;
@@ -389,7 +410,7 @@ on_message()
 
 			[ -n "$name" ] && write_iface "$name"
 
-			[ -n "$in_hostname" ] && write_hostname "$in_hostname"
+			[ -n "$in_computer_name" ] && write_computer_name "$in_computer_name"
 			[ -n "$in_dns" ] && write_dns "$in_dns"
 			[ -n "$in_search" ] && write_search "$in_search"
 

@@ -14,7 +14,7 @@
       '("name")
       cmd)
     (form-update-value-list
-      '("hostname" "dns" "search")
+      '("computer_name" "dns" "search")
       cmd)
     (form-update-value-list
       '("adaptor" "ip" "mask" "default" "hw_binding" "configuration")
@@ -30,7 +30,7 @@
   (apply woo-write
 	 "/net-eth"
 	 'name name
-	 (form-value-list '("hostname" "dns" "search"
+	 (form-value-list '("computer_name" "dns" "search"
 			    "ip" "mask" "default" "hw_binding" "configuration"))))
 
 
@@ -77,8 +77,8 @@
     columns "0;40;60"
 
     ;;
-    (label text (_ "Host name:") name "hostname" align "right")
-    (edit name "hostname")
+    (label text (_ "Computer name:") name "computer_name" align "right")
+    (edit name "computer_name")
     (spacer)
 
     ;;
