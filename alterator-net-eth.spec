@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 4.0
-Release: alt3
+Version: 4.1
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -12,7 +12,7 @@ Summary: alterator module for tcp/ip connections configuration
 License: GPL
 Group: System/Configuration/Other
 Requires: alterator >= 4.7-alt3 alterator-sh-functions >= 0.6-alt5 libshell >= 0.0.1-alt4
-Requires: alterator-l10n >= 1.6-alt5
+Requires: alterator-l10n >= 2.0-alt2
 Requires: alterator-net-common >= 0.3-alt1
 Requires: alterator-net-wifi >= 0.5-alt1
 Requires: avahi-autoipd startup >= 0.9.8.21-alt1
@@ -64,6 +64,10 @@ alterator module for tcp/ip connections configuration
 
 
 %changelog
+* Wed Mar 04 2009 Stanislav Ievlev <inger@altlinux.org> 4.1-alt1
+- edit computer name instead of full name
+- improve hostname.d hooks calling
+
 * Wed Feb 25 2009 Stanislav Ievlev <inger@altlinux.org> 4.0-alt3
 - run /etc/hooks/hostname.d instead of hostname binding to 127.0.0.1
 - improve UI horizontal size
