@@ -35,18 +35,21 @@ clear_cache()
 
 commit_hostname()
 {
-    local value="$(shell_config_get /etc/sysconfig/network HOSTNAME)"
-    [ -n "$value" ] || return
+    [ -f "$cachedir/network" ] || return
+    ! cmp -s /etc/sysconfig/network "$cachedir/network" || return
 
-    hostname "$value"
-    run-parts /etc/hooks/hostname.d
+    local old_value="$(shell_config_get /etc/sysconfig/network HOSTNAME)"
+    local new_value="$(shell_config_get "$cachedir/network"    HOSTNAME)"
+
+    mv -f "$cachedir/network" /etc/sysconfig/network
+    hostname "$new_value"
+    run-parts /etc/hooks/hostname.d "$old_value" "$new_value"
 }
 
 commit_cache()
 {
     [ -f "$cachedir/iftab" ] && mv -f "$cachedir/iftab" /etc/iftab
     [ -f "$cachedir/resolv.conf" ] && mv -f "$cachedir/resolv.conf" /etc/resolv.conf
-    [ -f "$cachedir/network" ] && mv -f "$cachedir/network" /etc/sysconfig/network
     commit_hostname
 
     find $cachedir -maxdepth 1 -mindepth 1 -type d|
