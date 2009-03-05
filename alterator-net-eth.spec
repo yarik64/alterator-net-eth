@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.1
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -64,6 +64,11 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-ip.d
 
 %changelog
+* Thu Mar 05 2009 Stanislav Ievlev <inger@altlinux.org> 4.1-alt2
+- minimize number of layers to work with cache
+- restart only "cached" interfaces (TODO: restart only changed interfaces)
+- add hooks if ip was changed
+
 * Wed Mar 04 2009 Stanislav Ievlev <inger@altlinux.org> 4.1-alt1
 - edit computer name instead of full name
 - improve hostname.d hooks calling
