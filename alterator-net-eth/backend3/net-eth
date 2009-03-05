@@ -55,13 +55,28 @@ commit_cache()
     find $cachedir -maxdepth 1 -mindepth 1 -type d|
 	while read iface; do
 	    [ -n "$iface" ] || exit
-	    [ "$in_restart" = '#f' -o "$(read_iface_option "$iface" DISABLED)" != "yes" ] || ifdown "${iface##*/}"
 
-	    rm -rf "/etc/net/ifaces/${iface##*/}"
-	    mv -f "$iface" "/etc/net/ifaces/${iface##*/}"
+	    local ifname="${iface##*/}"
+	    [ "$in_restart" = '#f' -o "$(read_iface_option "$iface" DISABLED)" != "yes" ] || ifdown "$ifname"
+
+	    local old_ip="$(cat "$iface/ipv4address")"
+	    local new_ip="$(cat "/etc/net/ifaces/$ifname/ipv4address")"
+
+	    #update configs
+	    rm -rf "/etc/net/ifaces/$ifname"
+	    mv -f "$iface" "/etc/net/ifaces/$ifname"
+
+	    #try to restart
+	    [ "$in_restart" = '#f' ] ||
+		if [ -z "$DURING_INSTALL" ] || ! ifcheckup $ifname; then
+		    ifdown "$ifname" && ifup "$ifname"
+		fi
+
+	    [ "$old_ip" = "$new_ip" ] || run-parts /usr/lib/alterator/hooks/net-eth-ip.d "$ifname" "$old_ip" "$new_ip"
 	done
 
     clear_cache
+    /sbin/update_chrooted conf >&2 || :
 }
 
 ### dns
@@ -350,26 +365,6 @@ write_iface()
 	    write_hw_binding "$name" "$in_hw_binding"
 }
 
-commit_iface()
-{
-    commit_cache
-    [ "$in_restart" = '#f' ] ||
-	iflist|
-	    while read iface rest; do
-		[ -d "/etc/net/ifaces/$iface" ] || continue
-		if [ -z "$DURING_INSTALL" ] || ! ifcheckup $iface; then
-#		    echo "commit_cache: restarting $iface"
-		    ifdown "$iface" && ifup "$iface"
-		fi
-	    done >&2
-    /sbin/update_chrooted conf >&2 || :
-}
-
-reset_iface()
-{
-    clear_cache
-}
-
 #initial actions
 ifup lo
 clear_cache
@@ -417,8 +412,8 @@ on_message()
 			[ -n "$in_dns" ] && write_dns "$in_dns"
 			[ -n "$in_search" ] && write_search "$in_search"
 
-			[ -n "$in_commit" ] && commit_iface
-			[ -n "$in_reset" ] && reset_iface
+			[ -n "$in_commit" ] && commit_cache
+			[ -n "$in_reset" ] && clear_cache
 			;;
 	esac
 }
