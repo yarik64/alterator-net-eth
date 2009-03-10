@@ -59,8 +59,11 @@ commit_cache()
 	    local ifname="${iface##*/}"
 	    [ "$in_restart" = '#f' -o "$(read_iface_option "$iface" DISABLED)" != "yes" ] || ifdown "$ifname"
 
-	    local old_ip="$(cat "$iface/ipv4address")"
-	    local new_ip="$(cat "/etc/net/ifaces/$ifname/ipv4address")"
+	    local old_ip="$(cat "/etc/net/ifaces/$ifname/ipv4address")"
+	    local new_ip="$(cat "$iface/ipv4address")"
+
+	    local old_configuration="$(read_configuration "/etc/net/ifaces/$ifname")"
+	    local new_configuration="$(read_configuration "$iface")"
 
 	    #update configs
 	    rm -rf "/etc/net/ifaces/$ifname"
@@ -72,7 +75,10 @@ commit_cache()
 		    ifdown "$ifname" && ifup "$ifname"
 		fi
 
-	    [ "$old_ip" = "$new_ip" ] || run-parts /usr/lib/alterator/hooks/net-eth-ip.d "$ifname" "$old_ip" "$new_ip"
+	    if [ "$old_ip" != "$new_ip" -o "$old_configuration" != "$new_configuration" ];then
+		export old_ip new_ip old_configuration new_configuration
+		run-parts /usr/lib/alterator/hooks/net-eth.d "$ifname"
+	    fi
 	done
 
     clear_cache

@@ -61,7 +61,7 @@ alterator module for tcp/ip connections configuration
 %_altdata_dir/ui/*/
 %_alterator_backend3dir/*
 %_datadir/install2/preinstall.d/*
-%attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-ip.d
+%attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth.d
 
 %changelog
 * Thu Mar 05 2009 Stanislav Ievlev <inger@altlinux.org> 4.1-alt2
