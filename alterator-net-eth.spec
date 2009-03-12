@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.2
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -64,6 +64,9 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth.d
 
 %changelog
+* Thu Mar 12 2009 Mikhail Efremov <sem@altlinux.org> 4.2-alt2
+- updated UI for installer
+
 * Thu Mar 12 2009 Mikhail Efremov <sem@altlinux.org> 4.2-alt1
 - added 'Controlled by' combobox
 - allow configuration when interface controlled by NetworkManager
