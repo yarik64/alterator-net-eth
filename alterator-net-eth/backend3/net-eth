@@ -182,10 +182,15 @@ list_hw_binding()
     write_enum_item "businfo" "`_ "by bus location"`"
 }
 
+list_controlled()
+{
+    write_enum_item "etcnet" "etcnet"
+    [ ! -f "/usr/sbin/NetworkManager" ] || write_enum_item "NetworkManager" "NetworkManager"
+}
+
 list_configuration()
 {
     write_enum_item "off" "`_ "Turned off"`"
-    [ ! -f "/usr/sbin/NetworkManager" ] || write_enum_item "networkmanager" "`_ "Managed by user (NetworkManager)"`"
     write_enum_item "dhcp" "`_ "Use DHCP"`"
     write_enum_item "ipv4ll" "`_ "Use Zeroconf"`"
     write_enum_item "static" "`_ "Manually"`"
@@ -232,15 +237,23 @@ read_info()
 	echo "$info"
 }
 
+read_controlled()
+{
+	local nm_controlled="$(read_iface_option "$1" NM_CONTROLLED)"
+
+	if [ $(write_bool "$nm_controlled") = "#t" ];then
+		echo 'NetworkManager'
+	else
+		echo 'etcnet'
+	fi
+}
+
 read_configuration()
 {
     local disabled="$(read_iface_option "$1" DISABLED)"
-    local nm_controlled="$(read_iface_option "$1" NM_CONTROLLED)"
     local bootproto="$(read_iface_option "$1" BOOTPROTO)"
 
-    if [ "$(write_bool "$nm_controlled")" = "#t" ];then
-	echo 'networkmanager'
-    elif [ "$(write_bool "$disabled")" = "#t" ];then
+    if [ "$(write_bool "$disabled")" = "#t" ] && [ "$(read_controlled "$1")" = "etcnet" ];then
         echo 'off'
     elif [ "$bootproto" = "static" ];then
 	echo 'static'
@@ -267,6 +280,7 @@ read_iface()
 	write_string_param adaptor "$(read_info)"
 	write_string_param hw_binding "$(read_hw_binding "$name")"
 	write_string_param configuration "$(read_configuration "$ifacedir")"
+	write_string_param controlled "$(read_controlled "$ifacedir")"
 	write_bool_param wireless "$(ifcheckwireless "$name" && echo "yes" || echo "no")"
 
 	local addr= ip= mask=
@@ -285,6 +299,22 @@ read_iface()
 		write_string_param \
 			default \
 			$(grep '^default' "$ifacedir/ipv4route" | sed -r 's,default[[:space:]]+via[[:space:]],,' || echo "")
+}
+
+write_controlled()
+{
+	local ifacedir="$1";shift
+	local controlled="$1";shift
+	local yes_no=
+
+	if [ "$controlled" = "NetworkManager" ];then
+		yes_no="yes"
+	else
+		yes_no="no"
+	fi
+
+	write_iface_option "$ifacedir" DISABLED "$yes_no"
+	write_iface_option "$ifacedir" NM_CONTROLLED "$yes_no"
 }
 
 
@@ -346,23 +376,16 @@ write_iface()
 		write_iface_option "$ifacedir" DISABLED yes
 		write_iface_option "$ifacedir" NM_CONTROLLED no
 		;;
-	    networkmanager)
-		write_iface_option "$ifacedir" DISABLED yes
-		write_iface_option "$ifacedir" NM_CONTROLLED yes
-		;;
 	    static)
-		write_iface_option "$ifacedir" DISABLED no
-		write_iface_option "$ifacedir" NM_CONTROLLED no
+		write_controlled "$ifacedir" "$in_controlled"
 		write_iface_option "$ifacedir" BOOTPROTO static
 		;;
 	    dhcp)
-		write_iface_option "$ifacedir" DISABLED no
-		write_iface_option "$ifacedir" NM_CONTROLLED no
+		write_controlled "$ifacedir" "$in_controlled"
 		write_iface_option "$ifacedir" BOOTPROTO dhcp
 		;;
 	    ipv4ll)
-		write_iface_option "$ifacedir" DISABLED no
-		write_iface_option "$ifacedir" NM_CONTROLLED no
+		write_controlled "$ifacedir" "$in_controlled"
 		write_iface_option "$ifacedir" BOOTPROTO ipv4ll
 		;;
 	esac
@@ -391,6 +414,7 @@ on_message()
 			    avail_masks) list_mask ;;
 			    avail_hw_bindings) list_hw_binding ;;
 			    avail_configurations) list_configuration ;;
+			    avail_controlled) list_controlled ;;
 			    *) list_eth|write_enum ;;
 			esac
 			;;

@@ -18,7 +18,7 @@
       '("computer_name" "dns" "search")
       cmd)
     (form-update-value-list
-      '("adaptor" "ip" "mask" "default" "hw_binding" "configuration")
+      '("adaptor" "ip" "mask" "default" "hw_binding" "controlled" "configuration")
       cmd)
 
     (form-update-visibility
@@ -33,7 +33,7 @@
 	 'name name
 	 (form-value-list '("language"
 			    "computer_name" "dns" "search"
-			    "ip" "mask" "default" "hw_binding" "configuration"))))
+			    "ip" "mask" "default" "hw_binding" "controlled" "configuration"))))
 
 (define (wireless-interface)
  (form-replace (format #f "/net-wifi?iface=~A" (form-value "name"))))

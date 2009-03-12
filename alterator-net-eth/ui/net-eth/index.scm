@@ -17,7 +17,7 @@
       '("computer_name" "dns" "search")
       cmd)
     (form-update-value-list
-      '("adaptor" "ip" "mask" "default" "hw_binding" "configuration")
+      '("adaptor" "ip" "mask" "default" "hw_binding" "controlled" "configuration")
       cmd)
 
     (form-update-visibility
@@ -31,7 +31,7 @@
 	 "/net-eth"
 	 'name name
 	 (form-value-list '("computer_name" "dns" "search"
-			    "ip" "mask" "default" "hw_binding" "configuration"))))
+			    "ip" "mask" "default" "hw_binding" "controlled" "configuration"))))
 
 
 (define (commit-interface)
@@ -47,6 +47,7 @@
 
       (form-update-enum "mask" (woo-list "/net-eth/avail_masks"))
       (form-update-enum "hw_binding" (woo-list "/net-eth/avail_hw_bindings"))
+      (form-update-enum "controlled" (woo-list "/net-eth/avail_controlled"))
       (form-update-enum "configuration" (woo-list "/net-eth/avail_configurations"))
       (form-update-enum "name" (woo-list "/net-eth/avail_ifaces"))
 
@@ -111,6 +112,9 @@
     ;;
     (textbox colspan 2 name "adaptor" max-height 60 alterability #f)
 
+	;;
+    (label text (_ "Controlled by:") align "right" name "controlled")
+    (combobox name "controlled")
     ;;
     (label text (_ "Configuration:") align "right" name "configuration")
     (combobox name "configuration")
