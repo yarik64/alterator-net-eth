@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 4.1
-Release: alt3
+Version: 4.2
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -64,6 +64,10 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth.d
 
 %changelog
+* Thu Mar 12 2009 Mikhail Efremov <sem@altlinux.org> 4.2-alt1
+- added 'Controlled by' combobox
+- allow configuration when interface controlled by NetworkManager
+
 * Tue Mar 10 2009 Stanislav Ievlev <inger@altlinux.org> 4.1-alt3
 - more powerfull "on update" hook
 
