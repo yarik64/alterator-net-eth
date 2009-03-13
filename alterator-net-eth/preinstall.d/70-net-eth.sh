@@ -21,6 +21,7 @@ if [ -n "$iface" ]; then
 		run_chroot alterator-cmdline "/net-eth" action "write" \
 							commit '#t' \
 							name "$iface" \
+							controlled 'etcnet' \
 							configuration 'static' \
 							ip "${IPADDR:-}" \
 							mask "${NETBITS:-}" \
@@ -30,6 +31,7 @@ if [ -n "$iface" ]; then
 		run_chroot alterator-cmdline "/net-eth" action "write" \
 							commit '#t' \
 							name "$iface" \
+							controlled 'etcnet' \
 							configuration 'dhcp'
 		;;
     esac
