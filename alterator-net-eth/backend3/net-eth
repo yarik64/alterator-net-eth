@@ -57,7 +57,9 @@ commit_cache()
 	    [ -n "$iface" ] || exit
 
 	    local ifname="${iface##*/}"
-	    [ "$(read_iface_option "$iface" DISABLED)" != "yes" ] || ifdown "$ifname"
+	    [ -n "$DURING_INSTALL" ] ||
+		[ "$(read_iface_option "$iface" DISABLED)" != "yes" ] ||
+		ifdown "$ifname"
 
 	    local old_ip="$(cat "/etc/net/ifaces/$ifname/ipv4address")"
 	    local new_ip="$(cat "$iface/ipv4address")"

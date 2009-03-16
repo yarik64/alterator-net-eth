@@ -6,7 +6,7 @@ case "$METHOD" in
 	cdrom|disk) exit 0 ;;
 esac
 
-run_chroot alterator-cmdline /net-eth action "write" \
+run_chroot alterator-cmdline -l /net-eth action "write" \
 				      commit '#t' \
 				      hostname "${HOSTNAME:-localhost.localdomain}" \
 				      search "${DOMAINNAME:-}" \
@@ -18,7 +18,7 @@ iface="$(exec_chroot ip link show up |
 if [ -n "$iface" ]; then
     case "${BOOTPROTO:-}" in
 	static)
-		run_chroot alterator-cmdline "/net-eth" action "write" \
+		run_chroot alterator-cmdline -l "/net-eth" action "write" \
 							commit '#t' \
 							name "$iface" \
 							controlled 'etcnet' \
@@ -28,7 +28,7 @@ if [ -n "$iface" ]; then
 							default "${GATEWAY:-}"
 		;;
 	dhcp)
-		run_chroot alterator-cmdline "/net-eth" action "write" \
+		run_chroot alterator-cmdline -l "/net-eth" action "write" \
 							commit '#t' \
 							name "$iface" \
 							controlled 'etcnet' \
