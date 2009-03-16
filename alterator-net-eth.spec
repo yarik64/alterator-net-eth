@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.2
-Release: alt3
+Release: alt4
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -64,6 +64,9 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth.d
 
 %changelog
+* Mon Mar 16 2009 Stanislav Ievlev <inger@altlinux.org> 4.2-alt4
+- don't stop network interfaces during installation process
+
 * Fri Mar 13 2009 Mikhail Efremov <sem@altlinux.org> 4.2-alt3
 - use 'controlled' parameter in preinstall.d script
 - removed unused variable
