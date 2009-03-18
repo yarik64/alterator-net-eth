@@ -124,14 +124,14 @@
 
     ;;
     (or (global 'frame:next)
-		(label colspan 2))
+		(label colspan 2)))
 
 	;;
 	(or (global 'frame:next)
 		(hbox align "left"
 			  colspan 2
 			  (button (_ "Apply") name "apply")
-			  (button (_ "Reset") name "reset")))))
+			  (button (_ "Reset") name "reset"))))
 
 ;;;;;;;;;;;;;;;;;;
 
