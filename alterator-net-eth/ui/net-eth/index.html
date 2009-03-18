@@ -11,17 +11,6 @@
 					<td><span translate="_" name="computer_name">Computer name:</span></td>
 					<td><input type="text" class="text" name="computer_name"/></td>
 				    </tr>
-				    <tr>
-					<td colspan="2">&nbsp;</td>
-				    </tr>
-				    <tr>
-					<td><span translate="_" name="dns">DNS servers:</span></td>
-					<td><input type="text" class="text" name="dns"/></td>
-				    </tr>
-				    <tr>
-					<td><span translate="_" name="search">Search domains:</span></td>
-					<td><input type="text" class="text" name="search"/></td>
-				    </tr>
 				</table>
 			    </td>
 			  </tr>
@@ -33,7 +22,7 @@
 			  </tr>
 			  <tr>
 				  <td>
-				      <select name="name" enumref="/net-eth" size="10" style="width:150px"/>
+				      <select name="name" enumref="/net-eth" size="16" style="width:150px"/>
 				      <input type="hidden" name="prev_name"/>
 				  </td>
 				  <td>
@@ -42,10 +31,6 @@
 						    <td colspan="2">
 							<textarea rows="2" readonly="yes" name="adaptor" style="width:98%"/>
 						    </td>
-						  </tr>
-						  <tr>
-							  <td><span translate="_">Controlled:</span></td>
-							  <td><select name="controlled" enumref="/net-eth/avail_controlled"></select></td>
 						  </tr>
 						  <tr>
 							  <td><span translate="_">Configuration:</span></td>
@@ -64,15 +49,29 @@
 							  <td><span translate="_" name="default">Default gateway:</span></td>
 							  <td><input type="text" class="text" name="default"></input></td>
 						  </tr>
+
+
 						  <tr>
-							  <td><span translate="_">Hardware binding:</span></td>
-							  <td><select name="hw_binding" enumref="/net-eth/avail_hw_bindings"></select></td>
+							  <td><span translate="_" name="dns">DNS servers:</span></td>
+							  <td><input type="text" class="text" name="dns"/></td>
 						  </tr>
 						  <tr>
-							  <td>&nbsp;</td>
-							  <td>
-							      <input type="button" class="btn" name="wireless" style="display:none" value="Wireless settings..."/>
-							   </td>
+							  <td><span translate="_" name="search">Search domains:</span></td>
+							  <td><input type="text" class="text" name="search"/></td>
+						  </tr>
+						  <tr>
+							<td>&nbsp;</td>
+							 <td>
+							   <small><span translate="_">(multiple values should be space separated)</span></small>
+							 </td>
+						  </tr>
+
+						  <tr>
+							  <td colspan="2">&nbsp;</td>
+						  </tr>
+						  <tr>
+							<td>&nbsp;</td>
+							<td><input type="button" name="advanced" value="Advanced.." class="btn" style="text-align:right"/></td>
 						  </tr>
 					  </table>
 				  </td>

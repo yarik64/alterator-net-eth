@@ -18,12 +18,8 @@
       '("computer_name" "dns" "search")
       cmd)
     (form-update-value-list
-      '("adaptor" "ip" "mask" "default" "hw_binding" "controlled" "configuration")
+      '("adaptor" "ip" "mask" "default" "configuration")
       cmd)
-
-    (form-update-visibility
-      "wireless"
-      (woo-get-option cmd 'wireless))
 
     (update-configuration (woo-get-option cmd 'configuration))))
 
@@ -33,10 +29,8 @@
 	 'name name
 	 (form-value-list '("language"
 			    "computer_name" "dns" "search"
-			    "ip" "mask" "default" "hw_binding" "controlled" "configuration"))))
+			    "ip" "mask" "default" "configuration"))))
 
-(define (wireless-interface)
- (form-replace (format #f "/net-wifi?iface=~A" (form-value "name"))))
 
 (define (update-interface)
   (or (catch/message
@@ -47,10 +41,13 @@
 	    (form-update-value "prev_name" name))))
       (form-update-value "name" (form-value "prev_name"))))
 
+(define (advanced-interface)
+  (form-replace (format #f "/net-eth/advanced?iface=~A" (form-value "name"))))
+
 (define (init)
- (read-interface "")
+ (read-interface (or (form-value "iface") ""))
  (form-update-value "prev_name" (form-value "name"))
 
  (form-bind "name" "change" update-interface)
  (form-bind "configuration" "change" (lambda() (update-configuration (form-value "configuration"))))
- (form-bind "wireless" "click" wireless-interface))
+ (form-bind "advanced" "click" advanced-interface))

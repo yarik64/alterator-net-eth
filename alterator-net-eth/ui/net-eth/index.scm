@@ -17,12 +17,8 @@
       '("computer_name" "dns" "search")
       cmd)
     (form-update-value-list
-      '("adaptor" "ip" "mask" "default" "hw_binding" "controlled" "configuration")
+      '("adaptor" "ip" "mask" "default" "configuration")
       cmd)
-
-    (form-update-visibility
-      "wireless"
-      (woo-get-option cmd 'wireless))
 
     (update-configuration (woo-get-option cmd 'configuration))))
 
@@ -31,8 +27,7 @@
 	 "/net-eth"
 	 'name name
 	 (form-value-list '("computer_name" "dns" "search"
-			    "ip" "mask" "default" "hw_binding" "controlled" "configuration"))))
-
+			    "ip" "mask" "default" "configuration"))))
 
 (define (commit-interface)
   (catch/message
@@ -46,8 +41,6 @@
       (woo-write "/net-eth" 'reset #t)
 
       (form-update-enum "mask" (woo-list "/net-eth/avail_masks"))
-      (form-update-enum "hw_binding" (woo-list "/net-eth/avail_hw_bindings"))
-      (form-update-enum "controlled" (woo-list "/net-eth/avail_controlled"))
       (form-update-enum "configuration" (woo-list "/net-eth/avail_configurations"))
       (form-update-enum "name" (woo-list "/net-eth/avail_ifaces"))
 
@@ -63,8 +56,8 @@
 	    (form-update-value "prev_name" name))))
       (form-update-value "name" (form-value "prev_name"))))
 
-(define (wireless-interface)
- (form-popup "/net-wifi/" 'interface (form-value "name")))
+(define (advanced-interface)
+ (form-popup "/net-eth/advanced" 'name (form-value "name")))
 
 ;;; UI
 
@@ -81,25 +74,7 @@
     (label text (_ "Computer name:") name "computer_name" align "right")
     (edit name "computer_name")
     (spacer)
-
-    ;;
-    (label colspan 3)
-
-    ;;
-    (label text (_ "DNS servers:") name "dns" align "right")
-    (edit name "dns")
-    (spacer)
-
-    ;;
-    (label text (_ "Search domains:") name "search" align "right")
-    (edit name "search")
-    (spacer)
-
-    (spacer)
-    (label text (string-append "<small>("
-			       (_ "multiple values should be space separated")
-			       ")<small>"))
-    (spacer))
+   )
 
   (separator colspan 2)
 
@@ -112,9 +87,6 @@
     ;;
     (textbox colspan 2 name "adaptor" max-height 60 alterability #f)
 
-	;;
-    (label text (_ "Controlled by:") align "right" name "controlled")
-    (combobox name "controlled")
     ;;
     (label text (_ "Configuration:") align "right" name "configuration")
     (combobox name "configuration")
@@ -130,16 +102,25 @@
     (label text (_ "Default gateway:") align "right" name "default")
     (edit name "default")
 
+
     ;;
-    (label text (_ "Hardware binding:") align "right")
-    (combobox name "hw_binding")
+    (label text (_ "DNS servers:") name "dns" align "right")
+    (edit name "dns")
+
+    ;;
+    (label text (_ "Search domains:") name "search" align "right")
+    (edit name "search")
 
     ;;
     (spacer)
-    (button text (_ "Wireless settings...")
-	    name "wireless"
-	    align "left"
-	    visibility #f))
+    (label text (small (_ "(multiple values should be space separated)")))
+
+    ;;
+    (label colspan 2)
+
+    ;;
+    (spacer)
+    (button text (_ "Advanced...") name "advanced" align "right")
 
     ;;
     (or (global 'frame:next)
@@ -150,7 +131,7 @@
 		(hbox align "left"
 			  colspan 2
 			  (button (_ "Apply") name "apply")
-			  (button (_ "Reset") name "reset"))))
+			  (button (_ "Reset") name "reset")))))
 
 ;;;;;;;;;;;;;;;;;;
 
@@ -159,7 +140,7 @@
     (reset-interface)
     (form-bind "name" "change" update-interface)
     (form-bind "configuration" "change" (lambda() (update-configuration (form-value "configuration"))))
-    (form-bind "wireless" "click" wireless-interface)
+    (form-bind "advanced" "click" advanced-interface)
     (or (global 'frame:next)
       (begin (form-bind "apply" "click" commit-interface)
 	     (form-bind "reset" "click" reset-interface)))))
