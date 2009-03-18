@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<!-- tcp connections module -->
+<html wf="none">
+  <body>
+	<form method="POST" id="ajax-select">
+	    <input type="hidden" name="name"/>
+	    <table class="form-table">
+		<tr>
+		    <td><span translate="_">Interface:</span></td>
+		    <td><span name="iface" class="alterator-label"/></td>
+		</tr>
+		<tr>
+		    <td><span translate="_">Controlled:</span></td>
+		    <td><select name="controlled" enumref="/net-eth/avail_controlled"></select></td>
+		</tr>
+		<tr>
+		    <td><span translate="_">Hardware binding:</span></td>
+		    <td><select name="hw_binding" enumref="/net-eth/avail_hw_bindings"></select></td>
+		</tr>
+		<tr>
+		    <td>&nbsp;</td>
+		    <td>
+			<input type="button" class="btn" name="wireless" style="display:none" value="Wireless settings..."/>
+		    </td>
+		</tr>
+		<tr>
+		    <td colspan="2">&nbsp;</td>
+		</tr>
+		<tr>
+		    <td>&nbsp;</td>
+		    <td>
+			<input type="button" name="ok" value="OK" class="btn"/>
+			&nbsp;
+			<input type="button" name="cancel" value="Cancel" class="btn"/>
+		    </td>
+		</tr>
+	    </table>
+	 </form>
+  </body>
+</html>
