@@ -185,13 +185,13 @@ list_hw_binding()
 
 list_controlled()
 {
-    write_enum_item "etcnet" "etcnet"
+    write_enum_item "etcnet" "Etcnet"
     [ ! -f "/usr/sbin/NetworkManager" ] || write_enum_item "NetworkManager" "NetworkManager"
+    write_enum_item "nothing" "nothing"
 }
 
 list_configuration()
 {
-    write_enum_item "off" "`_ "Turned off"`"
     write_enum_item "dhcp" "`_ "Use DHCP"`"
     write_enum_item "ipv4ll" "`_ "Use Zeroconf"`"
     write_enum_item "static" "`_ "Manually"`"
@@ -241,11 +241,14 @@ read_info()
 read_controlled()
 {
 	local nm_controlled="$(read_iface_option "$1" NM_CONTROLLED)"
+	local disabled="$(read_iface_option "$1" DISABLED)"
 
 	if [ $(write_bool "$nm_controlled") = "#t" ];then
 		echo 'NetworkManager'
-	else
+	elif [ $(write_bool "$disabled") = "#f" ];then
 		echo 'etcnet'
+	else
+		echo "nothing"
 	fi
 }
 
@@ -254,9 +257,7 @@ read_configuration()
     local disabled="$(read_iface_option "$1" DISABLED)"
     local bootproto="$(read_iface_option "$1" BOOTPROTO)"
 
-    if [ "$(write_bool "$disabled")" = "#t" ] && [ "$(read_controlled "$1")" = "etcnet" ];then
-        echo 'off'
-    elif [ "$bootproto" = "static" ];then
+    if [ "$bootproto" = "static" ];then
 	echo 'static'
     elif [ "$bootproto" = "ipv4ll" ];then
 	echo 'ipv4ll'
@@ -306,18 +307,40 @@ write_controlled()
 {
 	local ifacedir="$1";shift
 	local controlled="$1";shift
-	local yes_no=
 
-	if [ "$controlled" = "NetworkManager" ];then
-		yes_no="yes"
-	else
-		yes_no="no"
-	fi
-
-	write_iface_option "$ifacedir" DISABLED "$yes_no"
-	write_iface_option "$ifacedir" NM_CONTROLLED "$yes_no"
+	case "$controlled" in
+	    NetworkManager)
+		write_iface_option "$ifacedir" DISABLED yes
+		write_iface_option "$ifacedir" NM_CONTROLLED yes
+		;;
+	    etcnet)
+		write_iface_option "$ifacedir" DISABLED no
+		write_iface_option "$ifacedir" NM_CONTROLLED no
+		;;
+	    nothing)
+		write_iface_option "$ifacedir" DISABLED yes
+		write_iface_option "$ifacedir" NM_CONTROLLED no
+		;;
+	esac
 }
 
+write_configuration()
+{
+	local ifacedir="$1";shift
+	local configuration="$1";shift
+
+	 case "$configuration" in
+	    static)
+		write_iface_option "$ifacedir" BOOTPROTO static
+		;;
+	    dhcp)
+		write_iface_option "$ifacedir" BOOTPROTO dhcp
+		;;
+	    ipv4ll)
+		write_iface_option "$ifacedir" BOOTPROTO ipv4ll
+		;;
+	esac
+}
 
 write_hw_binding()
 {
@@ -364,32 +387,19 @@ write_iface()
 	local name="$1" && shift
 	local ifacedir="$cachedir/$name"
 
+	write_iface_option "$ifacedir" TYPE eth
+
 	[ -n "$in_mask" ] && [ -n "$in_ip" ] && \
 		printf '%s/%s\n' "$in_ip" "$in_mask" >"/$ifacedir/ipv4address"
 
 	[ -n "$in_default" ] && [ -s "/$ifacedir/ipv4address" ] && \
 		printf 'default via %s\n' "$in_default" >"/$ifacedir/ipv4route"
 
-	write_iface_option "$ifacedir" TYPE eth
+	[ -n "$in_controlled" ] && 
+	    write_controlled "$ifacedir" "$in_controlled"
 
-	case "$in_configuration" in
-	    off)
-		write_iface_option "$ifacedir" DISABLED yes
-		write_iface_option "$ifacedir" NM_CONTROLLED no
-		;;
-	    static)
-		write_controlled "$ifacedir" "$in_controlled"
-		write_iface_option "$ifacedir" BOOTPROTO static
-		;;
-	    dhcp)
-		write_controlled "$ifacedir" "$in_controlled"
-		write_iface_option "$ifacedir" BOOTPROTO dhcp
-		;;
-	    ipv4ll)
-		write_controlled "$ifacedir" "$in_controlled"
-		write_iface_option "$ifacedir" BOOTPROTO ipv4ll
-		;;
-	esac
+	[ -n "$in_configuration" ] &&
+	    write_configuration "$ifacedir" "$in_configuration"
 
 	[ -n "$in_hw_binding" ] &&
 	    write_hw_binding "$name" "$in_hw_binding"

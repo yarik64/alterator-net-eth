@@ -43,7 +43,7 @@ height 300
   (label name "name")
 
   ;;
-  (label text (_ "Controlled by:") align "right" name "controlled")
+  (label text (_ "Network subsystem:") align "right" name "controlled")
   (combobox name "controlled")
 
   ;;
