@@ -151,7 +151,7 @@ list_controlled()
 {
     write_enum_item "etcnet" "Etcnet"
     [ ! -f "/usr/sbin/NetworkManager" ] || write_enum_item "NetworkManager" "NetworkManager"
-    write_enum_item "nothing" "nothing"
+    write_enum_item "nothing" "`_ "not under control"`"
 }
 
 list_configuration()

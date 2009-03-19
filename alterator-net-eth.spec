@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 4.2
-Release: alt4
+Version: 4.3
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -12,8 +12,8 @@ Summary: alterator module for tcp/ip connections configuration
 License: GPL
 Group: System/Configuration/Other
 Requires: alterator >= 4.7-alt3 alterator-sh-functions >= 0.6-alt5 libshell >= 0.0.1-alt4
-Requires: alterator-l10n >= 2.0-alt2
-Requires: alterator-net-common >= 0.3-alt1
+Requires: alterator-l10n >= 2.1-alt5
+Requires: alterator-net-common >= 0.7-alt1
 Requires: alterator-net-wifi >= 0.5-alt1
 Requires: etcnet openresolv avahi-autoipd startup >= 0.9.8.21-alt1
 
@@ -65,6 +65,9 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth.d
 
 %changelog
+* Thu Mar 19 2009 Stanislav Ievlev <inger@altlinux.org> 4.3-alt1
+- edit resolv.conf for each interface
+
 * Mon Mar 16 2009 Stanislav Ievlev <inger@altlinux.org> 4.2-alt4
 - don't stop network interfaces during installation process
 
