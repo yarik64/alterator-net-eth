@@ -11,6 +11,12 @@ alterator_api_version=1
 . alterator-net-functions
 . shell-config
 
+###
+
+is_defined()
+{
+    set|grep -qs "^$(quote_sed_regexp "$1")="
+}
 
 ### cache
 init_cache()
@@ -23,7 +29,6 @@ init_cache()
     fi
 
     [ -f "$cachedir/iftab" ] || cp /etc/iftab "$cachedir/iftab"
-    [ -f "$cachedir/resolv.conf" ] || cp /etc/resolv.conf "$cachedir/resolv.conf"
     [ -f "$cachedir/network" ] || cp /etc/sysconfig/network "$cachedir/network"
 }
 
@@ -49,7 +54,6 @@ commit_hostname()
 commit_cache()
 {
     [ -f "$cachedir/iftab" ] && mv -f "$cachedir/iftab" /etc/iftab
-    [ -f "$cachedir/resolv.conf" ] && mv -f "$cachedir/resolv.conf" /etc/resolv.conf
     commit_hostname
 
     find $cachedir -maxdepth 1 -mindepth 1 -type d|
@@ -84,46 +88,6 @@ commit_cache()
 
     clear_cache
     /sbin/update_chrooted conf >&2 || :
-}
-
-### dns
-
-read_dns()
-{
-	local resolv_conf="/etc/resolv.conf"
-	[ -f "$cachedir/resolv.conf" ] && resolv_conf="$cachedir/resolv.conf"
-
-	shell_config_get "$resolv_conf" nameserver "$rdelim"| tr '\n' ' '
-}
-
-write_dns()
-{
-	local resolv_conf="$cachedir/resolv.conf"
-
-	shell_config_del "$resolv_conf" nameserver "$rdelim"
-
-	local IFS=' '
-	for i in $1;do
-	    printf 'nameserver %s\n' "$i" >>"$resolv_conf"
-	done
-}
-
-read_search()
-{
-	local resolv_conf="/etc/resolv.conf"
-	[ -f "$cachedir/resolv.conf" ] && resolv_conf="$cachedir/resolv.conf"
-
-	shell_config_get "$resolv_conf" search "$rdelim"|
-	    tail -n1
-}
-
-write_search()
-{
-	local resolv_conf="$cachedir/resolv.conf"
-	local IFS=' '
-
-	shell_config_del "$resolv_conf" search "$rdelim"
-	shell_config_set "$resolv_conf" search "$1" "$rdelim" "$wdelim"
 }
 
 ### hostname
@@ -285,6 +249,9 @@ read_iface()
 	write_string_param controlled "$(read_controlled "$ifacedir")"
 	write_bool_param wireless "$(ifcheckwireless "$name" && echo "yes" || echo "no")"
 
+	write_string_param dns "$(read_iface_dns "$ifacedir")"
+	write_string_param search "$(read_iface_search "$ifacedir")"
+
 	local addr= ip= mask=
 	[ ! -s "/$ifacedir/ipv4address" ] ||
 		addr=$(grep '^[0-9]' "$ifacedir/ipv4address" | head -n1 || echo "")
@@ -403,6 +370,12 @@ write_iface()
 
 	[ -n "$in_hw_binding" ] &&
 	    write_hw_binding "$name" "$in_hw_binding"
+
+	is_defined "in_dns" &&
+	    write_iface_dns "$ifacedir" "$in_dns"
+
+	is_defined "in_search" &&
+	    write_iface_search "$ifacedir" "$in_search"
 }
 
 #initial actions
@@ -438,8 +411,6 @@ on_message()
 
 			write_string_param computer_name "$(read_computer_name)"
 			write_string_param computer_domain "$(read_computer_domain)"
-			write_string_param dns "$(read_dns)"
-			write_string_param search "$(read_search)"
 			;;
 		write)
 			local name="${in_name}"
@@ -450,8 +421,6 @@ on_message()
 			[ -n "$name" ] && write_iface "$name"
 
 			[ -n "$in_computer_name" ] && write_computer_name "$in_computer_name"
-			[ -n "$in_dns" ] && write_dns "$in_dns"
-			[ -n "$in_search" ] && write_search "$in_search"
 
 			[ -n "$in_commit" ] && commit_cache
 			[ -n "$in_reset" ] && clear_cache
