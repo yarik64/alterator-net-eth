@@ -8,12 +8,11 @@ esac
 
 run_chroot alterator-cmdline -l /net-eth action "write" \
 				      commit '#t' \
-				      hostname "${HOSTNAME:-localhost.localdomain}" \
-				      search "${DOMAINNAME:-}" \
-				      dns "${DNS_SERVER:-}${DNS_SERVER2:+ $DNS_SERVER2}"
+				      hostname "${HOSTNAME:-localhost.localdomain}"
 
-iface="$(exec_chroot ip link show up |
-	sed -n -e '/^[[:digit:]]\+:/!d' -e '/^[[:digit:]]\+: lo:/d' -e 's/^[[:digit:]]\+: \([^:]\+\):.*/\1/p' -e 'q')"
+iface="$(exec_chroot /sbin/ip -o addr show up|
+	sed -n -e 's/[[:digit:]]:[[:space:]]\+\([[:alnum:]]\+\)[[:space:]]\+inet[[:space:]].*/\1/p'|
+	grep -v lo)"
 
 if [ -n "$iface" ]; then
     case "${BOOTPROTO:-}" in
@@ -25,14 +24,18 @@ if [ -n "$iface" ]; then
 							configuration 'static' \
 							ip "${IPADDR:-}" \
 							mask "${NETBITS:-}" \
-							default "${GATEWAY:-}"
+							default "${GATEWAY:-}" \
+							search "${DOMAINNAME:-}" \
+							dns "${DNS_SERVER:-}${DNS_SERVER2:+ $DNS_SERVER2}"
 		;;
 	dhcp)
 		run_chroot alterator-cmdline -l "/net-eth" action "write" \
 							commit '#t' \
 							name "$iface" \
 							controlled 'etcnet' \
-							configuration 'dhcp'
+							configuration 'dhcp' \
+							search "${DOMAINNAME:-}" \
+							dns "${DNS_SERVER:-}${DNS_SERVER2:+ $DNS_SERVER2}"
 		;;
     esac
 fi
