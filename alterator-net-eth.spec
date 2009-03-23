@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.3
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -65,6 +65,9 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth.d
 
 %changelog
+* Mon Mar 23 2009 Stanislav Ievlev <inger@altlinux.org> 4.3-alt2
+- stop interface with old configuration, start with new one.
+
 * Thu Mar 19 2009 Stanislav Ievlev <inger@altlinux.org> 4.3-alt1
 - edit resolv.conf for each interface
 
