@@ -61,9 +61,7 @@ commit_cache()
 	    [ -n "$iface" ] || exit
 
 	    local ifname="${iface##*/}"
-	    [ -n "$DURING_INSTALL" ] ||
-		[ "$(read_iface_option "$iface" DISABLED)" != "yes" ] ||
-		ifdown "$ifname"
+	    [ -n "$DURING_INSTALL" ] || ifdown "$ifname"
 
 	    local old_ip="$(cat "/etc/net/ifaces/$ifname/ipv4address")"
 	    local new_ip="$(cat "$iface/ipv4address")"
@@ -76,9 +74,7 @@ commit_cache()
 	    mv -f "$iface" "/etc/net/ifaces/$ifname"
 
 	    #try to restart
-	    if [ -z "$DURING_INSTALL" ] || ! ifcheckup $ifname; then
-		ifdown "$ifname" && ifup "$ifname"
-	    fi
+	    [ -n "$DURING_INSTALL" ] && ifcheckup "$ifname" || ifup "$ifname"
 
 	    if [ "$old_ip" != "$new_ip" -o "$old_configuration" != "$new_configuration" ];then
 		export old_ip new_ip old_configuration new_configuration
