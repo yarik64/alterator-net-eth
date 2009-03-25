@@ -184,7 +184,8 @@ read_hw_binding()
 
 read_info()
 {
-	local info="$(ifaceinfo "$name")"
+	local info="`_ "Network adaptor:"`"
+	info="$info $(ifaceinfo "$name")"
 
 	if ! ifcheckwireless "$name"; then
 	    ifcheckplug "$name"

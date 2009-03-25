@@ -12,7 +12,7 @@ Summary: alterator module for tcp/ip connections configuration
 License: GPL
 Group: System/Configuration/Other
 Requires: alterator >= 4.7-alt3 alterator-sh-functions >= 0.6-alt5 libshell >= 0.0.1-alt4
-Requires: alterator-l10n >= 2.1-alt5
+Requires: alterator-l10n >= 2.1-alt9
 Requires: alterator-net-common >= 0.7-alt1
 Requires: alterator-net-wifi >= 0.5-alt1
 Requires: etcnet openresolv avahi-autoipd startup >= 0.9.8.21-alt1
