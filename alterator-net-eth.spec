@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.3
-Release: alt2
+Release: alt3
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -65,6 +65,9 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth.d
 
 %changelog
+* Wed Mar 25 2009 Stanislav Ievlev <inger@altlinux.org> 4.3-alt3
+- resurrect full hostname setup (for propagator)
+
 * Mon Mar 23 2009 Stanislav Ievlev <inger@altlinux.org> 4.3-alt2
 - stop interface with old configuration, start with new one.
 
