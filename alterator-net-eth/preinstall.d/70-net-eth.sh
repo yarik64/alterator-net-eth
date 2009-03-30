@@ -33,9 +33,7 @@ if [ -n "$iface" ]; then
 							commit '#t' \
 							name "$iface" \
 							controlled 'etcnet' \
-							configuration 'dhcp' \
-							search "${DOMAINNAME:-}" \
-							dns "${DNS_SERVER:-}${DNS_SERVER2:+ $DNS_SERVER2}"
+							configuration 'dhcp'
 		;;
     esac
 fi

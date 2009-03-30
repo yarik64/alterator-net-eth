@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.3
-Release: alt3
+Release: alt4
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -65,6 +65,9 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth.d
 
 %changelog
+* Mon Mar 30 2009 Stanislav Ievlev <inger@altlinux.org> 4.3-alt4
+- don't copy search and dns data from propagator for dhcp interfaces
+
 * Wed Mar 25 2009 Stanislav Ievlev <inger@altlinux.org> 4.3-alt3
 - resurrect full hostname setup (for propagator)
 
