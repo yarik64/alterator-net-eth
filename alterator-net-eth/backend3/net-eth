@@ -30,8 +30,8 @@ init_cache()
 	mkdir -p "$cachedir/$1"
     fi
 
-    [ -f "$cachedir/iftab" ] || cp /etc/iftab "$cachedir/iftab"
-    [ -f "$cachedir/network" ] || cp /etc/sysconfig/network "$cachedir/network"
+    [ ! -f /etc/iftab -o -f "$cachedir/iftab" ] || cp /etc/iftab "$cachedir/iftab"
+    [ ! -f /etc/sysconfig/network -o -f "$cachedir/network" ] || cp /etc/sysconfig/network "$cachedir/network"
 }
 
 clear_cache()
