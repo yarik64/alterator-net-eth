@@ -62,8 +62,9 @@ commit_cache()
 	[ -f "$f" -a -x "$f" ] || continue
 	[ "${f%.rpm*}" = "$f" -a "${f%\~}" = "$f" ] || continue
 
-	if ! answer="$($f >&2)";then
-	    write_error "answer"
+	if ! answer="$("$f")";then
+	    [ -n "$answer" ] || answer="$f failed"
+	    write_error "$answer"
 	    return 1
 	fi
     done
@@ -435,8 +436,11 @@ on_message()
 			[ -n "$in_computer_name" ] && write_computer_name "$in_computer_name"
 			[ -n "$in_hostname" ] && write_hostname "$in_hostname"
 
-			[ -n "$in_commit" ] && commit_cache || return 0 #return on errors
-			[ -n "$in_reset" ] && clear_cache
+			if [ -n "$in_commit" ]; then
+			    commit_cache || return
+			elif [ -n "$in_reset" ]; then
+			    clear_cache || return
+			fi
 			;;
 	esac
 }
