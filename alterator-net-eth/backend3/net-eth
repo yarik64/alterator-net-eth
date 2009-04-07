@@ -1,6 +1,8 @@
 #!/bin/sh
 
 cachedir="/var/cache/alterator/net-eth"
+precommit_hooks_dir=/usr/lib/alterator/hooks/net-eth-precommit.d
+postcommit_hooks_dir=/usr/lib/alterator/hooks/net-eth.d
 
 rdelim='[[:space:]]\+'
 wdelim=' '
@@ -53,6 +55,19 @@ commit_hostname()
 
 commit_cache()
 {
+    #little run-parts: check configuration before apply it
+    set_locale
+    local answer=
+    for f in "$precommit_hooks_dir"/*; do
+	[ -f "$f" -a -x "$f" ] || continue
+	[ "${f%.rpm*}" = "$f" -a "${f%\~}" = "$f" ] || continue
+
+	if ! answer="$($f >&2)";then
+	    write_error "answer"
+	    return 1
+	fi
+    done
+
     [ -f "$cachedir/iftab" ] && mv -f "$cachedir/iftab" /etc/iftab
     commit_hostname
 
@@ -78,7 +93,7 @@ commit_cache()
 
 	    if [ "$old_ip" != "$new_ip" -o "$old_configuration" != "$new_configuration" ];then
 		export old_ip new_ip old_configuration new_configuration
-		run-parts /usr/lib/alterator/hooks/net-eth.d "$ifname"
+		run-parts  "$postcommit_hooks_dir"  "$ifname"
 	    fi
 	done
 
@@ -420,7 +435,7 @@ on_message()
 			[ -n "$in_computer_name" ] && write_computer_name "$in_computer_name"
 			[ -n "$in_hostname" ] && write_hostname "$in_hostname"
 
-			[ -n "$in_commit" ] && commit_cache
+			[ -n "$in_commit" ] && commit_cache || return 0 #return on errors
 			[ -n "$in_reset" ] && clear_cache
 			;;
 	esac

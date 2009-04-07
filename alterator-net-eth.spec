@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.3
-Release: alt4
+Release: alt5
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -63,8 +63,12 @@ alterator module for tcp/ip connections configuration
 %_alterator_backend3dir/*
 %_datadir/install2/preinstall.d/*
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth.d
+%attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Tue Apr 07 2009 Stanislav Ievlev <inger@altlinux.org> 4.3-alt5
+- add precommit hooks. It's useful to validate a future network configuration.
+
 * Mon Mar 30 2009 Stanislav Ievlev <inger@altlinux.org> 4.3-alt4
 - don't copy search and dns data from propagator for dhcp interfaces
 
