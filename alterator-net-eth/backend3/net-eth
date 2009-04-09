@@ -89,8 +89,8 @@ commit_cache()
 	    local ifname="${iface##*/}"
 	    [ -n "$DURING_INSTALL" ] || ifdown "$ifname"
 
-	    local old_ip="$(cat "/etc/net/ifaces/$ifname/ipv4address")"
-	    local new_ip="$(cat "$iface/ipv4address")"
+	    local old_ip="$(read_iface_addr "/etc/net/ifaces/$ifname")"
+	    local new_ip="$(read_iface_addr "$iface")"
 
 	    local old_configuration="$(read_configuration "/etc/net/ifaces/$ifname")"
 	    local new_configuration="$(read_configuration "$iface")"
