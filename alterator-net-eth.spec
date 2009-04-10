@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 4.3
-Release: alt5
+Version: 4.4
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -11,9 +11,11 @@ Source:%name-%version.tar
 Summary: alterator module for tcp/ip connections configuration
 License: GPL
 Group: System/Configuration/Other
-Requires: alterator >= 4.7-alt3 alterator-sh-functions >= 0.6-alt5 alterator-hw-functions libshell >= 0.0.1-alt4
+Requires: alterator >= 4.7-alt3 libshell >= 0.0.1-alt4
 Requires: alterator-l10n >= 2.1-alt9
-Requires: alterator-net-common >= 0.7-alt1
+Requires: alterator-sh-functions >= 0.6-alt5
+Requires: alterator-hw-functions
+Requires: alterator-net-functions >= 0.8-alt1
 Requires: alterator-net-wifi >= 0.5-alt1
 Requires: etcnet openresolv avahi-autoipd startup >= 0.9.8.21-alt1
 
@@ -66,6 +68,9 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Fri Apr 10 2009 Stanislav Ievlev <inger@altlinux.org> 4.4-alt1
+- add support for bridge interfaces
+
 * Tue Apr 07 2009 Stanislav Ievlev <inger@altlinux.org> 4.3-alt5
 - add precommit hooks. It's useful to validate a future network configuration.
 
