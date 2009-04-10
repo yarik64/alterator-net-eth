@@ -84,9 +84,11 @@ commit_cache()
 
     find $cachedir -maxdepth 1 -mindepth 1 -type d|
 	while read iface; do
+
 	    [ -n "$iface" ] || exit
 
 	    local ifname="${iface##*/}"
+
 	    [ -n "$DURING_INSTALL" ] || ifdown "$ifname"
 
 	    local old_ip="$(read_iface_addr "/etc/net/ifaces/$ifname")"
@@ -96,11 +98,19 @@ commit_cache()
 	    local new_configuration="$(read_configuration "$iface")"
 
 	    #update configs
-	    rm -rf "/etc/net/ifaces/$ifname"
-	    mv -f "$iface" "/etc/net/ifaces/$ifname"
+	    rm -rf -- "/etc/net/ifaces/$ifname"
+	    mv -f -- "$cachedir/$ifname" "/etc/net/ifaces/$ifname"
+
+	    #add config for bridge members
+	    if netdev_is_bridge "$ifname";then
+		local real_fname="$(real_iface "$ifname")"
+		rm -rf -- "/etc/net/ifaces/$real_fname"
+		mkdir -p -- "/etc/net/ifaces/$real_fname"
+		printf 'TYPE=eth' >"/etc/net/ifaces/$real_fname/options"
+	    fi
 
 	    #try to restart
-	    [ -n "$DURING_INSTALL" ] && ifcheckup "$ifname" || ifup "$ifname"
+	    [ -n "$DURING_INSTALL" ] && netdev_is_up "$ifname" || ifup "$ifname"
 
 	    if [ "$old_ip" != "$new_ip" -o "$old_configuration" != "$new_configuration" ];then
 		export old_ip new_ip old_configuration new_configuration
@@ -381,7 +391,12 @@ write_iface()
 	local name="$1" && shift
 	local ifacedir="$cachedir/$name"
 
-	write_iface_option "$ifacedir" TYPE eth
+	if netdev_is_bridge "$name";then
+	    write_iface_option "$ifacedir" TYPE bri
+	    write_iface_option "$ifacedir" HOST "$(real_iface "$name")"
+	else
+	    write_iface_option "$ifacedir" TYPE eth
+	fi
 
 	[ -n "$in_mask" ] && [ -n "$in_ip" ] && \
 		printf '%s/%s\n' "$in_ip" "$in_mask" >"/$ifacedir/ipv4address"
@@ -440,8 +455,7 @@ on_message()
 			write_string_param computer_domain "$(read_computer_domain)"
 			;;
 		write)
-			local name="${in_name}"
-			[ -n "$name" ] || name="$(iflist|cut -f1 -d' '|head -n1)"
+			[ -n "$name" ] || name="$(list_eth|head -n1)"
 
 			init_cache "$name"
 
