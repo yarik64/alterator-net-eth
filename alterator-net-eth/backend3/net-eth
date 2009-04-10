@@ -289,10 +289,8 @@ read_iface()
 	write_string_param dns "$(read_iface_dns "$ifacedir")"
 	write_string_param search "$(read_iface_search "$ifacedir")"
 
-	local addr= ip= mask=
-	[ ! -s "/$ifacedir/ipv4address" ] ||
-		addr=$(grep '^[0-9]' "$ifacedir/ipv4address" | head -n1 || echo "")
-
+	local addr="$(read_iface_addr "$ifacedir")"
+	local ip= mask=
 	if [ -n "$addr" ]; then
 		ip="${addr%%/*}"
 		mask="${addr#$ip}"; mask="${mask#/}"
@@ -398,13 +396,13 @@ write_iface()
 	    write_iface_option "$ifacedir" TYPE eth
 	fi
 
-	[ -n "$in_mask" ] && [ -n "$in_ip" ] && \
-		printf '%s/%s\n' "$in_ip" "$in_mask" >"/$ifacedir/ipv4address"
+	[ -n "$in_mask" ] && [ -n "$in_ip" ] &&
+		write_iface_addr "$ifacedir" "$in_ip/$in_mask"
 
-	[ -n "$in_default" ] && [ -s "/$ifacedir/ipv4address" ] && \
+	[ -n "$in_default" ] && [ -s "/$ifacedir/ipv4address" ] &&
 		printf 'default via %s\n' "$in_default" >"/$ifacedir/ipv4route"
 
-	[ -n "$in_controlled" ] && 
+	[ -n "$in_controlled" ] &&
 	    write_controlled "$ifacedir" "$in_controlled"
 
 	[ -n "$in_configuration" ] &&
