@@ -61,6 +61,9 @@
 
 ;;; UI
 
+width 400
+height 200
+
 (edit name "prev_name" text "" visibility #f)
 (gridbox
   columns "0;100"

@@ -185,6 +185,7 @@ list_configuration()
 
 read_hw_binding()
 {
+    local name="$(real_iface "$1")";shift
     local config=
 
     if [ -f "$cachedir/iftab" ];then
@@ -193,7 +194,7 @@ read_hw_binding()
 	config="/etc/iftab"
     fi
 
-    local line="$(grep "^[[:space:]]*$1[[:space:]]" "$config")"
+    local line="$(grep "^[[:space:]]*$name[[:space:]]" "$config")"
 
     if [ -z "$line" ]; then
 	echo "missing"
@@ -337,12 +338,12 @@ write_configuration()
 
 write_hw_binding()
 {
-    local name="$1";shift
+    local name="$(real_iface "$1")";shift
     local value="$1";shift
     local config="$cachedir/iftab"
 
-    local mac="$(ifread "$name"|cut -f1)"
-    local businfo="$(ifread "$name"|cut -f2)"
+    local mac="$(netdev_read_mac "$name")"
+    local businfo="$(netdev_read_businfo "$name")"
 
     if [ -s "$config" ]; then
 	sed -r \

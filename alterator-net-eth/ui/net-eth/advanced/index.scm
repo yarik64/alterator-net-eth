@@ -31,7 +31,7 @@
 
 ;;; UI
 
-width 500
+width 600
 height 300
 
 (gridbox
@@ -61,8 +61,8 @@ height 300
   (label colspan 2)
 
   ;;
+  (spacer)
   (hbox align "left"
-	colspan 2
 	(button (_ "OK") name "ok")
 	(button (_ "Cancel") name "cancel")))
 
