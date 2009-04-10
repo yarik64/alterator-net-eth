@@ -37,7 +37,7 @@ init_cache()
 
     if [ ! -d "$cachedir/$1" ] ;then
 	[ -d "$ifacedir" ] && cp -a "$ifacedir" "$cachedir"
-	mkdir -p "$cachedir/$1"
+	mkdir -p -- "$cachedir/$1"
     fi
 
     [ ! -f /etc/iftab -o -f "$cachedir/iftab" ] || cp /etc/iftab "$cachedir/iftab"
@@ -89,7 +89,7 @@ commit_cache()
 
 	    local ifname="${iface##*/}"
 
-	    [ -n "$DURING_INSTALL" ] || ifdown "$ifname"
+	    [ -n "$DURING_INSTALL" ] || iface_down "$ifname"
 
 	    local old_ip="$(read_iface_addr "/etc/net/ifaces/$ifname")"
 	    local new_ip="$(read_iface_addr "$iface")"
@@ -110,7 +110,7 @@ commit_cache()
 	    fi
 
 	    #try to restart
-	    [ -n "$DURING_INSTALL" ] && netdev_is_up "$ifname" || ifup "$ifname"
+	    [ -n "$DURING_INSTALL" ] && netdev_is_up "$ifname" || iface_up "$ifname"
 
 	    if [ "$old_ip" != "$new_ip" -o "$old_configuration" != "$new_configuration" ];then
 		export old_ip new_ip old_configuration new_configuration
@@ -421,7 +421,7 @@ write_iface()
 }
 
 #initial actions
-ifup lo
+iface_up lo
 clear_cache
 
 on_message()
@@ -455,6 +455,7 @@ on_message()
 			write_string_param computer_domain "$(read_computer_domain)"
 			;;
 		write)
+			local name="${in_name}"
 			[ -n "$name" ] || name="$(list_eth|head -n1)"
 
 			init_cache "$name"
