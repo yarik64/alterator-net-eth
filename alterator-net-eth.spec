@@ -63,7 +63,6 @@ alterator module for tcp/ip connections configuration
 %_altdata_dir/applications/*
 %_altdata_dir/ui/*/
 %_alterator_backend3dir/*
-%_datadir/install2/preinstall.d/*
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth.d
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
