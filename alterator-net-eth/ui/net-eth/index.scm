@@ -74,7 +74,7 @@ height 200
     columns "0;40;60"
 
     ;;
-    (label text (_ "Computer name:") name "computer_name" align "right")
+    (label text (_ "Computer name:") nameref "computer_name" align "right")
     (edit name "computer_name")
     (spacer)
    )
@@ -91,27 +91,27 @@ height 200
     (textbox colspan 2 name "adaptor" max-height 60 alterability #f)
 
     ;;
-    (label text (_ "Configuration:") align "right" name "configuration")
+    (label text (_ "Configuration:") align "right" nameref "configuration")
     (combobox name "configuration")
     ;;
-    (label text (_ "IP address:") align "right" name "ip")
+    (label text (_ "IP address:") align "right" nameref "ip")
     (edit name "ip")
 
     ;;
-    (label text (_ "Netmask:") align "right" name "mask")
+    (label text (_ "Netmask:") align "right" nameref "mask")
     (combobox name "mask")
 
     ;;
-    (label text (_ "Default gateway:") align "right" name "default")
+    (label text (_ "Default gateway:") align "right" nameref "default")
     (edit name "default")
 
 
     ;;
-    (label text (_ "DNS servers:") name "dns" align "right")
+    (label text (_ "DNS servers:") nameref "dns" align "right")
     (edit name "dns")
 
     ;;
-    (label text (_ "Search domains:") name "search" align "right")
+    (label text (_ "Search domains:") nameref "search" align "right")
     (edit name "search")
 
     ;;
