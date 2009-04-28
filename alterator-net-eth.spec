@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.4
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -63,11 +63,13 @@ alterator module for tcp/ip connections configuration
 %_altdata_dir/applications/*
 %_altdata_dir/ui/*/
 %_alterator_backend3dir/*
-%_datadir/install2/preinstall.d/*
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth.d
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Thu Apr 16 2009 Anton V. Boyarshinov <boyarsh@altlinux.ru> 4.4-alt2
+- alterator-net-eth/preinstall.d/70-net-eth.sh deleted 
+
 * Fri Apr 10 2009 Stanislav Ievlev <inger@altlinux.org> 4.4-alt1
 - add support for bridge interfaces
 
