@@ -298,11 +298,7 @@ read_iface()
 
 	write_string_param ip "$ip"
 	write_string_param mask "${mask:-24}"
-
-	[ ! -s "/$ifacedir/ipv4route" ] ||
-		write_string_param \
-			default \
-			$(grep '^default' "$ifacedir/ipv4route" | sed -r 's,default[[:space:]]+via[[:space:]],,' || echo "")
+	write_string_param default "$(read_iface_default_gw "$ifacedir")"
 }
 
 write_controlled()
@@ -399,8 +395,8 @@ write_iface()
 	[ -n "$in_mask" ] && [ -n "$in_ip" ] &&
 		write_iface_addr "$ifacedir" "$in_ip/$in_mask"
 
-	[ -n "$in_default" ] && [ -s "/$ifacedir/ipv4address" ] &&
-		printf 'default via %s\n' "$in_default" >"/$ifacedir/ipv4route"
+	is_defined "in_default" &&
+		write_iface_default_gw "$ifacedir" "$in_default"
 
 	[ -n "$in_controlled" ] &&
 	    write_controlled "$ifacedir" "$in_controlled"
