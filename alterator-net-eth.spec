@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 4.4
-Release: alt2
+Version: 4.5
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -15,12 +15,12 @@ Requires: alterator >= 4.7-alt3 libshell >= 0.0.1-alt4
 Requires: alterator-l10n >= 2.1-alt9
 Requires: alterator-sh-functions >= 0.6-alt5
 Requires: alterator-hw-functions
-Requires: alterator-net-functions >= 0.8-alt1
+Requires: alterator-net-functions >= 0.9-alt3
 Requires: alterator-net-wifi >= 0.5-alt1
 Requires: etcnet openresolv avahi-autoipd startup >= 0.9.8.21-alt1
 
-Conflicts: alterator-lookout < 1.6-alt6
-Conflicts: alterator-fbi < 5.9-alt1
+Conflicts: alterator-lookout < 1.7-alt1
+Conflicts: alterator-fbi < 5.14-alt1
 Conflicts: alterator-browser-qt < 2.9.76-alt1
 Conflicts: filesystem < 2.3.4-alt1
 
@@ -67,6 +67,10 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Thu Apr 30 2009 Stanislav Ievlev <inger@altlinux.org> 4.5-alt1
+- use nameref attribute
+- fix "default gateway" option processing
+
 * Thu Apr 16 2009 Anton V. Boyarshinov <boyarsh@altlinux.ru> 4.4-alt2
 - alterator-net-eth/preinstall.d/70-net-eth.sh deleted 
 
