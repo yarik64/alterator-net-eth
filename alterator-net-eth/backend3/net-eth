@@ -299,6 +299,8 @@ read_iface()
 	write_string_param ip "$ip"
 	write_string_param mask "${mask:-24}"
 	write_string_param default "$(read_iface_default_gw "$ifacedir")"
+
+	write_string_param ip_string "$(netdev_read_ip "$name"|head -n1)"
 }
 
 write_controlled()
