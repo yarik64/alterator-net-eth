@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.5
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -67,6 +67,9 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Wed Jun 10 2009 Stanislav Ievlev <inger@altlinux.org> 4.5-alt2
+- net-eth backend: add 'ip string' parameter
+
 * Thu Apr 30 2009 Stanislav Ievlev <inger@altlinux.org> 4.5-alt1
 - use nameref attribute
 - fix "default gateway" option processing
