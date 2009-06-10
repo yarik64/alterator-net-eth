@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.5
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -14,7 +14,7 @@ Group: System/Configuration/Other
 Requires: alterator >= 4.7-alt3 libshell >= 0.0.1-alt4
 Requires: alterator-l10n >= 2.1-alt9
 Requires: alterator-sh-functions >= 0.6-alt5
-Requires: alterator-hw-functions
+Requires: alterator-hw-functions >= 0.7-alt2
 Requires: alterator-net-functions >= 0.9-alt3
 Requires: alterator-net-wifi >= 0.5-alt1
 Requires: etcnet openresolv avahi-autoipd startup >= 0.9.8.21-alt1
@@ -67,6 +67,9 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Wed Jun 10 2009 Stanislav Ievlev <inger@altlinux.org> 4.5-alt2
+- net-eth backend: add 'ip string' parameter
+
 * Thu Apr 30 2009 Stanislav Ievlev <inger@altlinux.org> 4.5-alt1
 - use nameref attribute
 - fix "default gateway" option processing
