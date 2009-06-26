@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.5
-Release: alt2
+Release: alt3
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -23,6 +23,7 @@ Conflicts: alterator-lookout < 1.7-alt1
 Conflicts: alterator-fbi < 5.14-alt1
 Conflicts: alterator-browser-qt < 2.9.76-alt1
 Conflicts: filesystem < 2.3.4-alt1
+Conflicts: ifrename < 29-alt8
 
 
 %add_findreq_skiplist %_datadir/install2/preinstall.d/*
@@ -67,6 +68,12 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Fri Jun 26 2009 Stanislav Ievlev <inger@altlinux.org> 4.5-alt3
+- use workflow 'none'
+- drop "hardware binding" support because ifrename doing it automatically now.
+  (closes: #13351) (closes: #20500) (closes: #20272)
+- ajax: fix "prev_name" initial setup
+
 * Wed Jun 10 2009 Stanislav Ievlev <inger@altlinux.org> 4.5-alt2
 - net-eth backend: add 'ip string' parameter
 
