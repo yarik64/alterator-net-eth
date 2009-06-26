@@ -40,7 +40,6 @@ init_cache()
 	mkdir -p -- "$cachedir/$1"
     fi
 
-    [ ! -f /etc/iftab -o -f "$cachedir/iftab" ] || cp /etc/iftab "$cachedir/iftab"
     [ ! -f /etc/sysconfig/network -o -f "$cachedir/network" ] || cp /etc/sysconfig/network "$cachedir/network"
 }
 
@@ -79,7 +78,6 @@ commit_cache()
 	fi
     done
 
-    [ -f "$cachedir/iftab" ] && mv -f "$cachedir/iftab" /etc/iftab
     commit_hostname
 
     find $cachedir -maxdepth 1 -mindepth 1 -type d|
@@ -172,13 +170,6 @@ list_mask()
     done
 }
 
-list_hw_binding()
-{
-    write_enum_item "missing" "`_ "missing"`"
-    write_enum_item "mac" "`_ "by MAC address"`"
-    write_enum_item "businfo" "`_ "by bus location"`"
-}
-
 list_controlled()
 {
     write_enum_item "etcnet" "Etcnet"
@@ -191,32 +182,6 @@ list_configuration()
     write_enum_item "dhcp" "`_ "Use DHCP"`"
     write_enum_item "ipv4ll" "`_ "Use Zeroconf"`"
     write_enum_item "static" "`_ "Manually"`"
-}
-
-read_hw_binding()
-{
-    local name="$(real_iface "$1")";shift
-    local config=
-
-    if [ -f "$cachedir/iftab" ];then
-	config="$cachedir/iftab"
-    else
-	config="/etc/iftab"
-    fi
-
-    local line="$(grep "^[[:space:]]*$name[[:space:]]" "$config")"
-
-    if [ -z "$line" ]; then
-	echo "missing"
-    else
-	if echo "$line" | fgrep -qsw mac; then
-	    echo "mac"
-	elif echo "$line" | fgrep -qsw businfo; then
-	    echo "businfo"
-	else
-	    echo "missing"
-	fi
-    fi
 }
 
 read_info()
@@ -281,7 +246,6 @@ read_iface()
 	#collect general information
 
 	write_string_param adaptor "$(read_info "$name")"
-	write_string_param hw_binding "$(read_hw_binding "$name")"
 	write_string_param configuration "$(read_configuration "$ifacedir")"
 	write_string_param controlled "$(read_controlled "$ifacedir")"
 	write_bool_param wireless "$(netdev_is_wireless "$name" && echo "yes" || echo "no")"
@@ -342,46 +306,6 @@ write_configuration()
 	esac
 }
 
-write_hw_binding()
-{
-    local name="$(real_iface "$1")";shift
-    local value="$1";shift
-    local config="$cachedir/iftab"
-
-    local mac="$(netdev_read_mac "$name")"
-    local businfo="$(netdev_read_businfo "$name")"
-
-    if [ -s "$config" ]; then
-	sed -r \
-	    -e "/^$name[[:space:]]/ d" \
-	    -i "$config"
-
-	[ -z "$mac" ] ||
-	[ "$mac" = "00:00:00:00:00:00" ] ||
-	    sed -r \
-		-e "/[[:space:]]mac[[:space:]]+$mac([[:space:]]|\$)/ d" \
-	        -i "$config"
-
-	[ -z "$businfo" ] ||
-	    sed -r \
-		-e "/[[:space:]]businfo[[:space:]]+$businfo([[:space:]]|\$)/ d" \
-	    	-i "$config"
-    fi
-
-    case "$value" in
-	none) ;;
-	mac)
-	    [ -z "$mac" ] ||
-	    [ "$mac" = "00:00:00:00:00:00" ] ||
-	    printf "%s\tmac %s\n" "$name" "$mac" >>"$config"
-	    ;;
-	businfo)
-	    [ -z "$businfo" ] ||
-	    printf "%s\tbusinfo %s\n" "$name" "$businfo" >>"$config"
-	    ;;
-    esac
-}
-
 write_iface()
 {
 	local name="$1" && shift
@@ -405,9 +329,6 @@ write_iface()
 
 	[ -n "$in_configuration" ] &&
 	    write_configuration "$ifacedir" "$in_configuration"
-
-	[ -n "$in_hw_binding" ] &&
-	    write_hw_binding "$name" "$in_hw_binding"
 
 	is_defined "in_dns" &&
 	    write_iface_dns "$ifacedir" "$in_dns"
@@ -434,7 +355,6 @@ on_message()
 		list)
 			case "${in__objects##*/}" in
 			    avail_masks) list_mask ;;
-			    avail_hw_bindings) list_hw_binding ;;
 			    avail_configurations) list_configuration ;;
 			    avail_controlled) list_controlled ;;
 			    *) list_eth|write_enum ;;
