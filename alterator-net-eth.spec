@@ -14,7 +14,7 @@ Group: System/Configuration/Other
 Requires: alterator >= 4.7-alt3 libshell >= 0.0.1-alt4
 Requires: alterator-l10n >= 2.1-alt9
 Requires: alterator-sh-functions >= 0.6-alt5
-Requires: alterator-hw-functions
+Requires: alterator-hw-functions >= 0.7-alt2
 Requires: alterator-net-functions >= 0.9-alt3
 Requires: alterator-net-wifi >= 0.5-alt1
 Requires: etcnet openresolv avahi-autoipd startup >= 0.9.8.21-alt1
