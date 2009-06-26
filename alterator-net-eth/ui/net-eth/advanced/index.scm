@@ -11,11 +11,10 @@
     (lambda()
       (let ((cmd (woo-read-first "/net-eth" 'name *name*)))
       (form-update-enum "controlled" (woo-list "/net-eth/avail_controlled"))
-      (form-update-enum "hw_binding" (woo-list "/net-eth/avail_hw_bindings"))
       (form-update-value "name" *name*)
       (form-update-visibility "wireless" (woo-get-option cmd 'wireless))
 
-      (form-update-value-list '("controlled" "hw_binding") cmd)))))
+      (form-update-value-list '("controlled") cmd)))))
 
 (define (ui-exit)
   (document:end))
@@ -25,7 +24,6 @@
     (lambda()
       (woo-write "/net-eth"
 		 'name *name*
-		 'hw_binding (form-value "hw_binding")
 		 'controlled (form-value "controlled"))
       (ui-exit))))
 
@@ -45,10 +43,6 @@ height 300
   ;;
   (label text (_ "Network subsystem:") align "right" name "controlled")
   (combobox name "controlled")
-
-  ;;
-  (label text (_ "Hardware binding:") align "right")
-  (combobox name "hw_binding")
 
   ;;
   (spacer)
