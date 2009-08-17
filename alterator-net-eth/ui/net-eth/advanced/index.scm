@@ -2,9 +2,6 @@
 
 (define *name* (global 'name))
 
-(define (wireless-interface)
- (form-popup "/net-wifi/" 'interface *name*))
-
 ;;; Functions
 (define (ui-read)
   (catch/message
@@ -12,7 +9,6 @@
       (let ((cmd (woo-read-first "/net-eth" 'name *name*)))
       (form-update-enum "controlled" (woo-list "/net-eth/avail_controlled"))
       (form-update-value "name" *name*)
-      (form-update-visibility "wireless" (woo-get-option cmd 'wireless))
 
       (form-update-value-list '("controlled") cmd)))))
 
@@ -45,13 +41,6 @@ height 300
   (combobox name "controlled")
 
   ;;
-  (spacer)
-  (button text (_ "Wireless settings...")
-	  name "wireless"
-	  align "left"
-	  visibility #f)
-
-  ;;
   (label colspan 2)
 
   ;;
@@ -64,6 +53,5 @@ height 300
 (document:root
   (when loaded
     (ui-read)
-    (form-bind "wireless" "click" wireless-interface)
     (form-bind "ok" "click" ui-write)
     (form-bind "cancel" "click" ui-exit)))

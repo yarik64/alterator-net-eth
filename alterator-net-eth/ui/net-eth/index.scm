@@ -10,8 +10,12 @@
 (define (read-interface name)
   (let ((cmd (woo-read-first "/net-eth" 'name name)))
 
+   (form-update-visibility
+      "wireless"
+      (and (woo-get-option cmd 'wireless)
+	   (string=? (woo-get-option cmd 'controlled) "etcnet")))
     (form-update-value-list
-      '("name")
+      '("name" "real_name")
       cmd)
     (form-update-value-list
       '("computer_name" "dns" "search")
@@ -59,12 +63,17 @@
 (define (advanced-interface)
  (form-popup "/net-eth/advanced" 'name (form-value "name")))
 
+(define (wireless-interface)
+  (format #t "wireless-interface:real_name=~S~%" (form-value "real_name"))
+  (form-popup "/net-wifi/" 'interface (form-value "real_name")))
+
 ;;; UI
 
 width 400
 height 200
 
 (edit name "prev_name" text "" visibility #f)
+(edit name "real_name" text "" visibility #f)
 (gridbox
   columns "0;100"
   margin 20
@@ -123,6 +132,10 @@ height 200
 
     ;;
     (spacer)
+    (button text (_ "Wireless settings...") name "wireless" align "right" visibility #f)
+
+    ;;
+    (spacer)
     (button text (_ "Advanced...") name "advanced" align "right")
 
     ;;
@@ -144,6 +157,7 @@ height 200
     (form-bind "name" "change" update-interface)
     (form-bind "configuration" "change" (lambda() (update-configuration (form-value "configuration"))))
     (form-bind "advanced" "click" advanced-interface)
+    (form-bind "wireless" "click" wireless-interface)
     (or (global 'frame:next)
       (begin (form-bind "apply" "click" commit-interface)
 	     (form-bind "reset" "click" reset-interface)))))

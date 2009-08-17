@@ -365,7 +365,8 @@ on_message()
 			[ -n "$name" ] || name="$(list_eth|head -n1)"
 			[ -n "$name" ] && read_iface "$name"
 
-			write_string_param name "$name"
+			write_string_param name		"$name"
+			write_string_param real_name	"$(real_iface "$name")"
 
 			write_string_param computer_name "$(read_computer_name)"
 			write_string_param computer_domain "$(read_computer_domain)"
