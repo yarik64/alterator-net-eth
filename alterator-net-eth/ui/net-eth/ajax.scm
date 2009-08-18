@@ -13,8 +13,12 @@
 (define (read-interface name)
   (let ((cmd (woo-read-first "/net-eth" 'name name 'language (form-value "language"))))
 
+   (form-update-visibility
+      "wireless"
+      (and (woo-get-option cmd 'wireless)
+	   (string=? (woo-get-option cmd 'controlled) "etcnet")))
     (form-update-value-list
-      '("name")
+      '("name" "real_name")
       cmd)
     (form-update-value-list
       '("computer_name" "dns" "search")
@@ -45,7 +49,11 @@
       (form-update-value "name" (form-value "prev_name"))))
 
 (define (advanced-interface)
-  (form-replace (format #f "/net-eth/advanced?iface=~A" (form-value "name"))))
+  (form-replace "/net-eth/advanced" 'iface (form-value "name")))
+
+(define (wireless-interface)
+  (format #t "wireless-interface:real_name=~S~%" (form-value "real_name"))
+  (form-replace "/net-wifi/" 'interface (form-value "real_name")))
 
 (define (commit-interface)
   (catch/message
@@ -78,6 +86,7 @@
  (form-bind "name" "change" update-interface)
  (form-bind "configuration" "change" (lambda() (update-configuration (form-value "configuration"))))
  (form-bind "advanced" "click" advanced-interface)
+ (form-bind "wireless" "click" wireless-interface)
 
  (form-bind "commit" "click" commit-interface)
  (form-bind "reset" "click" reset-interface))

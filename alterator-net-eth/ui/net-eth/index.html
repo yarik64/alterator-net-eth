@@ -2,7 +2,7 @@
 <!-- tcp connections module -->
 <html wf="none">
   <body>
-	  <form method="POST" id="ajax-select">
+	  <form method="POST">
 		  <table>
 			  <tr>
 			    <td colspan="2">
@@ -24,6 +24,7 @@
 				  <td>
 				      <select name="name" enumref="/net-eth" size="16" style="width:150px"/>
 				      <input type="hidden" name="prev_name"/>
+				      <input type="hidden" name="real_name"/>
 				  </td>
 				  <td>
 					  <table class="form-table">
@@ -65,9 +66,12 @@
 							   <small><span translate="_">(multiple values should be space separated)</span></small>
 							 </td>
 						  </tr>
-
 						  <tr>
 							  <td colspan="2">&nbsp;</td>
+						  </tr>
+						  <tr>
+							<td>&nbsp;</td>
+							<td><input type="button" name="wireless" value="Wireless settings..." class="btn" style="display:none;text-align:right"/></td>
 						  </tr>
 						  <tr>
 							<td>&nbsp;</td>

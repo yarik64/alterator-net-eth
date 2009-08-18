@@ -9,7 +9,6 @@
       (let ((cmd (woo-read-first "/net-eth" 'name name)))
       (form-update-enum "controlled" (woo-list "/net-eth/avail_controlled"))
       (form-update-value "iface" name)
-      (form-update-visibility "wireless" (woo-get-option cmd 'wireless))
 
       (form-update-value-list '("name" "controlled") cmd)))))
 
@@ -24,11 +23,7 @@
 		 'controlled (form-value "controlled"))
       (ui-exit))))
 
-(define (ui-wireless)
-  (form-replace (format #f "/net-wifi?iface=~A" (form-value "name"))))
-
 (define (init)
   (ui-read (form-value "iface"))
   (form-bind "ok" "click" ui-write)
-  (form-bind "cancel" "click" ui-exit)
-  (form-bind "wireless" "click" ui-wireless))
+  (form-bind "cancel" "click" ui-exit))
