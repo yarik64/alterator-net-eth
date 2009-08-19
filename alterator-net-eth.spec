@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 4.5
-Release: alt3
+Version: 4.6
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -68,6 +68,21 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Wed Aug 19 2009 Vladislav Zavjalov <slazav@altlinux.org> 4.6-alt1
+[slazav@]
+- fix net-wifi calls
+[inger@]
+- fix wireless property calculation, use real interface instead of bridge
+  (closes: #19870)
+- html ui:
+  * move "wireless settings" button into main interface
+  * show "wireless settings" button only for interfaces controlled by etcnet
+  * redirect to wireless dialog with real interface, not bridge
+- qt ui:
+  * move "wireless settings" button into main interface
+  * show "wireless settings" button only for interfaces controlled by etcnet
+  * redirect to wireless dialog with real interface, not bridge
+
 * Fri Jun 26 2009 Stanislav Ievlev <inger@altlinux.org> 4.5-alt3
 - use workflow 'none'
 - drop "hardware binding" support because ifrename doing it automatically now.
