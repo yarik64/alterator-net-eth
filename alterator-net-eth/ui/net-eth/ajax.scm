@@ -53,7 +53,7 @@
 
 (define (wireless-interface)
   (format #t "wireless-interface:real_name=~S~%" (form-value "real_name"))
-  (form-replace "/net-wifi/" 'interface (form-value "real_name")))
+  (form-replace "/net-wifi/" 'iface (form-value "real_name")))
 
 (define (commit-interface)
   (catch/message

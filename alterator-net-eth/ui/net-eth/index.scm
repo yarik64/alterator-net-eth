@@ -65,7 +65,7 @@
 
 (define (wireless-interface)
   (format #t "wireless-interface:real_name=~S~%" (form-value "real_name"))
-  (form-popup "/net-wifi/" 'interface (form-value "real_name")))
+  (form-popup "/net-wifi/" 'iface (form-value "real_name")))
 
 ;;; UI
 
