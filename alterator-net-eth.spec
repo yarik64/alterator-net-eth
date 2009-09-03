@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.6
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -68,6 +68,10 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Thu Sep 03 2009 Stanislav Ievlev <inger@altlinux.org> 4.6-alt2
+- qt ui: fix layout
+- use ipv4addr_prefix_to_mask instead of maskname
+
 * Wed Aug 19 2009 Vladislav Zavjalov <slazav@altlinux.org> 4.6-alt1
 [slazav@]
 - fix net-wifi calls
