@@ -136,18 +136,18 @@ height 200
 
     ;;
     (spacer)
-    (button text (_ "Advanced...") name "advanced" align "right")
+    (button text (_ "Advanced...") name "advanced" align "right"))
 
-    ;;
-    (or (global 'frame:next)
-		(label colspan 2)))
+  ;;
+  (or (global 'frame:next)
+      (label colspan 2))
 
-	;;
-	(or (global 'frame:next)
-		(hbox align "left"
-			  colspan 2
-			  (button (_ "Apply") name "apply")
-			  (button (_ "Reset") name "reset"))))
+  ;;
+  (or (global 'frame:next)
+      (hbox align "left"
+	    colspan 2
+	    (button (_ "Apply") name "apply")
+	    (button (_ "Reset") name "reset"))))
 
 ;;;;;;;;;;;;;;;;;;
 
