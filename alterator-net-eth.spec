@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 4.6
-Release: alt2
+Version: 4.7
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -13,7 +13,7 @@ License: GPL
 Group: System/Configuration/Other
 Requires: alterator >= 4.7-alt3 libshell >= 0.0.1-alt4
 Requires: alterator-l10n >= 2.1-alt9
-Requires: alterator-sh-functions >= 0.6-alt5
+Requires: alterator-sh-functions >= 0.12-alt1
 Requires: alterator-hw-functions >= 0.7-alt2
 Requires: alterator-net-functions >= 1.0-alt3
 Requires: alterator-net-wifi >= 0.5-alt1
@@ -68,6 +68,9 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Fri Nov 13 2009 Stanislav Ievlev <inger@altlinux.org> 4.7-alt1
+- user alterator_export_var
+
 * Thu Sep 03 2009 Stanislav Ievlev <inger@altlinux.org> 4.6-alt2
 - qt ui: fix layout
 - use ipv4addr_prefix_to_mask instead of maskname

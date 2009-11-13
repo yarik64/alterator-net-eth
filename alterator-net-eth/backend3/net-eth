@@ -343,17 +343,16 @@ write_iface()
 iface_up lo
 clear_cache
 
+alterator_export_var \
+    computer_name	system-computer-name \
+    ip 			ipv4-address \
+    default		ipv4-address \
+    search		hostname-list \
+    dns			ipv4-address-list
+
 on_message()
 {
 	case "$in_action" in
-		type)
-		    write_type_item computer_name system-computer-name
-		    write_type_item ip ipv4-address
-		    write_type_item default ipv4-address
-
-		    write_type_item search hostname-list
-		    write_type_item dns ipv4-address-list
-		    ;;
 		list)
 			case "${in__objects##*/}" in
 			    avail_masks) list_mask ;;
