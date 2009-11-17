@@ -69,9 +69,6 @@
 
 ;;; UI
 
-width 400
-height 200
-
 (edit name "prev_name" text "" visibility #f)
 (edit name "real_name" text "" visibility #f)
 (gridbox
