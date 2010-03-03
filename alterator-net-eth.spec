@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.7
-Release: alt2
+Release: alt3
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -68,6 +68,9 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Wed Mar 03 2010 Mikhail Efremov <sem@altlinux.org> 4.7-alt3
+- check hostname length.
+
 * Tue Nov 17 2009 Stanislav Ievlev <inger@altlinux.org> 4.7-alt2
 - fix ui for qt interface
 
