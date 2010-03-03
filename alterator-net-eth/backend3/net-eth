@@ -7,6 +7,8 @@ postcommit_hooks_dir=/usr/lib/alterator/hooks/net-eth.d
 rdelim='[[:space:]]\+'
 wdelim=' '
 
+max_hostname_length=64
+
 alterator_api_version=1
 
 . alterator-sh-functions
@@ -121,6 +123,19 @@ commit_cache()
 }
 
 ### hostname
+check_hostname()
+{
+    local hn="$1"
+    local length=
+
+    length="$(printf "%s" "$hn" | wc -m)"
+    if [ $length -gt $max_hostname_length ]; then
+        write_error "`_ "Host name is too long"`"
+        return 1
+    fi
+    return 0
+}
+
 read_hostname()
 {
 	local netconfig="/etc/sysconfig/network"
@@ -136,6 +151,7 @@ write_hostname()
 {
 	local netconfig="$cachedir/network"
 
+    check_hostname "$1" || return
 	shell_config_set "$netconfig" HOSTNAME "$1"
 	shell_config_del "$netconfig" DOMAINNAME
 }
