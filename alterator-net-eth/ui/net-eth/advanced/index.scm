@@ -6,11 +6,10 @@
 (define (ui-read)
   (catch/message
     (lambda()
-      (let ((cmd (woo-read-first "/net-eth" 'name *name*)))
+      (let ((cmd (woo-read-first "/net-eth" 'name  *name*)))
       (form-update-enum "controlled" (woo-list "/net-eth/avail_controlled"))
-      (form-update-value "name" *name*)
 
-      (form-update-value-list '("controlled") cmd)))))
+      (form-update-value-list '("name" "controlled" "bridge") cmd)))))
 
 (define (ui-exit)
   (document:end))
@@ -19,9 +18,17 @@
   (catch/message
     (lambda()
       (woo-write "/net-eth"
-		 'name *name*
-		 'controlled (form-value "controlled"))
+		 'name (form-value "name")
+		 'controlled (form-value "controlled")
+         'bridge (form-value "bridge"))
       (ui-exit))))
+
+(define (bridge-changed)
+  (let* ((name (form-value "name"))
+         (new-name (if (form-value "bridge")
+                     (string-append "br" name)
+                     (substring name 2))))
+    (form-update-value "name" new-name)))
 
 ;;; UI
 
@@ -39,7 +46,9 @@ height 300
   ;;
   (label text (_ "Network subsystem:") align "right" name "controlled")
   (combobox name "controlled")
-
+  ;;
+  (label text (_ "Use interface as bridge") align "right" name "bridge")
+  (checkbox name "bridge")
   ;;
   (label colspan 2)
 
@@ -53,5 +62,6 @@ height 300
 (document:root
   (when loaded
     (ui-read)
+    (form-bind "bridge" "change" bridge-changed)
     (form-bind "ok" "click" ui-write)
     (form-bind "cancel" "click" ui-exit)))

@@ -61,7 +61,10 @@
       (form-update-value "name" (form-value "prev_name"))))
 
 (define (advanced-interface)
- (form-popup "/net-eth/advanced" 'name (form-value "name")))
+  (let ((name (form-value "name")))
+    (form-popup "/net-eth/advanced" 'name name)
+    (form-update-enum "name" (woo-list "/net-eth/avail_ifaces"))
+    (read-interface name)))
 
 (define (wireless-interface)
   (format #t "wireless-interface:real_name=~S~%" (form-value "real_name"))

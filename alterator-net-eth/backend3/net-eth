@@ -23,23 +23,87 @@ is_defined()
     set|grep -qs "^$(quote_sed_regexp "$1")="
 }
 
+is_bridge()
+{
+    local ifacedir="$1"; shift
+    local iface="${ifacedir##*/}"
+
+    if netdev_is_up "$iface"; then
+        netdev_is_bridge "$iface"
+    else
+        [ "$ifacedir" != "$iface" ] || ifacedir="/etc/net/ifaces/$iface"
+        [ "$(read_iface_option "$ifacedir" TYPE)" = bri ]
+    fi
+}
+
 real_iface()
 {
-    if netdev_is_bridge "$1";then
-	netdev_list_brif "$1"|head -n1
+    local ifacedir="$1"; shift
+    local iface="${ifacedir##*/}"
+
+    [ "$ifacedir" != "$iface" ] || ifacedir="/etc/net/ifaces/$iface"
+    if is_bridge "$ifacedir";then
+        if netdev_is_up "$iface"; then
+            netdev_list_brif "$iface"|head -n1
+        else
+            read_iface_option "$ifacedir" HOST | sed -rn "s;^['\"]?([[:alnum:]]+).*;\1;p"
+        fi
     else
-	echo "$1"
+        echo "$iface"
+    fi
+}
+
+name_with_bridge()
+{
+    local name="$1"; shift
+    local ifacedir=
+
+    if [ -d "$cachedir/br$name" ] && [ "$(real_iface "$cachedir/br$name")" = "$name" ]; then
+        echo "br$name"
+    elif [ -d "$cachedir/${name#br}" ]; then
+        echo "${name#br}"
+    else
+        echo "$name"
     fi
 }
 
 ### cache
 init_cache()
 {
-    local ifacedir="/etc/net/ifaces/$1"
+    local name="$1"; shift
+    local bridge="${1-}"
+    local ifacedir="/etc/net/ifaces/$name"
+    local dstdir="$cachedir/$name"
+    local srcname=
 
-    if [ ! -d "$cachedir/$1" ] ;then
-	[ -d "$ifacedir" ] && cp -a "$ifacedir" "$cachedir"
-	mkdir -p -- "$cachedir/$1"
+    if [ ! -d "$dstdir" ] ;then
+        if [ -n "$bridge" ]; then
+            if test_bool "$bridge"; then
+                srcname="${name#br}"
+                if [ -d "$cachedir/$srcname" ]; then
+                    mv -f -- "$cachedir/$srcname" "$dstdir"
+                    echo "mv -f -- $cachedir/$srcname $dstdir"
+                elif [ -d "$ifacedir" ]; then
+                    cp -a "$ifacedir" "$cachedir"
+                    echo "cp -a $ifacedir $cachedir"
+                elif [ -d "/etc/net/ifaces/$srcname" ]; then
+                    cp -a "/etc/net/ifaces/$srcname" "$dstdir"
+                    echo "cp -a /etc/net/ifaces/$srcname $dstdir"
+                fi
+            else
+                srcname="br$name"
+                if [ -d "$cachedir/$srcname" ]; then
+                    mv -f -- "$cachedir/$srcname" "$dstdir"
+                elif [ -d "/etc/net/ifaces/$srcname" ]; then
+                    cp -a "/etc/net/ifaces/$srcname" "$dstdir"
+                elif [ -d "$ifacedir" ]; then
+                    cp -a "$ifacedir" "$cachedir"
+                fi
+            fi
+        else
+            [ -d "$ifacedir" ] && cp -a "$ifacedir" "$cachedir"
+        fi
+        mkdir -p -- "$dstdir"
     fi
 
     [ ! -f /etc/sysconfig/network -o -f "$cachedir/network" ] || cp /etc/sysconfig/network "$cachedir/network"
@@ -89,6 +153,12 @@ commit_cache()
 
 	    local ifname="${iface##*/}"
 
+        #try to stop and remove old bridge
+        if [ -d "/etc/net/ifaces/br$ifname" ] && is_bridge "/etc/net/ifaces/br$ifname"; then
+            [ -n "$DURING_INSTALL" ] || iface_down "br$ifname"
+            rm -rf -- "/etc/net/ifaces/br$ifname"
+        fi
+
 	    [ -n "$DURING_INSTALL" ] || iface_down "$ifname"
 
 	    local old_ip="$(read_iface_addr "/etc/net/ifaces/$ifname")"
@@ -102,11 +172,14 @@ commit_cache()
 	    mv -f -- "$cachedir/$ifname" "/etc/net/ifaces/$ifname"
 
 	    #add config for bridge members
-	    if netdev_is_bridge "$ifname";then
-		local real_fname="$(real_iface "$ifname")"
-		rm -rf -- "/etc/net/ifaces/$real_fname"
-		mkdir -p -- "/etc/net/ifaces/$real_fname"
-		printf 'TYPE=eth' >"/etc/net/ifaces/$real_fname/options"
+	    if is_bridge "$ifname";then
+            local real_fname="$(real_iface "$ifname")"
+            if [ -n "$real_fname" ]; then
+                [ -n "$DURING_INSTALL" ] || iface_down "$real_fname"
+                rm -rf -- "/etc/net/ifaces/$real_fname"
+                mkdir -p -- "/etc/net/ifaces/$real_fname"
+                printf 'TYPE=eth\nBOOTPROTO=static\n' >"/etc/net/ifaces/$real_fname/options"
+            fi
 	    fi
 
 	    #try to restart
@@ -178,6 +251,19 @@ write_computer_name()
 }
 
 ### interface work
+list_eth_cached()
+{
+    list_eth | while read name; do
+        if [ -d "$cachedir/br$name" ] && [ "$(real_iface "$cachedir/br$name")" = "$name" ]; then
+            name="br$name"
+        elif [ -d "$cachedir/${name#br}" ]; then
+            name="${name#br}"
+        elif [ -d "/etc/net/ifaces/br$name" ] && [ "$(real_iface "br$name")" = "$name" ]; then
+            name="br$name"
+        fi
+        echo "$name" 2>/dev/null
+    done
+}
 
 list_mask()
 {
@@ -252,6 +338,7 @@ read_iface()
 {
 	local name="$1"; shift
 	local ifacedir=
+    local bridge=no
 
 	if [ -d "$cachedir/$name" ];then
 	    ifacedir="$cachedir/$name"
@@ -283,6 +370,8 @@ read_iface()
 	write_string_param default "$(read_iface_default_gw "$ifacedir")"
 
 	write_string_param ip_string "$(netdev_read_ip "$name"|head -n1)"
+    is_bridge "$ifacedir" && bridge=yes
+    write_bool_param bridge "$bridge"
 }
 
 write_controlled()
@@ -326,14 +415,23 @@ write_configuration()
 
 write_iface()
 {
-	local name="$1" && shift
+	local name="$1"; shift
+    local bridge="${1-}"
 	local ifacedir="$cachedir/$name"
 
-	if netdev_is_bridge "$name";then
+    if [ -z "$bridge" ]; then
+        is_bridge "$ifacedir" && bridge="#t" || bridge="#f"
+    fi
+	if test_bool "$bridge"; then
+        # During the creation a new bridge HOST not setted yet
+        local host="$(real_iface "$name")"
+        [ "$name" != "$host" ] || host="${name#br}"
 	    write_iface_option "$ifacedir" TYPE bri
-	    write_iface_option "$ifacedir" HOST "$(real_iface "$name")"
+	    write_iface_option "$ifacedir" HOST "$host"
+        [ "$in_controlled" != NetworkManager ] || in_controlled=etcnet
 	else
 	    write_iface_option "$ifacedir" TYPE eth
+        shell_config_del "$ifacedir/options" HOST
 	fi
 
 	[ -n "$in_mask" ] && [ -n "$in_ip" ] &&
@@ -374,12 +472,13 @@ on_message()
 			    avail_masks) list_mask ;;
 			    avail_configurations) list_configuration ;;
 			    avail_controlled) list_controlled ;;
-			    *) list_eth|write_enum ;;
+			    *) list_eth_cached|write_enum;;
 			esac
 			;;
 		read)
 			local name="${in_name}"
-			[ -n "$name" ] || name="$(list_eth|head -n1)"
+			[ -n "$name" ] || name="$(list_eth_cached|head -n1)"
+            name="$(name_with_bridge "$name")"
 			[ -n "$name" ] && read_iface "$name"
 
 			write_string_param name		"$name"
@@ -388,20 +487,21 @@ on_message()
 			write_string_param computer_domain "$(read_computer_domain)"
 			;;
 		write)
+            if  [ -n "$in_reset" ]; then
+                clear_cache
+                return
+            fi
 			local name="${in_name}"
-			[ -n "$name" ] || name="$(list_eth|head -n1)"
+			[ -n "$name" ] || name="$(list_eth_cached|head -n1)"
+			init_cache "$name" "$in_bridge"
 
-			init_cache "$name"
-
-			[ -n "$name" ] && write_iface "$name"
+			[ -n "$name" ] && write_iface "$name" "$in_bridge"
 
 			[ -n "$in_computer_name" ] && write_computer_name "$in_computer_name"
 			[ -n "$in_hostname" ] && write_hostname "$in_hostname"
 
 			if [ -n "$in_commit" ]; then
 			    commit_cache || return
-			elif [ -n "$in_reset" ]; then
-			    clear_cache || return
 			fi
 			;;
 	esac

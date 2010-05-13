@@ -66,8 +66,9 @@
     (lambda()
       (woo-write "/net-eth" 'reset #t)
 
-      (read-interface (or (form-value "iface") ""))
-      (form-update-value "prev_name" (or (form-value "iface") "")))))
+      (form-update-enum "name" (woo-list "/net-eth/avail_ifaces" 'language (form-value "language")))
+      (read-interface "")
+      (form-update-value "prev_name"  ""))))
 
 (define (init-interface)
   (catch/message
