@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 4.7
-Release: alt3
+Version: 4.8
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -68,6 +68,9 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Thu May 13 2010 Mikhail Efremov <sem@altlinux.org> 4.8-alt1
+- create/destroy bridges.
+
 * Wed Mar 03 2010 Mikhail Efremov <sem@altlinux.org> 4.7-alt3
 - check hostname length.
 
