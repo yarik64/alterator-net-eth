@@ -82,13 +82,10 @@ init_cache()
                 srcname="${name#br}"
                 if [ -d "$cachedir/$srcname" ]; then
                     mv -f -- "$cachedir/$srcname" "$dstdir"
-                    echo "mv -f -- $cachedir/$srcname $dstdir"
                 elif [ -d "$ifacedir" ]; then
                     cp -a "$ifacedir" "$cachedir"
-                    echo "cp -a $ifacedir $cachedir"
                 elif [ -d "/etc/net/ifaces/$srcname" ]; then
                     cp -a "/etc/net/ifaces/$srcname" "$dstdir"
-                    echo "cp -a /etc/net/ifaces/$srcname $dstdir"
                 fi
             else
                 srcname="br$name"
