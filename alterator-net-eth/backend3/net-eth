@@ -322,7 +322,6 @@ read_controlled()
 
 read_configuration()
 {
-    local disabled="$(read_iface_option "$1" DISABLED)"
     local bootproto="$(read_iface_option "$1" BOOTPROTO)"
 
     if [ "$bootproto" = "static" ];then
