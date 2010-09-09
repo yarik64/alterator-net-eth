@@ -7,7 +7,7 @@
 
 (define (update-configuration configuration)
     (form-update-activity
-      '("ip" "mask" "default")
+      '("addresses" "default")
       (string=? configuration "static")))
 
 (define (read-interface name)
@@ -24,7 +24,7 @@
       '("computer_name" "dns" "search")
       cmd)
     (form-update-value-list
-      '("adaptor" "ip" "mask" "default" "configuration")
+      '("adaptor" "addresses" "default" "configuration")
       cmd)
 
     (update-configuration (woo-get-option cmd 'configuration))))
@@ -35,7 +35,7 @@
 	 'name name
 	 (form-value-list '("language"
 			    "computer_name" "dns" "search"
-			    "ip" "mask" "default" "configuration"))))
+			    "addresses" "default" "configuration"))))
 
 ;;; high level
 
@@ -73,7 +73,6 @@
 (define (init-interface)
   (catch/message
     (lambda()
-      (form-update-enum "mask" (woo-list "/net-eth/avail_masks" 'language (form-value "language")))
       (form-update-enum "configuration" (woo-list "/net-eth/avail_configurations" 'language (form-value "language")))
       (form-update-enum "name" (woo-list "/net-eth/avail_ifaces" 'language (form-value "language")))
 
