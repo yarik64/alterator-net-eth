@@ -1,7 +1,7 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 4.8
+Version: 4.9
 Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
@@ -68,6 +68,9 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Thu Sep 09 2010 Sergey V Turchin <zerg@altlinux.org> 4.9-alt1
+- add multiple interface addresses support
+
 * Thu May 13 2010 Mikhail Efremov <sem@altlinux.org> 4.8-alt1
 - create/destroy bridges.
 
