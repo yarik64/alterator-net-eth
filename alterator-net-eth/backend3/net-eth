@@ -451,7 +451,7 @@ clear_cache
 
 alterator_export_var \
     computer_name	system-computer-name \
-    addresses 		ipv4-network-list \
+    addresses 		ipv4-addrwmask-list \
     default		ipv4-address \
     search		hostname-list \
     dns			ipv4-address-list

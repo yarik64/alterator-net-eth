@@ -1,7 +1,7 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 4.9
+Version: 4.10
 Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
@@ -11,7 +11,7 @@ Source:%name-%version.tar
 Summary: alterator module for tcp/ip connections configuration
 License: GPL
 Group: System/Configuration/Other
-Requires: alterator >= 4.17 libshell >= 0.0.1-alt4
+Requires: alterator >= 4.19 libshell >= 0.0.1-alt4
 Requires: alterator-l10n >= 2.1-alt9
 Requires: alterator-sh-functions >= 0.12-alt1
 Requires: alterator-hw-functions >= 0.7-alt2
@@ -68,6 +68,9 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Thu Oct 21 2010 Sergey V Turchin <zerg@altlinux.org> 4.10-alt1
+- using ipv4-addrwmask-list type
+
 * Thu Sep 09 2010 Sergey V Turchin <zerg@altlinux.org> 4.9-alt1
 - add multiple interface addresses support
 
