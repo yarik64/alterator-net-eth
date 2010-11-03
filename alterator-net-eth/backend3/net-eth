@@ -161,8 +161,8 @@ commit_cache()
 
 	    [ -n "$DURING_INSTALL" ] || iface_down "$ifname"
 
-	    local old_addresses="$(read_iface_addresses "/etc/net/ifaces/$ifname")"
-	    local new_addresses="$(read_iface_addresses "$iface")"
+	    local old_ip="$(read_iface_addr "/etc/net/ifaces/$ifname")"
+	    local new_ip="$(read_iface_addr "$iface")"
 
 	    local old_configuration="$(read_configuration "/etc/net/ifaces/$ifname")"
 	    local new_configuration="$(read_configuration "$iface")"
@@ -185,8 +185,8 @@ commit_cache()
 	    #try to restart
 	    [ -n "$DURING_INSTALL" ] && netdev_is_up "$ifname" || iface_up "$ifname"
 
-	    if [ "$old_addresses" != "$new_addresses" -o "$old_configuration" != "$new_configuration" ];then
-		export old_addresses new_addresses old_configuration new_configuration
+	    if [ "$old_ip" != "$new_ip" -o "$old_configuration" != "$new_configuration" ];then
+		export old_ip new_ip old_configuration new_configuration
 		run-parts  "$postcommit_hooks_dir"  "$ifname"
 	    fi
 	done
@@ -358,7 +358,15 @@ read_iface()
 	write_string_param dns "$(read_iface_dns "$ifacedir")"
 	write_string_param search "$(read_iface_search "$ifacedir")"
 
-	write_string_param addresses "$(read_iface_addresses "$ifacedir")"
+	local addr="$(read_iface_addr "$ifacedir")"
+	local ip= mask=
+	if [ -n "$addr" ]; then
+		ip="${addr%%/*}"
+		mask="${addr#$ip}"; mask="${mask#/}"
+	fi
+
+	write_string_param ip "$ip"
+	write_string_param mask "${mask:-24}"
 	write_string_param default "$(read_iface_default_gw "$ifacedir")"
 
 	write_string_param ip_string "$(netdev_read_ip "$name"|head -n1)"
@@ -426,8 +434,8 @@ write_iface()
         shell_config_del "$ifacedir/options" HOST
 	fi
 
-	is_defined "in_addresses" &&
-	    write_iface_addresses "$ifacedir" "$in_addresses"
+	[ -n "$in_mask" ] && [ -n "$in_ip" ] &&
+		write_iface_addr "$ifacedir" "$in_ip/$in_mask"
 
 	is_defined "in_default" &&
 		write_iface_default_gw "$ifacedir" "$in_default"
@@ -451,7 +459,7 @@ clear_cache
 
 alterator_export_var \
     computer_name	system-computer-name \
-    addresses 		ipv4-addrwmask-list \
+    ip 			ipv4-address \
     default		ipv4-address \
     search		hostname-list \
     dns			ipv4-address-list
@@ -470,7 +478,7 @@ on_message()
 		read)
 			local name="${in_name}"
 			[ -n "$name" ] || name="$(list_eth_cached|head -n1)"
-			name="$(name_with_bridge "$name")"
+            name="$(name_with_bridge "$name")"
 			[ -n "$name" ] && read_iface "$name"
 
 			write_string_param name		"$name"

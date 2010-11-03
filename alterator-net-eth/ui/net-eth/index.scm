@@ -2,10 +2,9 @@
 
 ;;; Functions
 
-;      '("addresses" "default")
 (define (update-configuration configuration)
     (form-update-activity
-      '("default")
+      '("ip" "mask" "default")
       (string=? configuration "static")))
 
 (define (read-interface name)
@@ -19,10 +18,10 @@
       '("name" "real_name")
       cmd)
     (form-update-value-list
-      '("computer_name" "addresses" "dns" "search")
+      '("computer_name" "dns" "search")
       cmd)
     (form-update-value-list
-      '("adaptor" "default" "configuration")
+      '("adaptor" "ip" "mask" "default" "configuration")
       cmd)
 
     (update-configuration (woo-get-option cmd 'configuration))))
@@ -32,7 +31,7 @@
 	 "/net-eth"
 	 'name name
 	 (form-value-list '("computer_name" "dns" "search"
-			    "addresses" "default" "configuration"))))
+			    "ip" "mask" "default" "configuration"))))
 
 (define (commit-interface)
   (catch/message
@@ -45,6 +44,7 @@
     (lambda()
       (woo-write "/net-eth" 'reset #t)
 
+      (form-update-enum "mask" (woo-list "/net-eth/avail_masks"))
       (form-update-enum "configuration" (woo-list "/net-eth/avail_configurations"))
       (form-update-enum "name" (woo-list "/net-eth/avail_ifaces"))
 
@@ -102,18 +102,17 @@
     ;;
     (label text (_ "Configuration:") align "right" nameref "configuration")
     (combobox name "configuration")
+    ;;
+    (label text (_ "IP address:") align "right" nameref "ip")
+    (edit name "ip")
+
+    ;;
+    (label text (_ "Netmask:") align "right" nameref "mask")
+    (combobox name "mask")
 
     ;;
     (label text (_ "Default gateway:") align "right" nameref "default")
     (edit name "default")
-
-    ;;
-    (separator colspan 2)
-    (spacer)(label text (small (_ "(multiple values should be space separated)")))
-
-    ;;
-    (label text (_ "IP addresses:") align "right" nameref "addresses")
-    (edit name "addresses")
 
 
     ;;
@@ -125,7 +124,10 @@
     (edit name "search")
 
     ;;
-    (separator colspan 2)
+    (spacer)
+    (label text (small (_ "(multiple values should be space separated)")))
+
+    ;;
     (label colspan 2)
 
     ;;
