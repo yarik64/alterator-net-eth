@@ -1,7 +1,7 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 4.10
+Version: 4.11
 Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
@@ -68,6 +68,9 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Wed Nov 03 2010 Anton V. Boyarshinov <boyarsh@altlinux.ru> 4.11-alt1
+- revert to last usable version (4.8-alt1)
+
 * Thu Oct 21 2010 Sergey V Turchin <zerg@altlinux.org> 4.10-alt1
 - using ipv4-addrwmask-list type
 
