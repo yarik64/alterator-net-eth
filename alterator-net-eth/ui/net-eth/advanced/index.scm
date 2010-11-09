@@ -6,8 +6,9 @@
 (define (ui-read)
   (catch/message
     (lambda()
-      (let ((cmd (woo-read-first "/net-eth" 'name  *name*)))
-      (form-update-enum "controlled" (woo-list "/net-eth/avail_controlled"))
+      (let* ((cmd (woo-read-first "/net-eth" 'name  *name*))
+             (is_bridge (woo-get-option cmd 'bridge)))
+      (form-update-enum "controlled" (woo-list "/net-eth/avail_controlled" 'bridge is_bridge))
 
       (form-update-value-list '("name" "controlled" "bridge") cmd)))))
 
@@ -25,10 +26,14 @@
 
 (define (bridge-changed)
   (let* ((name (form-value "name"))
-         (new-name (if (form-value "bridge")
+         (is_bridge (form-value "bridge"))
+         (new-name (if is_bridge
                      (string-append "br" name)
-                     (substring name 2))))
-    (form-update-value "name" new-name)))
+                     (substring name 2)))
+         (cmd (woo-read-first "/net-eth/controlled" 'name name 'bridge is_bridge)))
+    (form-update-value "name" new-name)
+    (form-update-enum "controlled" (woo-list "/net-eth/avail_controlled" 'bridge is_bridge))
+    (form-update-value "controlled" (woo-get-option cmd 'controlled))))
 
 ;;; UI
 

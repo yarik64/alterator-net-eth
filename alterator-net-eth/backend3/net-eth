@@ -271,8 +271,11 @@ list_mask()
 
 list_controlled()
 {
+    local bridge="$1"; shift
     write_enum_item "etcnet" "Etcnet"
-    [ ! -f "/usr/sbin/NetworkManager" ] || write_enum_item "NetworkManager" "NetworkManager"
+    if [ -f "/usr/sbin/NetworkManager" ] && ! test_bool "$bridge"; then
+	write_enum_item "NetworkManager" "NetworkManager"
+    fi
     write_enum_item "nothing" "`_ "not under control"`"
 }
 
@@ -330,17 +333,22 @@ read_configuration()
     fi
 }
 
+get_ifacedir()
+{
+	local name="$1"; shift
+
+	if [ -d "$cachedir/$name" ];then
+	    echo "$cachedir/$name"
+	else
+	    echo "/etc/net/ifaces/$name"
+	fi
+}
+
 read_iface()
 {
 	local name="$1"; shift
-	local ifacedir=
+	local ifacedir="$(get_ifacedir "$name")"
 	local bridge=no
-
-	if [ -d "$cachedir/$name" ];then
-	    ifacedir="$cachedir/$name"
-	else
-	    ifacedir="/etc/net/ifaces/$name"
-	fi
 
 	#collect general information
 	local real_name="$(real_iface "$name")"
@@ -467,7 +475,7 @@ on_message()
 			case "${in__objects##*/}" in
 			    avail_masks) list_mask ;;
 			    avail_configurations) list_configuration ;;
-			    avail_controlled) list_controlled ;;
+			    avail_controlled) list_controlled "$in_bridge";;
 			    *) list_eth_cached|write_enum;;
 			esac
 			;;
@@ -475,12 +483,23 @@ on_message()
 			local name="${in_name}"
 			[ -n "$name" ] || name="$(list_eth_cached|head -n1)"
 			name="$(name_with_bridge "$name")"
-			[ -n "$name" ] && read_iface "$name"
+			case "$in__objects" in
+			    /)
+				[ -n "$name" ] && read_iface "$name"
 
-			write_string_param name		"$name"
+				write_string_param name		"$name"
 
-			write_string_param computer_name "$(read_computer_name)"
-			write_string_param computer_domain "$(read_computer_domain)"
+				write_string_param computer_name "$(read_computer_name)"
+				write_string_param computer_domain "$(read_computer_domain)"
+				;;
+			    controlled)
+				local controlled="$(read_controlled "$(get_ifacedir "$name")")"
+				if test_bool "$in_bridge" && [ "$controlled" = 'NetworkManager' ]; then
+				    controlled='etcnet';
+				fi
+				write_string_param controlled "$controlled"
+				;;
+			esac
 			;;
 		write)
 			if  [ -n "$in_reset" ]; then
