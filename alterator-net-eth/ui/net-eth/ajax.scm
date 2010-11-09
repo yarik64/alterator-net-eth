@@ -49,7 +49,11 @@
       (form-update-value "name" (form-value "prev_name"))))
 
 (define (advanced-interface)
-  (form-replace "/net-eth/advanced" 'iface (form-value "name")))
+  (let ((name (form-value "name")))
+    (and (catch/message
+           (lambda()
+             (write-interface name)))
+         (form-replace "/net-eth/advanced" 'iface name))))
 
 (define (wireless-interface)
   (format #t "wireless-interface:real_name=~S~%" (form-value "real_name"))

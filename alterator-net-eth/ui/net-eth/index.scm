@@ -62,9 +62,13 @@
 
 (define (advanced-interface)
   (let ((name (form-value "name")))
-    (form-popup "/net-eth/advanced" 'name name)
-    (form-update-enum "name" (woo-list "/net-eth/avail_ifaces"))
-    (read-interface name)))
+    (and (catch/message
+           (lambda()
+             (write-interface name)))
+         (begin
+           (form-popup "/net-eth/advanced" 'name name)
+           (form-update-enum "name" (woo-list "/net-eth/avail_ifaces"))
+           (read-interface name)))))
 
 (define (wireless-interface)
   (format #t "wireless-interface:real_name=~S~%" (form-value "real_name"))
