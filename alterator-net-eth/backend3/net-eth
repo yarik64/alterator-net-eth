@@ -221,7 +221,7 @@ write_hostname()
 {
 	local netconfig="$cachedir/network"
 
-    check_hostname "$1" || return
+	check_hostname "$1" || return
 	shell_config_set "$netconfig" HOSTNAME "$1"
 	shell_config_del "$netconfig" DOMAINNAME
 }
@@ -334,7 +334,7 @@ read_iface()
 {
 	local name="$1"; shift
 	local ifacedir=
-    local bridge=no
+	local bridge=no
 
 	if [ -d "$cachedir/$name" ];then
 	    ifacedir="$cachedir/$name"
@@ -366,8 +366,8 @@ read_iface()
 	write_string_param default "$(read_iface_default_gw "$ifacedir")"
 
 	write_string_param ip_string "$(netdev_read_ip "$name"|head -n1)"
-    is_bridge "$ifacedir" && bridge=yes
-    write_bool_param bridge "$bridge"
+	is_bridge "$ifacedir" && bridge=yes
+	write_bool_param bridge "$bridge"
 }
 
 write_controlled()
@@ -412,12 +412,12 @@ write_configuration()
 write_iface()
 {
 	local name="$1"; shift
-    local bridge="${1-}"
+	local bridge="${1-}"
 	local ifacedir="$cachedir/$name"
 
-    if [ -z "$bridge" ]; then
-        is_bridge "$ifacedir" && bridge="#t" || bridge="#f"
-    fi
+	if [ -z "$bridge" ]; then
+	    is_bridge "$ifacedir" && bridge="#t" || bridge="#f"
+	fi
 	if test_bool "$bridge"; then
         # During the creation a new bridge HOST not setted yet
         local host="$(real_iface "$name")"
@@ -427,14 +427,14 @@ write_iface()
         [ "$in_controlled" != NetworkManager ] || in_controlled=etcnet
 	else
 	    write_iface_option "$ifacedir" TYPE eth
-        shell_config_del "$ifacedir/options" HOST
+	    shell_config_del "$ifacedir/options" HOST
 	fi
 
 	[ -n "$in_mask" ] && [ -n "$in_ip" ] &&
 		write_iface_addr "$ifacedir" "$in_ip/$in_mask"
 
 	is_defined "in_default" &&
-		write_iface_default_gw "$ifacedir" "$in_default"
+	    write_iface_default_gw "$ifacedir" "$in_default"
 
 	[ -n "$in_controlled" ] &&
 	    write_controlled "$ifacedir" "$in_controlled"
@@ -474,7 +474,7 @@ on_message()
 		read)
 			local name="${in_name}"
 			[ -n "$name" ] || name="$(list_eth_cached|head -n1)"
-            name="$(name_with_bridge "$name")"
+			name="$(name_with_bridge "$name")"
 			[ -n "$name" ] && read_iface "$name"
 
 			write_string_param name		"$name"
@@ -483,10 +483,10 @@ on_message()
 			write_string_param computer_domain "$(read_computer_domain)"
 			;;
 		write)
-            if  [ -n "$in_reset" ]; then
-                clear_cache
-                return
-            fi
+			if  [ -n "$in_reset" ]; then
+			    clear_cache
+			    return
+			fi
 			local name="${in_name}"
 			[ -n "$name" ] || name="$(list_eth_cached|head -n1)"
 			init_cache "$name" "$in_bridge"
