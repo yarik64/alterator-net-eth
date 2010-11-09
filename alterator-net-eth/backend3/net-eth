@@ -351,7 +351,7 @@ read_iface()
 	local bridge=no
 
 	#collect general information
-	local real_name="$(real_iface "$name")"
+	local real_name="$(real_iface "$ifacedir")"
 	write_string_param real_name "$real_name"
 
 	write_string_param adaptor "$(read_info "$real_name")"
@@ -428,7 +428,7 @@ write_iface()
 	fi
 	if test_bool "$bridge"; then
         # During the creation a new bridge HOST not setted yet
-        local host="$(real_iface "$name")"
+        local host="$(real_iface "$ifacedir")"
         [ "$name" != "$host" ] || host="${name#br}"
 	    write_iface_option "$ifacedir" TYPE bri
 	    write_iface_option "$ifacedir" HOST "$host"
