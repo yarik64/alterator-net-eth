@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.11
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -68,6 +68,14 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Tue Nov 09 2010 Mikhail Efremov <sem@altlinux.org> 4.11-alt2
+- qt gui: fix prev_iface value.
+- backend: fix real_iface() calls.
+- Don't expose NetworkManager for bridge as a controlling system.
+- To cache the changes when going to 'advanced' page (closes: #23689).
+- backend: remove debug output.
+- backend: remove unused variable.
+
 * Wed Nov 03 2010 Anton V. Boyarshinov <boyarsh@altlinux.ru> 4.11-alt1
 - revert to last usable version (4.8-alt1)
 
