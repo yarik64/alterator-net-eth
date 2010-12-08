@@ -4,7 +4,7 @@
 
 (define (update-configuration configuration)
     (form-update-activity
-      '("ip" "mask" "default")
+      '("addresses" "default")
       (string=? configuration "static")))
 
 (define (read-interface name)
@@ -18,10 +18,10 @@
       '("name" "real_name")
       cmd)
     (form-update-value-list
-      '("computer_name" "dns" "search")
+      '("computer_name" "addresses" "dns" "search")
       cmd)
     (form-update-value-list
-      '("adaptor" "ip" "mask" "default" "configuration")
+      '("mask" "adaptor" "default" "configuration")
       cmd)
 
     (update-configuration (woo-get-option cmd 'configuration))))
@@ -31,7 +31,7 @@
 	 "/net-eth"
 	 'name name
 	 (form-value-list '("computer_name" "dns" "search"
-			    "ip" "mask" "default" "configuration"))))
+			    "addresses" "default" "configuration"))))
 
 (define (commit-interface)
   (catch/message
@@ -75,6 +75,18 @@
   (format #t "wireless-interface:real_name=~S~%" (form-value "real_name"))
   (form-popup "/net-wifi/" 'iface (form-value "real_name")))
 
+
+(define (ui-append-address)
+    (if (regexp-exec (make-regexp (string-append "^" "([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])([.]([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9+]|25[0-5])){3}" "$") regexp/extended) (ui-add-ip value))
+	(ui-addresses value (string-append (ui-addresses value) (if (string-null? (ui-addresses value)) "" "\n") (ui-add-ip value) "/" (ui-add-mask value)))
+	(document:popup-critical (_ "invalid IP address") 'ok)
+    )
+)
+
+(define (ui-delete-address)
+	(document:popup-warning (_ "not implemented") 'ok)
+)
+
 ;;; UI
 
 (edit name "prev_name" text "" visibility #f)
@@ -102,23 +114,35 @@
     columns "0;100"
 
     ;;
-    (textbox colspan 2 name "adaptor" max-height 60 alterability #f)
+    (label colspan 2 name "adaptor")
 
     ;;
     (label text (_ "Configuration:") align "right" nameref "configuration")
     (combobox name "configuration")
-    ;;
-    (label text (_ "IP address:") align "right" nameref "ip")
-    (edit name "ip")
 
     ;;
-    (label text (_ "Netmask:") align "right" nameref "mask")
-    (combobox name "mask")
+    (spacer)(separator)
+
+    ;;
+    (label text (_ "IP addresses:") align "right" nameref "addresses")
+    (gridbox columns "100;0"
+	(document:id ui-addresses (textbox name "addresses"))
+	(button (_ "Delete") name "del-ip" nameref "addresses" visibility #f)
+    )
+    (spacer)
+    (gridbox columns "40;40;20" nameref "addresses"
+	(document:id ui-add-ip (edit))
+	(document:id ui-add-mask (combobox name "mask"))
+	(button (_ "Add") name "add-ip")
+    )
+    (spacer)(label text (small (_ "(multiple values should be one per row)")))
+
+    ;;
+    (spacer)(separator)
 
     ;;
     (label text (_ "Default gateway:") align "right" nameref "default")
     (edit name "default")
-
 
     ;;
     (label text (_ "DNS servers:") nameref "dns" align "right")
@@ -129,10 +153,7 @@
     (edit name "search")
 
     ;;
-    (spacer)
-    (label text (small (_ "(multiple values should be space separated)")))
-
-    ;;
+    (spacer)(label text (small (_ "(multiple values should be space separated)")))
     (label colspan 2)
 
     ;;
@@ -163,6 +184,8 @@
     (form-bind "configuration" "change" (lambda() (update-configuration (form-value "configuration"))))
     (form-bind "advanced" "click" advanced-interface)
     (form-bind "wireless" "click" wireless-interface)
+    (form-bind "del-ip" "click" ui-delete-address)
+    (form-bind "add-ip" "click" ui-append-address)
     (or (global 'frame:next)
       (begin (form-bind "apply" "click" commit-interface)
 	     (form-bind "reset" "click" reset-interface)))))

@@ -30,7 +30,7 @@
 					  <table class="form-table">
 						  <tr>
 						    <td colspan="2">
-							<textarea rows="2" readonly="yes" name="adaptor" style="width:98%"/>
+							<textarea rows="3" readonly="yes" name="adaptor" style="width:98%"/>
 						    </td>
 						  </tr>
 						  <tr>
@@ -38,19 +38,45 @@
 							  <td><select name="configuration" enumref="/net-eth/avail_configurations"></select></td>
 						  </tr>
 
+						  <tr><td/><td><hr/></td></tr>
+
 						  <tr>
-							  <td><span translate="_" nameref="ip">IP address:</span></td>
-							  <td><input type="text" class="text" name="ip"></input></td>
+							  <td><span translate="_" nameref="addresses">IP addresses:</span></td>
+							  <td><textarea rows="4" name="addresses" style="width:98%"/></td>
+						  </tr>
+
+						  <tr>
+							  <td></td>
+							  <td>
+							    <input type="text" class="text" name="ip"></input>
+							    <select name="mask" enumref="/net-eth/avail_masks"></select>
+							    <input type="button" name="add-ip" value="Add" class="btn"/>
+							  </td>
 						  </tr>
 						  <tr>
-							  <td><span translate="_" nameref="mask">Netmask:</span></td>
-							  <td><select name="mask" enumref="/net-eth/avail_masks"></select></td>
+						      <td/>
+						      <td>
+						          <div name="invalid_ip_message" style="display:none">
+						              <span  class="alterator-attention-message">
+						                  <img src="/design/images/attention.gif"/>
+						                  <span translate="_">invalid IP address</span>
+						              </span>
+						          </div>
+						      </td>
 						  </tr>
+						  <tr>
+							<td>&nbsp;</td>
+							 <td>
+							   <small><span nameref="addresses" translate="_">(multiple values should be one per row)</span></small>
+							 </td>
+						  </tr>
+
+						  <tr><td/><td><hr/></td></tr>
+
 						  <tr>
 							  <td><span translate="_" nameref="default">Default gateway:</span></td>
 							  <td><input type="text" class="text" name="default"></input></td>
 						  </tr>
-
 
 						  <tr>
 							  <td><span translate="_" nameref="dns">DNS servers:</span></td>

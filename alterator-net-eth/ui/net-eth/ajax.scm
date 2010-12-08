@@ -7,7 +7,7 @@
 
 (define (update-configuration configuration)
     (form-update-activity
-      '("ip" "mask" "default")
+      '("addresses" "ip" "mask" "add-ip" "default")
       (string=? configuration "static")))
 
 (define (read-interface name)
@@ -24,7 +24,7 @@
       '("computer_name" "dns" "search")
       cmd)
     (form-update-value-list
-      '("adaptor" "ip" "mask" "default" "configuration")
+      '("adaptor" "addresses" "mask" "default" "configuration")
       cmd)
 
     (update-configuration (woo-get-option cmd 'configuration))))
@@ -35,7 +35,7 @@
 	 'name name
 	 (form-value-list '("language"
 			    "computer_name" "dns" "search"
-			    "ip" "mask" "default" "configuration"))))
+			    "addresses" "default" "configuration"))))
 
 ;;; high level
 
@@ -84,14 +84,25 @@
       (read-interface (or (form-value "iface") ""))
       (form-update-value "prev_name" (or (form-value "iface") "")))))
 
+(define (ui-append-address)
+    (if (regexp-exec (make-regexp (string-append "^" "([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])([.]([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9+]|25[0-5])){3}" "$") regexp/extended) (form-value "ip"))
+	(begin
+	    (form-update-value "addresses" (string-append (form-value "addresses") (if (string-null? (form-value "addresses")) "" "\n") (form-value "ip") "/" (form-value "mask")))
+	    (form-update-visibility "invalid_ip_message" #f)
+	)
+	(form-update-visibility "invalid_ip_message" #t)
+    )
+)
 
 (define (init)
  (init-interface)
+  (form-update-visibility "invalid_ip_message" #f)
 
  (form-bind "name" "change" update-interface)
  (form-bind "configuration" "change" (lambda() (update-configuration (form-value "configuration"))))
  (form-bind "advanced" "click" advanced-interface)
  (form-bind "wireless" "click" wireless-interface)
+ (form-bind "add-ip" "click" ui-append-address)
 
  (form-bind "commit" "click" commit-interface)
  (form-bind "reset" "click" reset-interface))
