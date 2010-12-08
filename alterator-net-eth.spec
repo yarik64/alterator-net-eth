@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 4.11
-Release: alt2
+Version: 4.12
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -68,6 +68,9 @@ alterator module for tcp/ip connections configuration
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Wed Dec 08 2010 Sergey V Turchin <zerg@altlinux.org> 4.12-alt1
+- readd multiple interface addresses support
+
 * Tue Nov 09 2010 Mikhail Efremov <sem@altlinux.org> 4.11-alt2
 - qt gui: fix prev_iface value.
 - backend: fix real_iface() calls.
