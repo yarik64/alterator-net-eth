@@ -109,12 +109,12 @@
 
   (label colspan 2 text (bold (_ "Interfaces")))
 
-  (listbox name "name")
+  (listbox name "name" max-width 155)
   (gridbox
     columns "0;100"
 
     ;;
-    (label colspan 2 name "adaptor")
+    (textbox colspan 2 name "adaptor" max-height 80 alterability #f)
 
     ;;
     (label text (_ "Configuration:") align "right" nameref "configuration")
@@ -126,7 +126,7 @@
     ;;
     (label text (_ "IP addresses:") align "right" nameref "addresses")
     (gridbox columns "100;0"
-	(document:id ui-addresses (textbox name "addresses"))
+	(document:id ui-addresses (textbox name "addresses" max-height 100))
 	(button (_ "Delete") name "del-ip" nameref "addresses" visibility #f)
     )
     (spacer)
