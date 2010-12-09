@@ -130,7 +130,8 @@
 	(button (_ "Delete") name "del-ip" nameref "addresses" visibility #f)
     )
     (spacer)
-    (gridbox columns "40;40;20" nameref "addresses"
+    (gridbox columns "0;50;50;0" nameref "addresses"
+	(label text (_ "IP:"))
 	(document:id ui-add-ip (edit))
 	(document:id ui-add-mask (combobox name "mask"))
 	(button (_ "Add") name "add-ip")
