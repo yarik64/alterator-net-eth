@@ -34,10 +34,11 @@
 			    "addresses" "default" "configuration"))))
 
 (define (commit-interface)
-  (catch/message
-    (lambda()
-      (write-interface (or (form-value "name") ""))
-      (woo-write "/net-eth" 'commit #t))))
+    (if (check-addresses-list)
+	(catch/message
+	    (lambda()
+		(write-interface (or (form-value "name") ""))
+		(woo-write "/net-eth" 'commit #t)))))
 
 (define (reset-interface)
   (catch/message
@@ -81,6 +82,14 @@
 	(ui-addresses value (string-append (ui-addresses value) (if (string-null? (ui-addresses value)) "" "\n") (ui-add-ip value) "/" (ui-add-mask value)))
 	(document:popup-critical (_ "invalid IP address") 'ok)
     )
+)
+
+(define (check-addresses-list)
+  (or (and (string? (ui-addresses value)) (string-null? (ui-addresses value)))
+      (and (string? (ui-addresses value))
+           (every (lambda(x) (regexp-exec (make-regexp (string-append "^" "([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])([.]([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9+]|25[0-5])){3}" "/([1-9]|[12][0-9]|3[0-1])$") regexp/extended) x))
+                  (string-tokenize (ui-addresses value) (char-set-complement char-set:whitespace))))
+      (begin (document:popup-critical (_ "invalid IP with MASK list") 'ok) #f))
 )
 
 (define (ui-delete-address)

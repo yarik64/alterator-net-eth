@@ -1,4 +1,5 @@
 (define-module (ui net-eth ajax)
+    :use-module (srfi srfi-1)
     :use-module (alterator ajax)
     :use-module (alterator woo)
     :export (init))
@@ -60,10 +61,14 @@
   (form-replace "/net-wifi/" 'iface (form-value "real_name")))
 
 (define (commit-interface)
-  (catch/message
-    (lambda()
-      (write-interface (or (form-value "name") ""))
-      (woo-write "/net-eth" 'commit #t))))
+    (if (check-addresses-list)
+	(begin
+	    (form-update-visibility "invalid_addresses_list" #f)
+	    (catch/message
+		(lambda()
+		    (write-interface (or (form-value "name") ""))
+		    (woo-write "/net-eth" 'commit #t))))
+	(form-update-visibility "invalid_addresses_list" #t)))
 
 (define (reset-interface)
   (catch/message
@@ -93,6 +98,17 @@
 	(form-update-visibility "invalid_ip_message" #t)
     )
 )
+
+(define (check-addresses-list)
+  (or (and (string? (form-value "addresses")) (string-null? (form-value "addresses")))
+      (and (string? (form-value "addresses"))
+           (every (lambda(x)
+        	    (regexp-exec
+        		(make-regexp
+        		    (string-append "^" "([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])([.]([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9+]|25[0-5])){3}" "/([1-9]|[12][0-9]|3[0-1])$")
+        		    regexp/extended)
+        		x))
+                  (string-tokenize (form-value "addresses") (char-set-complement char-set:whitespace))))))
 
 (define (init)
  (init-interface)
