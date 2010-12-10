@@ -46,6 +46,7 @@
       (woo-write "/net-eth" 'reset #t)
 
       (form-update-enum "mask" (woo-list "/net-eth/avail_masks"))
+      (form-update-value "mask" "24")
       (form-update-enum "configuration" (woo-list "/net-eth/avail_configurations"))
       (form-update-enum "name" (woo-list "/net-eth/avail_ifaces"))
 

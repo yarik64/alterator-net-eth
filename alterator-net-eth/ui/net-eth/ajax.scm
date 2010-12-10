@@ -83,6 +83,7 @@
   (catch/message
     (lambda()
       (form-update-enum "mask" (woo-list "/net-eth/avail_masks" 'language (form-value "language")))
+      (form-update-value "mask" "24")
       (form-update-enum "configuration" (woo-list "/net-eth/avail_configurations" 'language (form-value "language")))
       (form-update-enum "name" (woo-list "/net-eth/avail_ifaces" 'language (form-value "language")))
 
