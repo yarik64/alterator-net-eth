@@ -71,6 +71,8 @@
 	(form-update-visibility "invalid_addresses_list" #t)))
 
 (define (reset-interface)
+  (form-update-visibility "invalid_ip_message" #f)
+  (form-update-visibility "invalid_addresses_list" #f)
   (catch/message
     (lambda()
       (woo-write "/net-eth" 'reset #t)
