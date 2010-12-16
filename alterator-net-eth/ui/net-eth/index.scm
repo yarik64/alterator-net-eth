@@ -124,19 +124,19 @@
     columns "0;100"
 
     ;;
-    (textbox colspan 2 name "adaptor" max-height 80 alterability #f)
+    (textbox colspan 2 name "adaptor" max-height 70 alterability #f)
 
     ;;
     (label text (_ "Configuration:") align "right" nameref "configuration")
     (combobox name "configuration")
 
     ;;
-    (spacer)(separator)
+    ;(spacer)(separator)
 
     ;;
     (label text (_ "IP addresses:") align "right" nameref "addresses")
     (gridbox columns "100;0"
-	(document:id ui-addresses (textbox name "addresses" max-height 100))
+	(document:id ui-addresses (textbox name "addresses" max-height 70))
 	(button (_ "Delete") name "del-ip" nameref "addresses" visibility #f)
     )
     (spacer)
@@ -149,7 +149,7 @@
     (spacer)(label text (small (_ "(multiple values should be one per row)")))
 
     ;;
-    (spacer)(separator)
+    ;(spacer)(separator)
 
     ;;
     (label text (_ "Default gateway:") align "right" nameref "default")
