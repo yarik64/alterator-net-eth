@@ -103,7 +103,7 @@
 (edit name "real_name" text "" visibility #f)
 (gridbox
   columns "0;100"
-  margin 20
+  margin 10
 
   (gridbox
     colspan 2
