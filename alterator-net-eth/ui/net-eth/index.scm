@@ -165,14 +165,9 @@
 
     ;;
     (spacer)(label text (small (_ "(multiple values should be space separated)")))
-    (label colspan 2)
 
     ;;
-    (spacer)
     (button text (_ "Wireless settings...") name "wireless" align "right" visibility #f)
-
-    ;;
-    (spacer)
     (button text (_ "Advanced...") name "advanced" align "right"))
 
   ;;
