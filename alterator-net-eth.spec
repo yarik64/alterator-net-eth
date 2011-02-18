@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.11
-Release: alt2
+Release: alt3
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -64,10 +64,14 @@ alterator module for tcp/ip connections configuration
 %_altdata_dir/applications/*
 %_altdata_dir/ui/*/
 %_alterator_backend3dir/*
+%_sysconfdir/hooks/hostname.d/*
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth.d
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
 %changelog
+* Fri Feb 18 2011 Mikhail Efremov <sem@altlinux.org> 4.11-alt3
+- Add hook for /etc/hosts.
+
 * Tue Nov 09 2010 Mikhail Efremov <sem@altlinux.org> 4.11-alt2
 - qt gui: fix prev_iface value.
 - backend: fix real_iface() calls.
