@@ -51,6 +51,15 @@ BuildRequires: alterator
 %description
 alterator module for tcp/ip connections configuration
 
+%package -n hostname-hook-hosts
+Summary: /etc/hooks/hostname.d hook for use with alterator-net-eth
+Group: System/Configuration/Other
+Requires: %name = %version-%release
+
+%description -n hostname-hook-hosts
+This package contains the hook for /etc/hooks/hostname.d which provides
+mapping current hostname to 127.0.0.1 in /etc/hosts.
+
 %prep
 %setup -q
 
@@ -64,9 +73,11 @@ alterator module for tcp/ip connections configuration
 %_altdata_dir/applications/*
 %_altdata_dir/ui/*/
 %_alterator_backend3dir/*
-%_sysconfdir/hooks/hostname.d/*
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth.d
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
+
+%files -n hostname-hook-hosts
+%_sysconfdir/hooks/hostname.d/*
 
 %changelog
 * Fri Feb 18 2011 Mikhail Efremov <sem@altlinux.org> 4.11-alt3
