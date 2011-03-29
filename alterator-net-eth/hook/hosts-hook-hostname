@@ -1,0 +1,15 @@
+#!/bin/sh -eu
+
+old_hostname="$1"
+new_hostname="$2"
+
+[ -n "$new_hostname" ] || exit 1
+
+grep -qs "^[^#]*\<$new_hostname\>" /etc/hosts ||
+    printf '127.0.0.1\t%s %s\n' "$new_hostname" "${new_hostname%%.*}" >> /etc/hosts
+
+short_old_hostname="${old_hostname%%.*}"
+
+[ -z "$old_hostname" -o "$old_hostname" = "$new_hostname" \
+    -o "$short_old_hostname" = 'localhost' ] ||
+    sed -ri "/^127\.0\.0\.1[[:blank:]]+$old_hostname[[:blank:]]+$short_old_hostname/d" /etc/hosts
