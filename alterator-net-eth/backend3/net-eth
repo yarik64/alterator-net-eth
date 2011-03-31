@@ -16,6 +16,8 @@ alterator_api_version=1
 . alterator-hw-functions
 . shell-config
 
+mkdir -p $cachedir
+
 ###
 
 is_defined()
@@ -109,7 +111,7 @@ init_cache()
 clear_cache()
 {
     rm -rf "$cachedir"
-    mkdir "$cachedir"
+    mkdir -p "$cachedir"
 }
 
 commit_hostname()
@@ -345,6 +347,18 @@ get_ifacedir()
 	fi
 }
 
+read_iface_address()
+{
+	local name="$1"
+	local ifacedir="$(get_ifacedir "$name")"
+	if ! [ -f "$cachedir/$name-ipv4address" ]; then
+	    > "$cachedir/$name-ipv4address"
+	    if [ -s "$ifacedir/ipv4address" ]; then
+		cat "$ifacedir/ipv4address" > $cachedir/$name-ipv4address
+	    fi
+	fi
+}
+
 read_iface()
 {
 	local name="$1"; shift
@@ -363,7 +377,8 @@ read_iface()
 	write_string_param dns "$(read_iface_dns "$ifacedir")"
 	write_string_param search "$(read_iface_search "$ifacedir")"
 
-	write_string_param addresses "$(read_iface_addresses "$ifacedir" | sed 's|[[:space:]]|\n|g')"
+	read_iface_address $name
+
 	write_string_param default "$(read_iface_default_gw "$ifacedir")"
 
 	write_string_param ip_string "$(netdev_read_ip "$name"|head -n1)"
@@ -431,8 +446,7 @@ write_iface()
 	    shell_config_del "$ifacedir/options" HOST
 	fi
 
-	is_defined "in_addresses" &&
-	    write_iface_addresses "$ifacedir" "$in_addresses"
+	write_iface_addresses "$ifacedir" "$(echo $(cat $cachedir/${name}-ipv4address))"
 
 	is_defined "in_default" &&
 	    write_iface_default_gw "$ifacedir" "$in_default"
@@ -450,6 +464,34 @@ write_iface()
 	    write_iface_search "$ifacedir" "$in_search"
 }
 
+add_iface_address()
+{
+    local iface="$1"
+    local addr="$2"
+    local mask="$3"
+    if [ -n "$iface" -a -n "$addr" -a -n "$mask" ] ; then
+	#read_iface_address $iface
+	echo "$addr/$mask" >> "$cachedir/$iface-ipv4address"
+    fi
+}
+
+del_iface_address()
+{
+    local iface="$1"
+    local addr="$2"
+    if [ -n "$iface" -a -n "$addr" ] ; then
+	#read_iface_address $iface
+	sed -i -e "s|^${addr}$||" -e '/^$/d' "$cachedir/$iface-ipv4address"
+    fi
+}
+
+list_iface_addresses()
+{
+    local name="$1"; shift
+    read_iface_address $name
+    cat "$cachedir/$name-ipv4address" | write_enum
+}
+
 #initial actions
 iface_up lo
 clear_cache
@@ -464,6 +506,15 @@ alterator_export_var \
 on_message()
 {
 	case "$in_action" in
+		add_iface_address)
+		    add_iface_address "$in_real_name" "${in_addip}" "${in_addmask}";;
+		del_iface_address)
+		    del_iface_address "$in_real_name" "$in_addresses" ;;
+		list_iface_address)
+		    local name="${in_name}"
+		    [ -n "$name" ] || name="$(list_eth_cached|head -n1)"
+		    list_iface_addresses "$name"
+		    ;;
 		list)
 			case "${in__objects##*/}" in
 			    avail_masks) list_mask ;;
