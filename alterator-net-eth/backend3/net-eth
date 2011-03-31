@@ -470,7 +470,7 @@ add_iface_address()
     local addr="$2"
     local mask="$3"
     if [ -n "$iface" -a -n "$addr" -a -n "$mask" ] ; then
-	#read_iface_address $iface
+	read_iface_address $iface
 	echo "$addr/$mask" >> "$cachedir/$iface-ipv4address"
     fi
 }
@@ -480,7 +480,7 @@ del_iface_address()
     local iface="$1"
     local addr="$2"
     if [ -n "$iface" -a -n "$addr" ] ; then
-	#read_iface_address $iface
+	read_iface_address $iface
 	sed -i -e "s|^${addr}$||" -e '/^$/d' "$cachedir/$iface-ipv4address"
     fi
 }
