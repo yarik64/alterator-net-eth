@@ -43,7 +43,6 @@
 	 "/net-eth"
 	 'name name
 	 (form-value-list '("computer_name" "dns" "search" "default" "configuration"))
-	 ;(form-value-list '("addresses"))
     ))
 
 (define (commit-interface)
