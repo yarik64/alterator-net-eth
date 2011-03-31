@@ -7,9 +7,16 @@
       '("addresses" "default")
       (string=? configuration "static")))
 
+(define (read-interface-address name)
+    (catch/message (lambda()
+	(form-update-enum "addresses"
+	    (apply woo "list_iface_address" "/net-eth"
+	    (form-value-list '("language"))))
+    ))
+)
+
 (define (read-interface name)
   (let ((cmd (woo-read-first "/net-eth" 'name name)))
-
    (form-update-visibility
       "wireless"
       (and (woo-get-option cmd 'wireless)
@@ -18,20 +25,26 @@
       '("name" "real_name")
       cmd)
     (form-update-value-list
-      '("computer_name" "addresses" "dns" "search")
+      '("computer_name" "dns" "search")
       cmd)
     (form-update-value-list
-      '("mask" "adaptor" "default" "configuration")
+      '("add-mask" "adaptor" "default" "configuration")
       cmd)
-
-    (update-configuration (woo-get-option cmd 'configuration))))
+    (read-interface-address name)
+    (form-update-value-list
+      '("configuration")
+      cmd)
+    (update-configuration (woo-get-option cmd 'configuration))
+    )
+)
 
 (define (write-interface name)
   (apply woo-write
 	 "/net-eth"
 	 'name name
-	 (form-value-list '("computer_name" "dns" "search"
-			    "addresses" "default" "configuration"))))
+	 (form-value-list '("computer_name" "dns" "search" "default" "configuration"))
+	 ;(form-value-list '("addresses"))
+    ))
 
 (define (commit-interface)
     (if (check-addresses-list)
@@ -45,8 +58,8 @@
     (lambda()
       (woo-write "/net-eth" 'reset #t)
 
-      (form-update-enum "mask" (woo-list "/net-eth/avail_masks"))
-      (form-update-value "mask" "24")
+      (form-update-enum "add-mask" (woo-list "/net-eth/avail_masks"))
+      (form-update-value "add-mask" "24")
       (form-update-enum "configuration" (woo-list "/net-eth/avail_configurations"))
       (form-update-enum "name" (woo-list "/net-eth/avail_ifaces"))
 
@@ -79,8 +92,11 @@
 
 
 (define (ui-append-address)
-    (if (regexp-exec (make-regexp (string-append "^" "([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])([.]([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9+]|25[0-5])){3}" "$") regexp/extended) (ui-add-ip value))
-	(ui-addresses value (string-append (ui-addresses value) (if (string-null? (ui-addresses value)) "" "\n") (ui-add-ip value) "/" (ui-add-mask value)))
+    (if (regexp-exec (make-regexp (string-append "^" "([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])([.]([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9+]|25[0-5])){3}" "$") regexp/extended) (form-value "add-ip"))
+	(begin
+	    (apply woo "add_iface_address" "/net-eth" (form-value-list '("real_name" "add-ip" "add-mask")))
+	    (read-interface-address (form-value "real_name"))
+	)
 	(document:popup-critical (_ "invalid IP address") 'ok)
     )
 )
@@ -94,7 +110,10 @@
 )
 
 (define (ui-delete-address)
-	(document:popup-warning (_ "not implemented") 'ok)
+    (catch/message (lambda()
+	(apply woo "del_iface_address" "/net-eth"
+	    (form-value-list '("language" "real_name" "addresses")))))
+    (read-interface-address (form-value "real_name"))
 )
 
 ;;; UI
@@ -136,15 +155,15 @@
     ;;
     (label text (_ "IP addresses:") align "right" nameref "addresses")
     (gridbox columns "100;0"
-	(document:id ui-addresses (textbox name "addresses" max-height 70))
-	(button (_ "Delete") name "del-ip" nameref "addresses" visibility #f)
+	(document:id ui-addresses (listbox name "addresses" max-height 70))
+	(button (_ "Delete") name "btn-del-ip" nameref "addresses")
     )
     (spacer)
     (gridbox columns "0;50;50;0" nameref "addresses"
 	(label text (_ "IP:"))
-	(document:id ui-add-ip (edit))
-	(document:id ui-add-mask (combobox name "mask"))
-	(button (_ "Add") name "add-ip")
+	(document:id ui-add-ip (edit name "add-ip"))
+	(document:id ui-add-mask (combobox name "add-mask"))
+	(button (_ "Add") name "btn-add-ip")
     )
     (spacer)(label text (small (_ "(multiple values should be one per row)")))
 
@@ -190,8 +209,8 @@
     (form-bind "configuration" "change" (lambda() (update-configuration (form-value "configuration"))))
     (form-bind "advanced" "click" advanced-interface)
     (form-bind "wireless" "click" wireless-interface)
-    (form-bind "del-ip" "click" ui-delete-address)
-    (form-bind "add-ip" "click" ui-append-address)
+    (form-bind "btn-del-ip" "click" ui-delete-address)
+    (form-bind "btn-add-ip" "click" ui-append-address)
     (or (global 'frame:next)
       (begin (form-bind "apply" "click" commit-interface)
 	     (form-bind "reset" "click" reset-interface)))))
