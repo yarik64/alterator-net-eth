@@ -8,8 +8,16 @@
 
 (define (update-configuration configuration)
     (form-update-activity
-      '("addresses" "ip" "mask" "add-ip" "default")
+      '("addresses" "ip" "add-mask" "add-ip" "default")
       (string=? configuration "static")))
+
+(define (read-interface-address name)
+    (catch/message (lambda()
+       (form-update-enum "addresses"
+           (apply woo "list_iface_address" "/net-eth"
+           (form-value-list '("language"))))
+    ))
+)
 
 (define (read-interface name)
   (let ((cmd (woo-read-first "/net-eth" 'name name 'language (form-value "language"))))
@@ -24,8 +32,9 @@
     (form-update-value-list
       '("computer_name" "dns" "search")
       cmd)
+    (read-interface-address name)
     (form-update-value-list
-      '("adaptor" "addresses" "mask" "default" "configuration")
+      '("adaptor" "add-mask" "default" "configuration")
       cmd)
 
     (update-configuration (woo-get-option cmd 'configuration))))
@@ -36,7 +45,7 @@
 	 'name name
 	 (form-value-list '("language"
 			    "computer_name" "dns" "search"
-			    "addresses" "default" "configuration"))))
+			    "default" "configuration"))))
 
 ;;; high level
 
@@ -61,14 +70,12 @@
   (form-replace "/net-wifi/" 'iface (form-value "real_name")))
 
 (define (commit-interface)
-    (if (check-addresses-list)
-	(begin
-	    (form-update-visibility "invalid_addresses_list" #f)
-	    (catch/message
-		(lambda()
-		    (write-interface (or (form-value "name") ""))
-		    (woo-write "/net-eth" 'commit #t))))
-	(form-update-visibility "invalid_addresses_list" #t)))
+    (begin
+        (catch/message
+	(lambda()
+	    (write-interface (or (form-value "name") ""))
+	    (woo-write "/net-eth" 'commit #t))))
+)
 
 (define (reset-interface)
   (form-update-visibility "invalid_ip_message" #f)
@@ -84,8 +91,8 @@
 (define (init-interface)
   (catch/message
     (lambda()
-      (form-update-enum "mask" (woo-list "/net-eth/avail_masks" 'language (form-value "language")))
-      (form-update-value "mask" "24")
+      (form-update-enum "add-mask" (woo-list "/net-eth/avail_masks" 'language (form-value "language")))
+      (form-update-value "add-mask" "24")
       (form-update-enum "configuration" (woo-list "/net-eth/avail_configurations" 'language (form-value "language")))
       (form-update-enum "name" (woo-list "/net-eth/avail_ifaces" 'language (form-value "language")))
 
@@ -93,13 +100,21 @@
       (form-update-value "prev_name" (or (form-value "iface") "")))))
 
 (define (ui-append-address)
-    (if (regexp-exec (make-regexp (string-append "^" "([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])([.]([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9+]|25[0-5])){3}" "$") regexp/extended) (form-value "ip"))
+    (if (regexp-exec (make-regexp (string-append "^" "([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])([.]([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9+]|25[0-5])){3}" "$") regexp/extended) (form-value "add-ip"))
 	(begin
-	    (form-update-value "addresses" (string-append (form-value "addresses") (if (string-null? (form-value "addresses")) "" "\n") (form-value "ip") "/" (form-value "mask")))
+	    (apply woo "add_iface_address" "/net-eth" (form-value-list '("real_name" "add-ip" "add-mask")))
 	    (form-update-visibility "invalid_ip_message" #f)
+	    (read-interface-address (form-value "real_name"))
 	)
 	(form-update-visibility "invalid_ip_message" #t)
     )
+)
+
+(define (ui-delete-address)
+    (catch/message (lambda()
+       (apply woo "del_iface_address" "/net-eth"
+           (form-value-list '("language" "real_name" "addresses")))))
+    (read-interface-address (form-value "real_name"))
 )
 
 (define (check-addresses-list)
@@ -121,7 +136,8 @@
  (form-bind "configuration" "change" (lambda() (update-configuration (form-value "configuration"))))
  (form-bind "advanced" "click" advanced-interface)
  (form-bind "wireless" "click" wireless-interface)
- (form-bind "add-ip" "click" ui-append-address)
+ (form-bind "btn-del-ip" "click" ui-delete-address)
+ (form-bind "btn-add-ip" "click" ui-append-address)
 
  (form-bind "commit" "click" commit-interface)
  (form-bind "reset" "click" reset-interface))

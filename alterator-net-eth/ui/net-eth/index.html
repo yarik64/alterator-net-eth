@@ -42,7 +42,14 @@
 
 						  <tr>
 							  <td><span translate="_" nameref="addresses">IP addresses:</span></td>
-							  <td><textarea rows="4" name="addresses" style="width:98%"/></td>
+							  <td>
+							    <table style="width:98%">
+								<tr>
+								    <td style="width:98%"><select name="addresses" size="4" style="width:98%"/></td>
+								    <td><input type="button" name="btn-del-ip" value="Delete" class="btn"/></td>
+								</tr>
+							    </table>
+							  </td>
 						  </tr>
 						  <tr>
 						      <td/>
@@ -58,10 +65,10 @@
 						  <tr>
 							  <td></td>
 							  <td>
-							    <span translate="_" nameref="ip">IP:</span>
-							    <input type="text" class="text" name="ip"></input>
-							    <select name="mask" enumref="/net-eth/avail_masks"></select>
-							    <input type="button" name="add-ip" value="Add" class="btn"/>
+							    <span translate="_" nameref="add-ip">IP:</span>
+							    <input type="text" class="text" name="add-ip"></input>
+							    <select name="add-mask" enumref="/net-eth/avail_masks"></select>
+							    <input type="button" name="btn-add-ip" value="Add" class="btn"/>
 							  </td>
 						  </tr>
 						  <tr>
