@@ -105,6 +105,7 @@
 	    (apply woo "add_iface_address" "/net-eth" (form-value-list '("real_name" "add-ip" "add-mask")))
 	    (form-update-visibility "invalid_ip_message" #f)
 	    (read-interface-address (form-value "real_name"))
+	    (form-update-value "add-ip" "")
 	)
 	(form-update-visibility "invalid_ip_message" #t)
     )

@@ -95,6 +95,7 @@
 	(begin
 	    (apply woo "add_iface_address" "/net-eth" (form-value-list '("real_name" "add-ip" "add-mask")))
 	    (read-interface-address (form-value "real_name"))
+	    (form-update-value "add-ip" "")
 	)
 	(document:popup-critical (_ "invalid IP address") 'ok)
     )
