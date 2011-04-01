@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 4.12
-Release: alt3
+Version: 4.13
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -80,6 +80,9 @@ mapping current hostname to 127.0.0.1 in /etc/hosts.
 %_sysconfdir/hooks/hostname.d/*
 
 %changelog
+* Fri Apr 01 2011 Anton Farygin <rider@altlinux.ru> 4.13-alt1
+- allow full hostname (with domain) in computer name field
+
 * Fri Apr 01 2011 Sergey V Turchin <zerg at altlinux dot org> 4.12-alt3
 - clean information label
 

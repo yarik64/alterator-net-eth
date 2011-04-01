@@ -200,7 +200,7 @@ check_hostname()
     local hn="$1"
     local length=
 
-    length="$(printf "%s" "$hn" | wc -m)"
+    length=${#hn}
     if [ $length -gt $max_hostname_length ]; then
         write_error "`_ "Host name is too long"`"
         return 1
@@ -233,20 +233,21 @@ write_hostname()
 read_computer_name()
 {
 	local value="$(read_hostname)"
-	echo "${value%%.*}"
+	echo "$value"
 }
 
 read_computer_domain()
 {
-	local value="$(read_hostname)"
+	local host=$1
+	[ $(expr index $host .) -eq 0 ] && unset host
+	local value="${host:-$(read_hostname)}"
 	local domain="${value#*.}"
-	[ "$value" != "$domain" ] || domain="localdomain"
 	echo "$domain"
 }
 
 write_computer_name()
 {
-    write_hostname "$1.$(read_computer_domain)"
+    write_hostname "${1%%.*}.$(read_computer_domain $1)"
 }
 
 ### interface work
@@ -497,7 +498,7 @@ iface_up lo
 clear_cache
 
 alterator_export_var \
-    computer_name	system-computer-name \
+    computer_name	hostname \
     default		ipv4-address \
     search		hostname-list \
     dns			ipv4-address-list
