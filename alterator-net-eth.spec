@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.12
-Release: alt2
+Release: alt3
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -80,6 +80,9 @@ mapping current hostname to 127.0.0.1 in /etc/hosts.
 %_sysconfdir/hooks/hostname.d/*
 
 %changelog
+* Fri Apr 01 2011 Sergey V Turchin <zerg at altlinux dot org> 4.12-alt3
+- clean information label
+
 * Thu Mar 31 2011 Sergey V Turchin <zerg at altlinux dot org> 4.12-alt2
 - show ip addresses as list
 
