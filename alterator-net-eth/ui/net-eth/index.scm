@@ -164,7 +164,6 @@
 	(document:id ui-add-mask (combobox name "add-mask"))
 	(button (_ "Add") name "btn-add-ip")
     )
-    (spacer)(label text (small (_ "(multiple values should be one per row)")))
 
     ;;
     ;(spacer)(separator)
