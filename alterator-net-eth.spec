@@ -1,7 +1,7 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 4.13
+Version: 4.14
 Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
@@ -80,6 +80,9 @@ mapping current hostname to 127.0.0.1 in /etc/hosts.
 %_sysconfdir/hooks/hostname.d/*
 
 %changelog
+* Mon Apr 04 2011 Anton Farygin <rider@altlinux.ru> 4.14-alt1
+- disabled FQDN in computer name if alterator-net-backend installed
+
 * Fri Apr 01 2011 Anton Farygin <rider@altlinux.ru> 4.13-alt1
 - allow full hostname (with domain) in computer name field
 
