@@ -3,6 +3,7 @@
 cachedir="/var/cache/alterator/net-eth"
 precommit_hooks_dir=/usr/lib/alterator/hooks/net-eth-precommit.d
 postcommit_hooks_dir=/usr/lib/alterator/hooks/net-eth.d
+ALTERATOR_DOMAIN=/usr/lib/alterator/backend3/net-domain
 
 rdelim='[[:space:]]\+'
 wdelim=' '
@@ -233,7 +234,11 @@ write_hostname()
 read_computer_name()
 {
 	local value="$(read_hostname)"
-	echo "$value"
+	if [ -f "$ALTERATOR_DOMAIN" ];then 
+	    echo "${value%%.*}"
+	else
+	    echo "$value"
+	fi
 }
 
 read_computer_domain()
@@ -497,7 +502,6 @@ list_iface_addresses()
 iface_up lo
 clear_cache
 
-ALTERATOR_DOMAIN=/usr/lib/alterator/backend3/net-domain
 
 # do not setup domain name if alterator-net-domain installed to current system
 if [ -f "$ALTERATOR_DOMAIN" ];then
