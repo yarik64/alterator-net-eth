@@ -10,10 +10,7 @@
 (define (read-interface-address name)
     (catch/message (lambda()
 	(form-update-enum "addresses"
-	    (apply woo "list_iface_address" "/net-eth"
-	    (form-value-list '("language"))))
-    ))
-)
+	    (apply woo "list_iface_address" "/net-eth" 'name name)))))
 
 (define (read-interface name)
   (let ((cmd (woo-read-first "/net-eth" 'name name)))
