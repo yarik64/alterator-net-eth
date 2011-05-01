@@ -2,7 +2,7 @@
 
 Name: alterator-net-eth
 Version: 4.14
-Release: alt1
+Release: alt2
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -80,6 +80,9 @@ mapping current hostname to 127.0.0.1 in /etc/hosts.
 %_sysconfdir/hooks/hostname.d/*
 
 %changelog
+* Sun May 01 2011 Mikhail Efremov <sem@altlinux.org> 4.14-alt2
+- Fix addresses list retrieval (closes: #25506).
+
 * Mon Apr 04 2011 Anton Farygin <rider@altlinux.ru> 4.14-alt1
 - disabled FQDN in computer name if alterator-net-backend installed
 
