@@ -99,9 +99,9 @@
 (define (ui-append-address)
     (if (regexp-exec (make-regexp (string-append "^" "([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])([.]([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9+]|25[0-5])){3}" "$") regexp/extended) (form-value "add-ip"))
 	(begin
-	    (apply woo "add_iface_address" "/net-eth" (form-value-list '("real_name" "add-ip" "add-mask")))
+	    (apply woo "add_iface_address" "/net-eth" (form-value-list '("name" "add-ip" "add-mask")))
 	    (form-update-visibility "invalid_ip_message" #f)
-	    (read-interface-address (form-value "real_name"))
+	    (read-interface-address (form-value "name"))
 	    (form-update-value "add-ip" "")
 	)
 	(form-update-visibility "invalid_ip_message" #t)
@@ -111,8 +111,8 @@
 (define (ui-delete-address)
     (catch/message (lambda()
        (apply woo "del_iface_address" "/net-eth"
-           (form-value-list '("language" "real_name" "addresses")))))
-    (read-interface-address (form-value "real_name"))
+           (form-value-list '("language" "name" "addresses")))))
+    (read-interface-address (form-value "name"))
 )
 
 (define (check-addresses-list)
