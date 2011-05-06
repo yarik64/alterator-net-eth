@@ -244,7 +244,7 @@ read_computer_name()
 read_computer_domain()
 {
 	local host=$1
-	[ $(expr index $host .) -eq 0 ] && unset host
+	[ $(expr index "$host" .) -eq 0 ] && unset host
 	local value="${host:-$(read_hostname)}"
 	local domain="${value#*.}"
 	echo "$domain"
