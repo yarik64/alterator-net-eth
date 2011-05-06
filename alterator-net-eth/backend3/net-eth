@@ -494,6 +494,8 @@ del_iface_address()
 list_iface_addresses()
 {
     local name="$1"; shift
+
+    [ -n "$name" ] || name="$(list_eth_cached|head -n1)"
     read_iface_address $name
     cat "$cachedir/$name-ipv4address" | write_enum
 }
@@ -524,16 +526,12 @@ on_message()
 		    add_iface_address "$in_real_name" "${in_addip}" "${in_addmask}";;
 		del_iface_address)
 		    del_iface_address "$in_real_name" "$in_addresses" ;;
-		list_iface_address)
-		    local name="${in_name}"
-		    [ -n "$name" ] || name="$(list_eth_cached|head -n1)"
-		    list_iface_addresses "$name"
-		    ;;
 		list)
 			case "${in__objects##*/}" in
 			    avail_masks) list_mask ;;
 			    avail_configurations) list_configuration ;;
 			    avail_controlled) list_controlled "$in_bridge";;
+			    avail_iface_address) list_iface_addresses "$in_name";;
 			    *) list_eth_cached|write_enum;;
 			esac
 			;;
