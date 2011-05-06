@@ -1,8 +1,8 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 4.14
-Release: alt2
+Version: 4.15
+Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
 
@@ -80,6 +80,11 @@ mapping current hostname to 127.0.0.1 in /etc/hosts.
 %_sysconfdir/hooks/hostname.d/*
 
 %changelog
+* Fri May 06 2011 Mikhail Efremov <sem@altlinux.org> 4.15-alt1
+- Don't use separate cache file for addresses.
+- Use woo-list for retrieval of iface addresses.
+- Fix syntax error on empty host variable.
+
 * Sun May 01 2011 Mikhail Efremov <sem@altlinux.org> 4.14-alt2
 - Fix addresses list retrieval (closes: #25506).
 
