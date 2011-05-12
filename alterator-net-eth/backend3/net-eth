@@ -559,7 +559,6 @@ on_message()
 			[ -n "$name" ] && write_iface "$name" "$in_bridge"
 
 			[ -n "$in_computer_name" ] && write_computer_name "$in_computer_name"
-			[ -n "$in_hostname" ] && write_hostname "$in_hostname"
 
 			if [ -n "$in_commit" ]; then
 			    commit_cache || return
