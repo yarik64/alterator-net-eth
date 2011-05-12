@@ -215,6 +215,11 @@ read_hostname()
 	local value="$(shell_config_get "$netconfig" HOSTNAME)"
 
 	[ -n "$value" ] || value="localhost.localdomain"
+	if [ $(expr index "$value" .) -eq 0 ]; then
+		local domain="$(shell_config_get "$netconfig" DOMAINNAME)"
+		[ -n "$domain" ] || domain="localdomain"
+		value="$value"."$domain"
+	fi
 	echo "$value"
 }
 
