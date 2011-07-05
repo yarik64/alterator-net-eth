@@ -1,7 +1,7 @@
 %define _altdata_dir %_datadir/alterator
 
 Name: alterator-net-eth
-Version: 4.15.1
+Version: 4.15.2
 Release: alt1
 
 Packager: Stanislav Ievlev <inger@altlinux.org>
@@ -18,6 +18,7 @@ Requires: alterator-hw-functions >= 0.7-alt2
 Requires: alterator-net-functions >= 1.1
 Requires: alterator-net-wifi >= 0.5-alt1
 Requires: etcnet openresolv avahi-autoipd startup >= 0.9.8.21-alt1
+Requires: bridge-utils
 
 Conflicts: alterator-lookout < 1.7-alt1
 Conflicts: alterator-fbi < 5.14-alt1
@@ -80,6 +81,10 @@ mapping current hostname to 127.0.0.1 in /etc/hosts.
 %_sysconfdir/hooks/hostname.d/*
 
 %changelog
+* Tue Jul 05 2011 Mikhail Efremov <sem@altlinux.org> 4.15.2-alt1
+- Add bridge-utils to requires (see #25740).
+- Fix reading addresses for iface (closes: #23689).
+
 * Thu May 12 2011 Mikhail Efremov <sem@altlinux.org> 4.15.1-alt1
 - backend: Drop obsoleted line.
 - Fix read_hostname(): Always return hostname with domain.
