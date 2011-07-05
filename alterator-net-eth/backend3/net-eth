@@ -521,7 +521,7 @@ on_message()
 			    avail_masks) list_mask ;;
 			    avail_configurations) list_configuration ;;
 			    avail_controlled) list_controlled "$in_bridge";;
-			    avail_iface_address) list_iface_addresses "$in_name";;
+			    avail_iface_address) list_iface_addresses "$(name_with_bridge "$in_name")";;
 			    *) list_eth_cached|write_enum;;
 			esac
 			;;
