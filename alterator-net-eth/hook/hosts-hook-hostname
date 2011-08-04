@@ -12,4 +12,7 @@ short_old_hostname="${old_hostname%%.*}"
 
 [ -z "$old_hostname" -o "$old_hostname" = "$new_hostname" \
     -o "$short_old_hostname" = 'localhost' ] ||
-    sed -ri "/^127\.0\.0\.1[[:blank:]]+$old_hostname[[:blank:]]+$short_old_hostname/d" /etc/hosts
+    sed -ri -e "/^127\.0\.0\.1[[:blank:]]+$old_hostname[[:blank:]]+$short_old_hostname/d" \
+			-e "/^127\.0\.0\.1[[:blank:]]+$old_hostname[[:blank:]]*$/d" \
+			-e "/^127\.0\.0\.1[[:blank:]]+$short_old_hostname[[:blank:]]*$/d" \
+			/etc/hosts
