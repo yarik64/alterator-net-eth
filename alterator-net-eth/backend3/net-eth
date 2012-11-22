@@ -18,7 +18,6 @@ alterator_api_version=1
 . shell-config
 
 ###
-
 is_defined()
 {
     set|grep -qs "^$(quote_sed_regexp "$1")="
@@ -159,11 +158,25 @@ commit_cache()
 
 	    [ -n "$DURING_INSTALL" ] || iface_down "$ifname"
 
-	    local old_addresses="$(read_iface_addresses "/etc/net/ifaces/$ifname")"
-	    local new_addresses="$(read_iface_addresses "$iface")"
+		# IPv4 configuration
+		local old_config_ipv4="$(read_config_ipv "/etc/net/ifaces/$ifname" 4)"
+		local new_config_ipv4="$(read_config_ipv "$iface" 4)"
 
-	    local old_configuration="$(read_configuration "/etc/net/ifaces/$ifname")"
-	    local new_configuration="$(read_configuration "$iface")"
+	    local old_ipv4addresses="$(read_iface_addresses "/etc/net/ifaces/$ifname" 4)"
+	    local new_ipv4addresses="$(read_iface_addresses "$iface" 4)"
+
+	    local old_ipv4configuration="$(read_configuration "/etc/net/ifaces/$ifname" 4)"
+	    local new_ipv4configuration="$(read_configuration "$iface" 4)"
+
+		# IPv6 configuration
+		local old_config_ipv6="$(read_config_ipv "/etc/net/ifaces/$ifname" 6)"
+		local new_config_ipv6="$(read_config_ipv "$iface" 6)"
+
+	    local old_ipv6addresses="$(read_iface_addresses "/etc/net/ifaces/$ifname" 6)"
+	    local new_ipv6addresses="$(read_iface_addresses "$iface" 6)"
+
+	    local old_ipv6configuration="$(read_configuration "/etc/net/ifaces/$ifname" 6)"
+	    local new_ipv6configuration="$(read_configuration "$iface" 6)"
 
 	    #update configs
 	    rm -rf -- "/etc/net/ifaces/$ifname"
@@ -183,10 +196,26 @@ commit_cache()
 	    #try to restart
 	    [ -n "$DURING_INSTALL" ] && netdev_is_up "$ifname" || iface_up "$ifname"
 
-	    if [ "$old_addresses" != "$new_addresses" -o "$old_configuration" != "$new_configuration" ];then
-		export old_addresses new_addresses old_configuration new_configuration
-		run-parts  "$postcommit_hooks_dir"  "$ifname"
-	    fi
+		if [ "$old_config_ipv4" != "$new_config_ipv4" -o \
+			 "$old_ipv4addresses" != "$new_ipv4addresses" -o \
+			 "$old_ipv4configuration" != "$new_ipv4configuration" -o \
+			 "$old_config_ipv6" != "$new_config_ipv6" -o \
+			 "$old_ipv6addresses" != "$new_ipv6addresses" -o \
+			 "$old_ipv6configuration" != "$new_ipv6configuration" ];then
+			# Deprecated. For backward compatibility only.
+			local old_addresses="$old_ipv4addresses"
+			local new_addresses="$new_ipv4addresses"
+			local old_configuration="$old_ipv4configuration"
+			local new_configuration="$new_ipv4configuration"
+			export old_addresses new_addresses old_configuration new_configuration
+			###
+			export old_config_ipv4 new_config_ipv4 old_ipv4addresses new_ipv4addresses \
+				old_ipv4configuration new_ipv4configuration \
+				old_config_ipv6 new_config_ipv6 old_ipv6addresses new_ipv6addresses \
+				old_ipv6configuration new_ipv6configuration
+
+			run-parts  "$postcommit_hooks_dir"  "$ifname"
+		fi
 	done
 
     clear_cache
@@ -259,6 +288,12 @@ write_computer_name()
 }
 
 ### interface work
+list_ipv()
+{
+	write_enum_item "4" "`_ "IPv4"`"
+	write_enum_item "6" "`_ "IPv6"`"
+}
+
 list_eth_cached()
 {
     list_eth | while read name; do
@@ -275,9 +310,16 @@ list_eth_cached()
 
 list_mask()
 {
-    for i in `seq 32 -1 0`; do 
-	write_enum_item "$i" "/$i ($(ipv4addr_prefix_to_mask "$i"))"
-    done
+	local ipv="$1"
+	if [ "$ipv" = 4 ]; then
+		for i in `seq 32 -1 0`; do
+			write_enum_item "$i" "/$i ($(ipv4addr_prefix_to_mask "$i"))"
+		done
+	else
+		for i in `seq 128 -1 0`; do
+			write_enum_item "$i" "/$i"
+		done
+	fi
 }
 
 list_controlled()
@@ -292,8 +334,10 @@ list_controlled()
 
 list_configuration()
 {
+	local ipv="$1"
+	[ "$ipv" = 6 ] && write_enum_item "ra" "`_ "Use RA only"`"
     write_enum_item "dhcp" "`_ "Use DHCP"`"
-    write_enum_item "ipv4ll" "`_ "Use Zeroconf"`"
+	[ "$ipv" = 4 ] && write_enum_item "ipv4ll" "`_ "Use Zeroconf"`"
     write_enum_item "static" "`_ "Manually"`"
 }
 
@@ -334,15 +378,67 @@ read_controlled()
 
 read_configuration()
 {
-    local bootproto="$(read_iface_option "$1" BOOTPROTO)"
+	local bootproto="$(read_iface_option "$1" BOOTPROTO)"
+	local ipv="$2"
+	local config=
 
-    if [ "$bootproto" = "static" ];then
-	echo 'static'
-    elif [ "$bootproto" = "ipv4ll" ];then
-	echo 'ipv4ll'
-    else #dhcp by default
-	echo 'dhcp'
-    fi
+	case "$bootproto" in
+		static)
+			# If there is no IPv6 static configuration
+			# then it is RA really.
+			if [ "$ipv" = 6 ] &&
+				[ ! -s "$1/ipv6address" ] &&
+				[ ! -s "$1/ipv6route" ]; then
+				config='ra'
+			else
+				config='static'
+			fi
+			;;
+		ipv4ll)
+			if [ "$ipv" = 6 ]; then
+				config='ra'
+			else
+				config='ipv4ll'
+			fi
+			;;
+		dhcp|dhcp[-,\ ]*)
+			if [ "$ipv" = 4 ]; then
+				config='dhcp'
+			else
+				# Very strange logic in etcnet
+				config='ra'
+			fi
+			;;
+		dhcp6|dhcp6[-,\ ]*)
+			if [ "$ipv" = 4 ]; then
+				# Very strange logic in etcnet
+				config='static'
+			else
+				config='dhcp'
+			fi
+			;;
+		*)
+			if [ "$ipv" = 4 ]; then
+				config='dhcp'
+			else
+				config='ra'
+			fi
+			;;
+	esac
+
+	echo "$config"
+}
+
+read_config_ipv()
+{
+	local ifacedir="$1"; shift
+	local v="$1"; shift
+	local enabled="$(read_iface_option "$ifacedir" CONFIG_IPV$v)"
+
+	case "$enabled" in
+		[Yy][Ee][Ss]|[Tt][Rr][Uu][Ee]|[Oo][Nn]|[Yy]|1) echo yes ;;
+		*) echo no ;;
+	esac
 }
 
 get_ifacedir()
@@ -359,6 +455,7 @@ get_ifacedir()
 read_iface()
 {
 	local name="$1"; shift
+	local ipv="$1"; shift
 	local ifacedir="$(get_ifacedir "$name")"
 	local bridge=no
 
@@ -366,15 +463,16 @@ read_iface()
 	local real_name="$(real_iface "$ifacedir")"
 	write_string_param real_name "$real_name"
 
+	write_bool_param ipv_enabled "$(read_config_ipv "$ifacedir" "$ipv")"
 	write_string_param adaptor "$(read_info "$real_name")"
-	write_string_param configuration "$(read_configuration "$ifacedir")"
+	write_string_param configuration "$(read_configuration "$ifacedir" "$ipv")"
 	write_string_param controlled "$(read_controlled "$ifacedir")"
 	write_bool_param wireless "$(netdev_is_wireless "$real_name" && echo "yes" || echo "no")"
 
 	write_string_param dns "$(read_iface_dns "$ifacedir")"
 	write_string_param search "$(read_iface_search "$ifacedir")"
 
-	write_string_param default "$(read_iface_default_gw "$ifacedir")"
+	write_string_param default "$(read_iface_default_gw "$ifacedir" "$ipv")"
 
 	write_string_param ip_string "$(netdev_read_ip "$name"|head -n1)"
 	is_bridge "$ifacedir" && bridge=yes
@@ -402,22 +500,114 @@ write_controlled()
 	esac
 }
 
+# Try to determine BOOTPROTO according with
+# that brain-damaged logic in etcnet
+get_etcnet_bootproto()
+{
+	local ipv4config="$1"; shift
+	local ipv6config="$1"; shift
+	local bootproto=
+
+	if [ -z "$ipv4config" ]; then
+		case "$ipv6config" in
+			dhcp) bootproto=dhcp6 ;;
+			*) bootproto=static ;;  # static | ra
+		esac
+	elif [ -z "$ipv6config" ]; then
+		bootproto="$ipv4config"
+	else
+		case "$ipv4config" in
+			static)
+				if [ "$ipv6config" = dhcp ]; then
+					bootproto=dhcp6
+				else # static | ra
+					bootproto=static
+				fi
+				;;
+			ipv4ll)
+				if [ "$ipv6config" = ra ]; then
+					bootproto=ipv4ll
+				else # static | dhcp
+					# Cannot be defined
+					bootproto=
+				fi
+				;;
+			dhcp)
+				if [ "$ipv6config" = ra ]; then
+					bootproto=dhcp
+				else # static | dhcp
+					# Cannot be defined
+					bootproto=
+				fi
+				;;
+		esac
+	fi
+
+	echo "$bootproto"
+}
+
 write_configuration()
 {
 	local ifacedir="$1";shift
 	local configuration="$1";shift
+	local ipv="$1"; shift
+	local bootproto=
+	local ipv4config= ipv6config=
 
-	 case "$configuration" in
-	    static)
-		write_iface_option "$ifacedir" BOOTPROTO static
-		;;
-	    dhcp)
-		write_iface_option "$ifacedir" BOOTPROTO dhcp
-		;;
-	    ipv4ll)
-		write_iface_option "$ifacedir" BOOTPROTO ipv4ll
-		;;
-	esac
+	if [ "$ipv" = 4 ]; then
+		ipv4config="$configuration"
+		[ "$(read_config_ipv "$ifacedir" 6)" = yes ] &&
+			ipv6config="$(read_configuration "$ifacedir" 6)"
+	else
+		ipv6config="$configuration"
+		[ "$(read_config_ipv "$ifacedir" 4)" = yes ] &&
+			ipv4config="$(read_configuration "$ifacedir" 4)"
+	fi
+
+	bootproto="$(get_etcnet_bootproto "$ipv4config" "$ipv6config")"
+
+	if [ -n "$bootproto" ]; then
+		write_iface_option "$ifacedir" BOOTPROTO "$bootproto"
+		if [ "$ipv" = 6 -a "$ipv6config" = ra ]; then
+			# Actually RA-only it is static without configuration.
+			# So remove ipv6* config files.
+			rm -f "$ifacedir/ipv6address" "$ifacedir/ipv6route"
+		fi
+	else
+		write_error "`_ "IPv4 and IPv6 configurations are incompatible:"` $ipv4config and $ipv6config"
+		return 1
+	fi
+
+	return 0
+}
+
+write_config_ipv()
+{
+	local ifacedir="$1"; shift
+	local v="$1"; shift
+	local enabled="$1"; shift
+	local config_ipv=
+
+	test_bool "$enabled" && config_ipv=yes || config_ipv=no
+	write_iface_option "$ifacedir" CONFIG_IPV$v "$config_ipv"
+}
+
+check_dns()
+{
+	local ifacedir="$1"; shift
+	local ns_list="$1"; shift
+	local config_ipv4="$(read_config_ipv "$ifacedir" 4)"
+	local config_ipv6="$(read_config_ipv "$ifacedir" 6)"
+
+	for ns in $ns_list; do
+		if [ "$config_ipv4" = no ] && check_ip "$ns" 4; then
+			return 1
+		elif [ "$config_ipv6" = no ] && check_ip "$ns" 6; then
+			return 1
+		fi
+	done
+
+	return 0
 }
 
 write_iface()
@@ -441,49 +631,91 @@ write_iface()
 	    shell_config_del "$ifacedir/options" HOST
 	fi
 
+	[ -n "$in_ipv_enabled" ] &&
+		write_config_ipv "$ifacedir" "$in_ipv" "$in_ipv_enabled"
+
 	is_defined "in_default" &&
-	    write_iface_default_gw "$ifacedir" "$in_default"
+		test_bool "$in_ipv_enabled" &&
+	    write_iface_default_gw "$ifacedir" "$in_default" "$in_ipv"
 
 	[ -n "$in_controlled" ] &&
 	    write_controlled "$ifacedir" "$in_controlled"
 
 	[ -n "$in_configuration" ] &&
-	    write_configuration "$ifacedir" "$in_configuration"
+		test_bool "$in_ipv_enabled" &&
+	    write_configuration "$ifacedir" "$in_configuration" "$in_ipv"
 
-	is_defined "in_dns" &&
-	    write_iface_dns "$ifacedir" "$in_dns"
+	if is_defined "in_dns"; then
+		check_dns "$ifacedir" "$in_dns" &&
+			write_iface_dns "$ifacedir" "$in_dns" ||
+			write_error "`_ "Invalid DNS list"`"
+	fi
 
 	is_defined "in_search" &&
 	    write_iface_search "$ifacedir" "$in_search"
 }
 
+check_ip()
+{
+	local ip="$1"
+	local ipv="$2"
+
+	if [ "$ipv" = 4 ]; then
+		valid_ipv4 "$ip"
+	else
+		valid_ipv6addr "$ip"
+	fi
+}
+
+check_prefix()
+{
+	local prefix="$1"
+	local ipv="$2"
+	local max=
+
+	[ "$ipv" = 4 ] &&
+		max=32 ||
+		max=128
+
+	[ -n "$prefix" -a $prefix -ge 0 -a $prefix -le $max ]
+}
+
 add_iface_address()
 {
-    local iface="$1"
-    local addr="$2"
-    local mask="$3"
-    if [ -n "$iface" -a -n "$addr" -a -n "$mask" ] ; then
-	echo "$addr/$mask" >> "$cachedir/$iface/ipv4address"
-    fi
+	local iface="$1"
+	local addr="$2"
+	local mask="$3"
+	local v="$4"
+
+
+	if ! check_ip "$addr" "$v" || ! check_prefix "$mask" "$v"; then
+		write_error "`_ "Invalid IP address:"` $addr/$mask"
+		return 1
+	fi
+	if [ -n "$iface" -a -n "$addr" -a -n "$mask" ] ; then
+		echo "$addr/$mask" >> "$cachedir/$iface/ipv${v}address"
+	fi
 }
 
 del_iface_address()
 {
     local iface="$1"
     local addr="$2"
+	local v="$3"
     if [ -n "$iface" -a -n "$addr" ] ; then
-	sed -i -e "s|^${addr}$||" -e '/^$/d' "$cachedir/$iface/ipv4address"
+	sed -i -e "s|^${addr}$||" -e '/^$/d' "$cachedir/$iface/ipv${v}address"
     fi
 }
 
 list_iface_addresses()
 {
     local name="$1"; shift
+	local v="$1"; shift
     [ -n "$name" ] || name="$(list_eth_cached|head -n1)"
 
 	local ifacedir="$(get_ifacedir "$name")"
 
-    [ -s "$ifacedir/ipv4address" ] && cat "$ifacedir/ipv4address" | write_enum
+    [ -s "$ifacedir/ipv${v}address" ] && cat "$ifacedir/ipv${v}address" | write_enum
 }
 
 #initial actions
@@ -500,28 +732,30 @@ fi
 
 alterator_export_var \
     computer_name	$NAME_CHECK \
-    default		ipv4-address \
     search		hostname-list \
-    dns			ipv4-address-list
+    dns			ip-address-list
+#    default		ipv4-address \
 #    addresses 		ipv4-addrwmask-list \
 
 on_message()
 {
 	case "$in_action" in
+
 		add_iface_address)
 			init_cache "$in_name" "$in_bridge"
-		    add_iface_address "$in_name" "${in_addip}" "${in_addmask}"
+		    add_iface_address "$in_name" "${in_addip}" "${in_addmask}" "$in_ipv"
 			;;
 		del_iface_address)
 			init_cache "$in_name" "$in_bridge"
-		    del_iface_address "$in_name" "$in_addresses"
+		    del_iface_address "$in_name" "$in_addresses" "$in_ipv"
 			;;
 		list)
 			case "${in__objects##*/}" in
-			    avail_masks) list_mask ;;
-			    avail_configurations) list_configuration ;;
+				avail_ipv) list_ipv;;
+			    avail_masks) list_mask "$in_ipv";;
+			    avail_configurations) list_configuration "$in_ipv";;
 			    avail_controlled) list_controlled "$in_bridge";;
-			    avail_iface_address) list_iface_addresses "$(name_with_bridge "$in_name")";;
+			    avail_iface_address) list_iface_addresses "$(name_with_bridge "$in_name")" "$in_ipv";;
 			    *) list_eth_cached|write_enum;;
 			esac
 			;;
@@ -531,7 +765,7 @@ on_message()
 			name="$(name_with_bridge "$name")"
 			case "$in__objects" in
 			    /)
-				[ -n "$name" ] && read_iface "$name"
+				[ -n "$name" ] && read_iface "$name" "$in_ipv"
 
 				write_string_param name		"$name"
 

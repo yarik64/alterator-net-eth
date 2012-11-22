@@ -2,24 +2,47 @@
 
 ;;; Functions
 
-(define (update-configuration configuration)
+(define *prev_ipv* (make-cell "4"))
+
+(define (update-configuration-activity configuration)
     (form-update-activity
-      '("addresses" "default")
-      (string=? configuration "static")))
+      '("addresses" "default" "btn-del-ip" "ipl_label")
+      (and (form-value "ipv_enabled") (string=? configuration "static"))))
+
+(define (update-ipv-activity)
+   (form-update-activity "configuration" (form-value "ipv_enabled"))
+   (update-configuration-activity (form-value "configuration")))
+
+(define (ipv_changed)
+  (let ((name (form-value "name"))
+		(ipv (form-value "ipv"))
+		(prev_ipv (cell-ref *prev_ipv*)))
+	(if (not (string=? ipv prev_ipv))
+	  (begin
+	  (cell-set! *prev_ipv* ipv)
+	   ; write configuration for previous ipv
+	   (catch/message
+		 (lambda()
+		   (write-interface name prev_ipv)))
+	   ; and read for current ipv
+	   (catch/message
+		 (lambda()
+		   (reset-enums ipv)
+		   (read-interface name ipv)))))))
 
 (define (read-interface-address name)
     (catch/message (lambda()
 	(form-update-enum "addresses"
-	    (woo-list "/net-eth/avail_iface_address" 'name name)))))
+	    (woo-list "/net-eth/avail_iface_address" 'name name 'ipv (form-value "ipv"))))))
 
-(define (read-interface name)
-  (let ((cmd (woo-read-first "/net-eth" 'name name)))
+(define (read-interface name ipv)
+  (let ((cmd (woo-read-first "/net-eth" 'name name 'ipv ipv)))
    (form-update-visibility
       "wireless"
       (and (woo-get-option cmd 'wireless)
 	   (string=? (woo-get-option cmd 'controlled) "etcnet")))
     (form-update-value-list
-      '("name" "real_name")
+      '("name" "real_name" "ipv_enabled")
       cmd)
     (form-update-value-list
       '("computer_name" "dns" "search")
@@ -31,85 +54,81 @@
     (form-update-value-list
       '("configuration")
       cmd)
-    (update-configuration (woo-get-option cmd 'configuration))
+	(update-ipv-activity)
     )
 )
 
-(define (write-interface name)
+(define (write-interface name ipv)
   (apply woo-write
 	 "/net-eth"
 	 'name name
-	 (form-value-list '("computer_name" "dns" "search" "default" "configuration"))
+	 'ipv ipv
+	 (form-value-list '("ipv_enabled" "computer_name" "dns" "search" "default" "configuration"))
     ))
 
 (define (commit-interface)
-    (if (check-addresses-list)
 	(catch/message
 	    (lambda()
-		(write-interface (or (form-value "name") ""))
-		(woo-write "/net-eth" 'commit #t)))))
+		(write-interface (or (form-value "name") "") (form-value "ipv"))
+		(woo-write "/net-eth" 'commit #t))))
+
+(define (reset-enums ipv)
+  (form-update-enum "add-mask" (woo-list "/net-eth/avail_masks" 'ipv ipv))
+  (form-update-value "add-mask" (if (string=? ipv "4") "24" "64"))
+  (form-update-enum "configuration" (woo-list "/net-eth/avail_configurations" 'ipv ipv))
+  (form-update-enum "name" (woo-list "/net-eth/avail_ifaces")))
 
 (define (reset-interface)
   (catch/message
     (lambda()
-      (woo-write "/net-eth" 'reset #t)
+	  (let ((ipv (form-value "ipv")))
+		(woo-write "/net-eth" 'reset #t 'ipv ipv)
+		(reset-enums ipv)
+		(read-interface "" ipv)
+		(form-update-value "prev_name" (form-value "name"))))))
 
-      (form-update-enum "add-mask" (woo-list "/net-eth/avail_masks"))
-      (form-update-value "add-mask" "24")
-      (form-update-enum "configuration" (woo-list "/net-eth/avail_configurations"))
-      (form-update-enum "name" (woo-list "/net-eth/avail_ifaces"))
-
-      (read-interface "")
-      (form-update-value "prev_name" (form-value "name")))))
+(define (init-interface)
+      (form-update-enum "ipv" (woo-list "/net-eth/avail_ipv"))
+      (form-update-value "ipv" "4")
+	  (reset-interface))
 
 (define (update-interface)
   (or (catch/message
 	(lambda()
-	  (let ((name (form-value "name")))
-	    (write-interface (form-value "prev_name"))
-	    (read-interface name)
+	  (let ((name (form-value "name"))
+			(ipv (form-value "ipv")))
+	    (write-interface (form-value "prev_name") ipv)
+	    (read-interface name ipv)
 	    (form-update-value "prev_name" name))))
       (form-update-value "name" (form-value "prev_name"))))
 
 (define (advanced-interface)
-  (let ((name (form-value "name")))
+  (let ((name (form-value "name"))
+		(ipv (form-value "ipv")))
     (and (catch/message
            (lambda()
-             (write-interface name)))
+             (write-interface name ipv)))
          (begin
            (form-popup "/net-eth/advanced" 'name name)
            (form-update-enum "name" (woo-list "/net-eth/avail_ifaces"))
-           (read-interface name)
+           (read-interface name ipv)
            (form-update-value "prev_name" (or (form-value "name") ""))))))
 
 (define (wireless-interface)
   (format #t "wireless-interface:real_name=~S~%" (form-value "real_name"))
   (form-popup "/net-wifi/" 'iface (form-value "real_name")))
 
-
 (define (ui-append-address)
-    (if (regexp-exec (make-regexp (string-append "^" "([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])([.]([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9+]|25[0-5])){3}" "$") regexp/extended) (form-value "add-ip"))
-	(begin
-	    (apply woo "add_iface_address" "/net-eth" (form-value-list '("name" "add-ip" "add-mask")))
-	    (read-interface-address (form-value "name"))
-	    (form-update-value "add-ip" "")
-	)
-	(document:popup-critical (_ "invalid IP address") 'ok)
-    )
-)
-
-(define (check-addresses-list)
-  (or (and (string? (ui-addresses value)) (string-null? (ui-addresses value)))
-      (and (string? (ui-addresses value))
-           (every (lambda(x) (regexp-exec (make-regexp (string-append "^" "([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])([.]([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9+]|25[0-5])){3}" "/([1-9]|[12][0-9]|3[0-1])$") regexp/extended) x))
-                  (string-tokenize (ui-addresses value) (char-set-complement char-set:whitespace))))
-      (begin (document:popup-critical (_ "invalid IP with MASK list") 'ok) #f))
-)
+  (and (catch/message (lambda()
+						(apply woo "add_iface_address" "/net-eth" 
+							   (form-value-list '("language" "ipv" "name" "add-ip" "add-mask")))))
+	   (read-interface-address (form-value "name"))
+	   (form-update-value "add-ip" "")))
 
 (define (ui-delete-address)
     (catch/message (lambda()
 	(apply woo "del_iface_address" "/net-eth"
-	    (form-value-list '("language" "name" "addresses")))))
+	    (form-value-list '("language" "ipv" "name" "addresses")))))
     (read-interface-address (form-value "name"))
 )
 
@@ -142,6 +161,11 @@
     ;;
     (textbox colspan 2 name "adaptor" max-height 70 alterability #f)
 
+	;;
+	(hbox align "left" colspan 2
+		(label text (_ "Select IP version:"))
+		(combobox name "ipv")
+		(checkbox name "ipv_enabled" text (_ "Enable")))
     ;;
     (label text (_ "Configuration:") align "right" nameref "configuration")
     (combobox name "configuration")
@@ -150,7 +174,7 @@
     ;(spacer)(separator)
 
     ;;
-    (label text (_ "IP addresses:") align "right" nameref "addresses")
+    (label name "ipl_label" text (_ "IP addresses:") align "right" nameref "addresses")
     (gridbox columns "100;0"
 	(document:id ui-addresses (listbox name "addresses" max-height 70))
 	(button (_ "Delete") name "btn-del-ip" nameref "addresses")
@@ -200,9 +224,11 @@
 
 (document:root
   (when loaded
-    (reset-interface)
+	(init-interface)
     (form-bind "name" "change" update-interface)
-    (form-bind "configuration" "change" (lambda() (update-configuration (form-value "configuration"))))
+	(form-bind "ipv" "change" ipv_changed)
+	(form-bind "ipv_enabled" "change" update-ipv-activity)
+    (form-bind "configuration" "change" (lambda() (update-configuration-activity (form-value "configuration"))))
     (form-bind "advanced" "click" advanced-interface)
     (form-bind "wireless" "click" wireless-interface)
     (form-bind "btn-del-ip" "click" ui-delete-address)

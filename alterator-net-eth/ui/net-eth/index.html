@@ -32,7 +32,15 @@
 						    <td colspan="2">
 							<textarea rows="3" readonly="yes" name="adaptor" style="width:98%"/>
 						    </td>
-						  </tr>
+							</tr>
+							<tr>
+								<td align="right"><span translate="_">Select IP version:</span></td>
+								<td>
+									<select name="ipv"/>
+									<input type="checkbox" name="ipv_enabled" value="#t"/>
+									<b><span translate="_">Enable</span></b>
+								</td>
+						   </tr>
 						  <tr>
 							  <td><span translate="_">Configuration:</span></td>
 							  <td><select name="configuration" enumref="/net-eth/avail_configurations"></select></td>
@@ -52,17 +60,6 @@
 							  </td>
 						  </tr>
 						  <tr>
-						      <td/>
-						      <td>
-						          <div name="invalid_addresses_list" style="display:none">
-						              <span  class="alterator-attention-message">
-						                  <img src="/design/images/attention.gif"/>
-						                  <span translate="_">invalid IP with MASK list</span>
-						              </span>
-						          </div>
-						      </td>
-						  </tr>
-						  <tr>
 							  <td></td>
 							  <td>
 							    <span translate="_" nameref="add-ip">IP:</span>
@@ -70,17 +67,6 @@
 							    <select name="add-mask" enumref="/net-eth/avail_masks"></select>
 							    <input type="button" name="btn-add-ip" value="Add" class="btn"/>
 							  </td>
-						  </tr>
-						  <tr>
-						      <td/>
-						      <td>
-						          <div name="invalid_ip_message" style="display:none">
-						              <span  class="alterator-attention-message">
-						                  <img src="/design/images/attention.gif"/>
-						                  <span translate="_">invalid IP address</span>
-						              </span>
-						          </div>
-						      </td>
 						  </tr>
 
 						  <tr><td/><td><hr/></td></tr>
