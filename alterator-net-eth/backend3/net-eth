@@ -614,6 +614,7 @@ write_iface()
 	local name="$1"; shift
 	local bridge="${1-}"
 	local ifacedir="$cachedir/$name"
+	local real_name= is_wireless=
 
 	if [ -z "$bridge" ]; then
 	    is_bridge "$ifacedir" && bridge="#t" || bridge="#f"
@@ -625,10 +626,15 @@ write_iface()
 	    write_iface_option "$ifacedir" TYPE bri
 	    write_iface_option "$ifacedir" HOST "$host"
         [ "$in_controlled" != NetworkManager ] || in_controlled=etcnet
+		real_name="$host"
 	else
 	    write_iface_option "$ifacedir" TYPE eth
 	    shell_config_del "$ifacedir/options" HOST
+		real_name="$name"
 	fi
+
+	netdev_is_wireless "$real_name" && is_wireless=yes || is_wireless=no
+	write_iface_option "$ifacedir" CONFIG_WIRELESS "$is_wireless"
 
 	[ -n "$in_ipv_enabled" ] &&
 		write_config_ipv "$ifacedir" "$in_ipv" "$in_ipv_enabled"
