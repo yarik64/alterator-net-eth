@@ -11,7 +11,8 @@
 
 (define (update-configuration-activity configuration)
     (form-update-activity
-      '("addresses" "ip" "add-mask" "add-ip" "default" "btn-del-ip" "ipl_label")
+      '("addresses" "ip" "add-mask" "add-ip" "default" "btn-add-ip" "btn-del-ip" "ipl_label"
+		"search_comment" "dns" "search")
       (and (form-value "ipv_enabled") (string=? configuration "static"))))
 
 (define (update-ipv-activity)

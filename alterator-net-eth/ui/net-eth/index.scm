@@ -6,7 +6,7 @@
 
 (define (update-configuration-activity configuration)
     (form-update-activity
-      '("addresses" "default" "btn-del-ip" "ipl_label")
+      '("addresses" "default" "btn-del-ip" "ipl_label" "dns" "search" "search_comment")
       (and (form-value "ipv_enabled") (string=? configuration "static"))))
 
 (define (update-ipv-activity)
@@ -203,7 +203,7 @@
     (edit name "search")
 
     ;;
-    (spacer)(label text (small (_ "(multiple values should be space separated)")))
+    (spacer)(label name "search_comment" text (small (_ "(multiple values should be space separated)")))
 
     ;;
     (button text (_ "Wireless settings...") name "wireless" align "right" visibility #f)
