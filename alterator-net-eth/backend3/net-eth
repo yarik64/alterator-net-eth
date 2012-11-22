@@ -474,7 +474,6 @@ read_iface()
 
 	write_string_param default "$(read_iface_default_gw "$ifacedir" "$ipv")"
 
-	write_string_param ip_string "$(netdev_read_ip "$name"|head -n1)"
 	is_bridge "$ifacedir" && bridge=yes
 	write_bool_param bridge "$bridge"
 }
