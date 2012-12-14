@@ -666,7 +666,7 @@ check_ip()
 	local ipv="$2"
 
 	if [ "$ipv" = 4 ]; then
-		valid_ipv4 "$ip"
+		valid_ipv4addr "$ip"
 	else
 		valid_ipv6addr "$ip"
 	fi
