@@ -291,7 +291,9 @@ write_computer_name()
 list_ipv()
 {
 	write_enum_item "4" "`_ "IPv4"`"
-	write_enum_item "6" "`_ "IPv6"`"
+	if is_ipv6_enabled; then
+		write_enum_item "6" "`_ "IPv6"`"
+	fi
 }
 
 list_eth_cached()
