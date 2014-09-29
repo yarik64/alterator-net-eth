@@ -5,6 +5,18 @@
     :use-module (alterator woo)
     :export (init))
 
+; DEBUG STRING (PASTE IN FOR YOUR NEEDS).
+; (format #t "XXX: ~S\n" rdp_profile_name)
+; (format #t "[ajax, module] action info\n")
+
+; TO DEBUG DO:
+; 1) define *debug* to #t
+; 2) start ahttpd -l -d
+(define *debug* #f)
+(define (dmsg msg . args)
+  (if *debug*
+    (format #t "[ajax, net-eth]: ~S ~S\n" msg args)))
+
 ;;; low level
 
 (define *prev_ipv* (make-cell ""))
@@ -42,7 +54,28 @@
            (woo-list "/net-eth/avail_iface_address" 'name name 'ipv (form-value "ipv"))))))
 
 (define (read-interface name ipv)
-  (let ((cmd (woo-read-first "/net-eth" 'name name 'ipv ipv 'language (form-value "language"))))
+    (dmsg "read-interface() -- enter")
+
+  (let* ((cmd (woo-read-first "/net-eth" 'name name 'ipv ipv 'language (form-value "language")))
+         (iface-type (woo-get-option cmd 'iface_type "eth"))
+         (is-vlan (if (string-ci=? iface-type "vlan") #t #f)))
+
+    (dmsg "read-interface() -- iface-type:" iface-type)
+    (dmsg "read-interface() -- is-vlan" is-vlan)
+
+    (for-each
+      (lambda(lst)
+        (form-update-visibility lst is-vlan))
+      '("area-vlan"))
+
+    (for-each
+      (lambda(lst)
+        (form-update-visibility lst (not is-vlan)))
+      '("area-generic" "advanced"))
+
+    (form-update-value-list '("label_vlan_host" "label_vlan_vid") cmd)
+
+
    (form-update-visibility
       "wireless"
       (and (woo-get-option cmd 'wireless)
@@ -104,7 +137,10 @@
   (form-update-enum "add-mask" (woo-list "/net-eth/avail_masks" 'ipv ipv 'language (form-value "language")))
   (form-update-value "add-mask" (if (string=? ipv "4") "24" "64"))
   (form-update-enum "configuration" (woo-list "/net-eth/avail_configurations" 'ipv ipv 'language (form-value "language")))
-  (form-update-enum "name" (woo-list "/net-eth/avail_ifaces" 'language (form-value "language"))))
+  (form-update-enum "name" (append
+                    (woo-list "/net-eth/avail_ifaces" 'language (form-value "language"))
+                    (woo-list "/net-eth/list_vlans" 'language (form-value "language"))
+                    )))
 
 (define (reset-interface)
   (catch/message
@@ -153,3 +189,5 @@
 
  (form-bind "commit" "click" commit-interface)
  (form-bind "reset" "click" reset-interface))
+
+; vim: ft=lisp expandtab

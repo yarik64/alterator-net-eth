@@ -143,8 +143,34 @@ commit_cache()
 
     commit_hostname
 
-    find $cachedir -maxdepth 1 -mindepth 1 -type d|
-	while read iface; do
+    # stanv@:
+    # first iteration: host-interfaces, that one that have infants
+    # second iteration: vlan, bridges, etc...
+    local ifaces_all=($(find "$cachedir" -maxdepth 1 -mindepth 1 -type d | sort))
+    local ifaces_have_host=($(find "$cachedir" -maxdepth 2 -mindepth 2 -type f -name "options" -exec grep -l "HOST" '{}' \+ | sed -e 's,/[^/]\+$,,' | sort))
+
+    local ifaces_not_infants=()
+    local skip=
+    for i in "${ifaces_all[@]}"; do
+      for j in "${ifaces_have_host[@]}"; do
+        if [ "$i" = "$j" ]; then
+          skip="yes"
+        fi
+      done
+      if [ -z "$skip" ]; then
+        ifaces_not_infants+=("$i")
+      fi
+      skip=
+    done
+
+    # stanv@:
+    # order to apply changes:
+    # 1. save host-interfaces (changed)
+    # 2. save vlan-interfaces (changed)
+    # 3. hint: unmodified vlan does not appear in cache
+    #    So, down host interface -> down vlan interface
+    #    Conclusion: necessary to up unchaged vlan interface
+    for iface in "${ifaces_not_infants[@]}" "${ifaces_have_host[@]}"; do
 
 	    [ -n "$iface" ] || exit
 
@@ -180,7 +206,11 @@ commit_cache()
 
 	    #update configs
 	    rm -rf -- "/etc/net/ifaces/$ifname"
-	    mv -f -- "$cachedir/$ifname" "/etc/net/ifaces/$ifname"
+      if [ -e "$cachedir/$ifname/REMOVED" ]; then
+        continue
+      fi
+
+      mv -f -- "$cachedir/$ifname" "/etc/net/ifaces/$ifname"
 
 	    #add config for bridge members
 	    if is_bridge "$ifname";then
@@ -195,6 +225,30 @@ commit_cache()
 
 	    #try to restart
 	    [ -n "$DURING_INSTALL" ] && netdev_is_up "$ifname" || iface_up "$ifname"
+
+      # stanv@
+      # Time to UP unmodified-infants-interfaces that are in /etc/net/ifaces.
+      # Unmodified-infants-interfaces were DOWNed.
+      # As they were not modified, they do not exist in /var/cache/alterator/net-eth
+      # At /var/cache/alterator/net-eth must stay only modified-infants-interfaces.
+      # Modified-infants-interfaces will be UPed further.
+      local vlan_all=($(list_vlan))
+      local vlan_dir=
+      local iface_host=
+      for i in ${vlan_all[@]}; do
+        vlan_dir="/etc/net/ifaces/$i"
+        iface_host="$(read_iface_option "$vlan_dir" "HOST")"
+
+        # Skip, will be processed as a part of $cachedir
+        if [ -e "$cachedir/$i" ]; then
+          continue
+        fi
+
+        if [ "$iface_host" = "$ifname" ]; then
+          # up child $i
+          [ -n "$DURING_INSTALL" ] && netdev_is_up "$i" || iface_up "$i"
+        fi
+      done
 
 		if [ "$old_config_ipv4" != "$new_config_ipv4" -o \
 			 "$old_ipv4addresses" != "$new_ipv4addresses" -o \
@@ -296,9 +350,36 @@ list_ipv()
 	fi
 }
 
+
+# GET LIST OF VLAN INTERFACES CONTROLED BY ETCNET
+list_vlan()
+{
+  local base="${1-$etcnet_iface_dir}"
+  for i in `find "$base" -type d`; do
+    if ! [ "$(read_iface_option "$i" TYPE)" = "vlan" ]; then
+      continue
+    fi
+    if [ -e "$cachedir/${i##*/}/REMOVED" ]; then
+      continue
+    fi
+    echo "${i##*/}" 2>/dev/null
+  done
+}
+
+
+# LIST CACHED VLANS
+list_vlans_cached() {
+  local vlans=($((list_vlan; list_vlan "$cachedir") | sort | uniq))
+  for vlan in ${vlans[@]}; do
+    echo "$vlan"
+  done
+}
+
+
+# stanv@: awful code ((((
 list_eth_cached()
 {
-    list_eth | while read name; do
+  list_eth | while read name; do
         if [ -d "$cachedir/br$name" ] && [ "$(real_iface "$cachedir/br$name")" = "$name" ]; then
             name="br$name"
         elif [ -d "$cachedir/${name#br}" ]; then
@@ -465,6 +546,19 @@ read_iface()
 	local real_name="$(real_iface "$ifacedir")"
 	write_string_param real_name "$real_name"
 
+  # Print iface type
+  local iface_type="$(read_iface_option "$ifacedir" "TYPE")"
+  write_string_param "iface_type" "$iface_type"
+
+  local vlan_vid=
+  local iface_host=
+  if [ "$iface_type" == "vlan" ]; then
+    vlan_vid="$(read_iface_option "$ifacedir" "VID")"
+    iface_host="$(read_iface_option "$ifacedir" "HOST")"
+    write_string_param "label_vlan_host" "$iface_host"
+    write_string_param "label_vlan_vid" "$vlan_vid"
+  fi
+
 	write_bool_param ipv_enabled "$(read_config_ipv "$ifacedir" "$ipv")"
 	write_string_param adaptor "$(read_info "$real_name")"
 	write_string_param configuration "$(read_configuration "$ifacedir" "$ipv")"
@@ -629,6 +723,8 @@ write_iface()
 	    write_iface_option "$ifacedir" HOST "$host"
         [ "$in_controlled" != NetworkManager ] || in_controlled=etcnet
 		real_name="$host"
+  elif [ "$(read_iface_option "$ifacedir" TYPE)" == "vlan" ]; then
+    real_name="$(real_iface "$ifacedir")"
 	else
 	    write_iface_option "$ifacedir" TYPE eth
 	    shell_config_del "$ifacedir/options" HOST
@@ -668,7 +764,7 @@ check_ip()
 	local ipv="$2"
 
 	if [ "$ipv" = 4 ]; then
-		valid_ipv4addr "$ip"
+		valid_ipv4 "$ip"
 	else
 		valid_ipv6addr "$ip"
 	fi
@@ -744,9 +840,283 @@ alterator_export_var \
 #    default		ipv4-address \
 #    addresses 		ipv4-addrwmask-list \
 
+
+# LIST CHILDREN VLANS FOR SELECTED HOST INTERFACE TO FRONTEND (AS A TABLE)
+list_host_vlans() {
+  local host=
+
+  host="$in_name"
+
+  if [ -z "$host" ]; then
+    return
+  fi
+
+  local ifacedir=
+  local vid=
+
+  local ifaces=($((list_vlan; list_vlan "$cachedir") | sort | uniq))
+  for i in ${ifaces[@]}; do
+    ifacedir="$(get_ifacedir "$i")"
+    iface_host="$(read_iface_option "$ifacedir" "HOST")"
+    vid="$(read_iface_option "$ifacedir" "VID")"
+
+    if [ -e "$cachedir/$i/REMOVED" ]; then
+      continue
+    fi
+
+    if [ "$iface_host" = "$host" ]; then
+      write_table_item "name" "$i" "list_vlan_name" "$i" "list_vlan_id" "$vid"
+    fi
+  done
+}
+
+
+# LIST CHILDREN VLANS FOR SELECTED HOST INTERFACE TO FRONTEND (AS A LIST)
+list_host_vlans2() {
+  local host=
+
+  host="$in_name"
+
+  if [ -z "$host" ]; then
+    return
+  fi
+
+  local ifacedir=
+  local vid=
+
+  local ifaces=($((list_vlan; list_vlan "$cachedir") | sort | uniq))
+  for i in ${ifaces[@]}; do
+    ifacedir="$(get_ifacedir "$i")"
+    iface_host="$(read_iface_option "$ifacedir" "HOST")"
+    vid="$(read_iface_option "$ifacedir" "VID")"
+
+    if [ -e "$cachedir/$i/REMOVED" ]; then
+      continue
+    fi
+
+    if [ "$iface_host" = "$host" ]; then
+      echo "$i" | write_enum
+    fi
+  done
+}
+
+
+#CHECK INTERFACE HAS VLAN INFANTS
+has_infant_vlans() {
+  local host=
+
+  host="$1"
+
+  if [ -z "$host" ]; then
+    # FALSE
+    return 1
+  fi
+
+  local ifacedir=
+  local vid=
+
+  local ifaces=($((list_vlan; list_vlan "$cachedir") | sort | uniq))
+  for i in ${ifaces[@]}; do
+    ifacedir="$(get_ifacedir "$i")"
+    iface_host="$(read_iface_option "$ifacedir" "HOST")"
+    vid="$(read_iface_option "$ifacedir" "VID")"
+
+    if [ -e "$cachedir/$i/REMOVED" ]; then
+      continue
+    fi
+
+    if [ "$iface_host" = "$host" ]; then
+      # TRUE
+      return 0
+    fi
+  done
+
+  # FALSE
+  return 1
+}
+
+
+# REMOVE VLAN INFANTS FOR INTERFACE
+vlan_remove_infants() {
+  local IFS=";"
+  for i in $in_infants; do
+    # Ask to remove infant interface $i
+    mkdir -p "$cachedir/$i"
+    touch "$cachedir/$i/REMOVED"
+  done
+}
+
+
+# VLAN: EDIT / RENAME
+vlan_edit() {
+
+  local host=
+  local vid=
+  local new=
+  local old=
+
+  host="$in_name"
+  new="$in_vlan_new_name"
+  vid="$in_vlan_new_vid"
+  old="$in_vlan_old_name"
+
+  echo "edit host: $host, new: $new, vid: $vid, old: $old"
+
+  if [ -z "$host" ]; then
+    return
+  fi
+
+  if [ -z "$new" ]; then
+    return
+  fi
+
+  if [ -z "$vid" ]; then
+    return
+  fi
+
+  if [ -z "$old" ]; then
+    return
+  fi
+
+  local ifacedir=
+
+  # If doesn't exist return /etc/net
+  ifacedir="$(get_ifacedir "$new")"
+
+  if ! [ "$old" = "$new" ] && [ -d "$ifacedir" ] && ! [ -e "$ifacedir/REMOVED" ]; then
+    # already exists
+    # can't rename to already existed interface
+    return
+  fi
+
+  if [ -e "$cachedir/$new/REMOVED" ]; then
+    rm -rf -- "$cachedir/$new"
+  fi
+
+  # If doesn't exist return /etc/net
+  ifacedir="/etc/net/ifaces/$old"
+
+  # Create cache for vlan
+  if ! [ -d "$cachedir/$old" ]; then
+    # create cache for $old
+    cp -a "$ifacedir" "$cachedir"
+  fi
+
+  if ! [ "$old" = "$new" ]; then
+    mv -f -- "$cachedir/$old" "$cachedir/$new"
+    mkdir -p -- "$cachedir/$old"
+    touch "$cachedir/$old/REMOVED"
+  fi
+
+  write_iface_option "$cachedir/$new" "VID" "$vid"
+}
+
+
+# ADD NEW VLAN FOR SELECTED INTERFACE
+vlan_add_new() {
+  local host=
+  local vid=
+  local name=
+
+  host="$in_name"
+  name="$in_vlan_new_name"
+  vid="$in_vlan_new_vid"
+
+  if [ -z "$host" ]; then
+    return
+  fi
+
+  if [ -z "$name" ]; then
+    return
+  fi
+
+  if [ -z "$vid" ]; then
+    return
+  fi
+
+  local ifacedir=
+
+  # If doesn't exist return /etc/net
+  ifacedir="$(get_ifacedir "$name")"
+
+  if [ -d "$ifacedir" ] && ! [ -e "$ifacedir/REMOVED" ]; then
+    # Can't add already exists
+    return
+  fi
+
+  # Remove removed interface
+  rm -rf -- "$cachedir/$name"
+
+  mkdir -p -- "$cachedir/$name"
+
+  write_iface_option "$cachedir/$name" "TYPE" "vlan"
+  write_iface_option "$cachedir/$name" "HOST" "$host"
+  write_iface_option "$cachedir/$name" "VID" "$vid"
+  write_iface_option "$cachedir/$name" "CONFIG_WIRELESS" "no"
+  write_iface_option "$cachedir/$name" "CONFIG_IPV4" "yes"
+  write_iface_option "$cachedir/$name" "ONBOOT" "yes"
+}
+
+
+# PRINT INFO FOR SELECTED VLAN
+vlan_info() {
+  local name=
+  local vid=
+  local host=
+  local ifacedir=
+
+  name="$in_name"
+  host=
+  vid=
+
+  if [ -z "$name" ]; then
+    return
+  fi
+
+  # If doesn't exist return /etc/net
+  ifacedir="$(get_ifacedir "$name")"
+
+  if [ -e "$ifacedir/REMOVED" ]; then
+    # Removed, do not print anything
+    return
+  fi
+
+  host="$(read_iface_option "$ifacedir" "HOST")"
+  vid="$(read_iface_option "$ifacedir" "VID")"
+
+  if [ -z "$host" ]; then
+    return
+  fi
+
+  if [ -z "$vid" ]; then
+    return
+  fi
+
+  write_string_param "name" "$name"
+  write_string_param "host" "$host"
+  write_string_param "vid" "$vid"
+}
+
+
 on_message()
 {
 	case "$in_action" in
+
+    vlan_remove_infants)
+      vlan_remove_infants
+      ;;
+
+    vlan_add_new)
+      vlan_add_new
+      ;;
+
+    vlan_edit)
+      vlan_edit
+      ;;
+
+    vlan_info)
+      vlan_info
+      ;;
 
 		add_iface_address)
 			init_cache "$in_name" "$in_bridge"
@@ -763,6 +1133,10 @@ on_message()
 			    avail_configurations) list_configuration "$in_ipv";;
 			    avail_controlled) list_controlled "$in_bridge";;
 			    avail_iface_address) list_iface_addresses "$(name_with_bridge "$in_name")" "$in_ipv";;
+          list_host_vlans) list_host_vlans;;
+          list_host_vlans2) list_host_vlans2;;
+          list_vlans) list_vlans_cached|write_enum;;
+          # avail_ifaces
 			    *) list_eth_cached|write_enum;;
 			esac
 			;;
@@ -775,6 +1149,10 @@ on_message()
 				[ -n "$name" ] && read_iface "$name" "$in_ipv"
 
 				write_string_param name		"$name"
+
+        if has_infant_vlans "$name"; then
+          write_bool_param "has_infant_vlans" "yes"
+        fi
 
 				write_string_param computer_name "$(read_computer_name)"
 				write_string_param computer_domain "$(read_computer_domain)"
@@ -809,3 +1187,4 @@ on_message()
 }
 
 message_loop
+# vim: autoindent tabstop=2 shiftwidth=2 expandtab softtabstop=2 filetype=sh

@@ -29,8 +29,20 @@
 				  <td>
 					  <table class="form-table">
 						  <tr>
-						    <td colspan="2">
-							<textarea rows="3" readonly="yes" name="adaptor" style="width:98%"/>
+                <td colspan="2" style="text-align:center;">
+                  <div name="area-generic">
+                    <textarea rows="3" readonly="yes" name="adaptor" style="width:98%"/>
+                  </div>
+                  <div name="area-vlan" style="display:none">
+                    <h2><span translate="_">VLAN</span></h2>
+                    <span style="white-space: nowrap;">
+                      <span translate="_">Host: </span>
+                      <b><span class="alterator-label" name="label_vlan_host"></span></b>,
+                      <span translate="_">VID: </span>
+                      <b><span class="alterator-label" name="label_vlan_vid"></span></b>
+                    </span>
+                    <br/>
+                  </div>
 						    </td>
 							</tr>
 							<tr>
@@ -118,3 +130,4 @@
 	  </form>
    </body>
 </html>
+<!-- vim: set expandtab ts=2 sw=2 filetype=xml :-->
