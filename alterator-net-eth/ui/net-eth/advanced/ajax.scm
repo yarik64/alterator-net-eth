@@ -20,15 +20,20 @@
   (catch/message
     (lambda()
       (let* ((cmd (woo-read-first "/net-eth" 'name name))
-       (has_infant_vlans (woo-get-option cmd 'has_infant_vlans #f))
-	     (is_bridge (woo-get-option cmd 'bridge)))
+             (has_infant_vlans (woo-get-option cmd 'has_infant_vlans #f))
+             (is_bridge (woo-get-option cmd 'bridge))
+             (is_etcnet (if (string-ci=? (woo-get-option cmd 'controlled) "etcnet") #t #f))
+             (is_wireless (woo-get-option cmd 'wireless #f)))
       (form-update-enum "controlled" (woo-list "/net-eth/avail_controlled" 'bridge is_bridge))
       (form-update-value "iface" name)
-      (form-update-visibility "area-vlan-list" has_infant_vlans)
-      (form-update-visibility "area-vlan-edit" has_infant_vlans)
+      (form-update-visibility "area-vlan" (and is_etcnet (not is_wireless)))
+      (form-update-visibility "area-vlan-list" (and is_etcnet has_infant_vlans))
+      (form-update-visibility "area-vlan-edit" (and is_etcnet has_infant_vlans))
       (form-update-activity "bridge" (not has_infant_vlans))
+      (form-update-activity "controlled" (not has_infant_vlans))
       (form-update-visibility "label_bridge" has_infant_vlans)
       (form-update-value-list '("name" "controlled" "bridge") cmd)
+
 
       ; VLAN
       (and
@@ -37,19 +42,22 @@
         ; FILL LISTS
         (for-each
           (lambda(lst)
-            (let ((data (woo-list (string-append "/net-eth/" lst)
-                                  'name name
-                                  'language (form-value "language"))))
-              (form-update-enum lst data)
+            (let* ((name (car lst))
+                   (select_first (car (cdr lst)))
+                   (data (woo-list (string-append "/net-eth/" name)
+                                   'name *name*
+                                   'language (form-value "language"))))
+              (form-update-enum name data)
               ; take first, make it active
               (and
+                select_first
                 (pair? data)
                 ; select first item only for general enums, not multi-select lists
                 (= (length (car data)) 5)
                 (let ((xxx (woo-get-option (car data) 'name)))
                   (form-update-value lst (if (string? xxx) xxx ""))))
               ))
-          '("list_host_vlans" "list_host_vlans2"))
+          '(("list_host_vlans" #f) ("list_host_vlans2" #t)))
 
         ; REBIND ACTIONS ON LISTS
         ;(form-bind "list_host_vlans2" "change" vlan_selected)

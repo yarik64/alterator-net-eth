@@ -36,11 +36,28 @@
 	    (woo-list "/net-eth/avail_iface_address" 'name name 'ipv (form-value "ipv"))))))
 
 (define (read-interface name ipv)
-  (let ((cmd (woo-read-first "/net-eth" 'name name 'ipv ipv)))
+  (let* ((cmd (woo-read-first "/net-eth" 'name name 'ipv ipv))
+	 (iface-type (woo-get-option cmd 'iface_type "eth"))
+	 (is-vlan (if (string-ci=? iface-type "etcnet") #t #f)))
    (form-update-visibility
       "wireless"
       (and (woo-get-option cmd 'wireless)
 	   (string=? (woo-get-option cmd 'controlled) "etcnet")))
+
+   (for-each
+     (lambda(lst)
+	   (form-update-visibility lst is-vlan))
+     '("box_vlan_caption" "box_vlan_info"))
+
+   (for-each
+     (lambda(lst)
+       (form-update-visibility lst (not is-vlan)))
+     '("adaptor" "advanced" "wireless"))
+
+   (form-update-value-list
+      '("label_vlan_host" "label_vlan_vid")
+      cmd)
+
     (form-update-value-list
       '("name" "real_name" "ipv_enabled")
       cmd)
@@ -76,7 +93,9 @@
   (form-update-enum "add-mask" (woo-list "/net-eth/avail_masks" 'ipv ipv))
   (form-update-value "add-mask" (if (string=? ipv "4") "24" "64"))
   (form-update-enum "configuration" (woo-list "/net-eth/avail_configurations" 'ipv ipv))
-  (form-update-enum "name" (woo-list "/net-eth/avail_ifaces")))
+  (form-update-enum "name" (append
+                             (woo-list "/net-eth/avail_ifaces")
+                             (woo-list "/net-eth/list_vlans"))))
 
 (define (reset-interface)
   (catch/message
@@ -110,7 +129,9 @@
              (write-interface name ipv)))
          (begin
            (form-popup "/net-eth/advanced" 'name name)
-           (form-update-enum "name" (woo-list "/net-eth/avail_ifaces"))
+           (form-update-enum "name" (append
+                                      (woo-list "/net-eth/avail_ifaces")
+                                      (woo-list "/net-eth/list_vlans")))
            (read-interface name ipv)
            (form-update-value "prev_name" (or (form-value "name") ""))))))
 
@@ -160,6 +181,16 @@
 
     ;;
     (textbox colspan 2 name "adaptor" max-height 70 alterability #f)
+
+    ;;
+    (label colspan 2 text (bold (_ "VLAN")) align "center" nameref "box_vlan_caption")
+
+    ;;
+    (hbox colspan 2 align "center" nameref "box_vlan_info"
+          (label text (_ "Host:"))
+          (label name "label_vlan_host")
+          (label text (_ "VID:"))
+          (label name "label_vlan_vid"))
 
 	;;
 	(hbox align "left" colspan 2
@@ -239,3 +270,5 @@
 
 (frame:on-back (lambda() (or (commit-interface) 'cancel)))
 (frame:on-next (lambda() (or (commit-interface) 'cancel)))
+
+; vim: ft=lisp expandtab

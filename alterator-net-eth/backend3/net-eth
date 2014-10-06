@@ -847,6 +847,9 @@ list_host_vlans() {
 
   host="$in_name"
 
+  # signle line, like true enum
+  local single="$1"
+
   if [ -z "$host" ]; then
     return
   fi
@@ -864,8 +867,13 @@ list_host_vlans() {
       continue
     fi
 
+    # Ajax has alterator-listbox multi-select, qt/x11 doesn't
     if [ "$iface_host" = "$host" ]; then
-      write_table_item "name" "$i" "list_vlan_name" "$i" "list_vlan_id" "$vid"
+      if [ -z "$single" ]; then
+        write_table_item "name" "$i" "list_vlan_name" "$i" "list_vlan_id" "$vid"
+      else
+        write_enum_item "$i" "$i -- $vid"
+      fi
     fi
   done
 }
@@ -978,6 +986,11 @@ vlan_edit() {
     return
   fi
 
+  if ! ( [ -n "${vid##0*}" -a -n "${vid##*[!0-9]*}" ] && [ "$vid" -gt 0 ] 2>/dev/null ); then
+    write_error "`_ "Bad VLAN ID: $vid"`"
+    return
+  fi
+
   local ifacedir=
 
   # If doesn't exist return /etc/net
@@ -986,6 +999,7 @@ vlan_edit() {
   if ! [ "$old" = "$new" ] && [ -d "$ifacedir" ] && ! [ -e "$ifacedir/REMOVED" ]; then
     # already exists
     # can't rename to already existed interface
+    write_error "`_ "Already existed: $new"`"
     return
   fi
 
@@ -1034,6 +1048,11 @@ vlan_add_new() {
     return
   fi
 
+  if ! ( [ -n "${vid##0*}" -a -n "${vid##*[!0-9]*}" ] && [ "$vid" -gt 0 ] 2>/dev/null ); then
+    write_error "`_ "Bad VLAN ID: $vid"`"
+    return
+  fi
+
   local ifacedir=
 
   # If doesn't exist return /etc/net
@@ -1041,6 +1060,7 @@ vlan_add_new() {
 
   if [ -d "$ifacedir" ] && ! [ -e "$ifacedir/REMOVED" ]; then
     # Can't add already exists
+    write_error "`_ "Already existed: $name"`"
     return
   fi
 
@@ -1134,6 +1154,7 @@ on_message()
 			    avail_controlled) list_controlled "$in_bridge";;
 			    avail_iface_address) list_iface_addresses "$(name_with_bridge "$in_name")" "$in_ipv";;
           list_host_vlans) list_host_vlans;;
+          list_host_vlans_single) list_host_vlans "single_line_on" ;;
           list_host_vlans2) list_host_vlans2;;
           list_vlans) list_vlans_cached|write_enum;;
           # avail_ifaces
