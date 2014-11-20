@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<!-- tcp connections module -->
+<html wf="none">
+  <body>
+    <form method="POST" id="ajax-select">
+	<h2><span translate="_">VLAN Configuration for Interface </span><span name="iface" class="alterator-label"/></h2>
+	<input type="button" name="back" value="Back" class="btn"/>
+	<hr />
+
+	<table cellpadding="10">
+	<tr>
+	    <td width="35%">
+		<select name="list" size="12" style="width: 20em;"/><br/>
+		<input type="button" name="add_vlan" value="New" class="btn"/>
+		<input type="button" name="remove_vlan" value="Delete" class="btn"/>
+	    </td>
+	    <td>
+	    	<input type="hidden" name="name"/>
+		<fieldset>
+		    <table>
+		   	<tr>
+			    <td><span translate="_">VLAN Name:</span></td>
+			    <td><input type="text" class="text" name="vlan_name"/></td>
+		    	</tr><tr>
+			    <td><span translate="_">VID (1-4095):</span></td>
+			    <td><input type="text" class="text" name="vlan_vid"/></td>
+		    	</tr>
+		    </table>
+		</fieldset>
+		<input type="button" name="apply" value="Apply" class="btn"/>
+		<input type="reset" name="reset" value="Reset" class="btn"/>
+	   </td>		
+	</tr>
+	</table>	   
+    </form>
+  </body>
+</html>

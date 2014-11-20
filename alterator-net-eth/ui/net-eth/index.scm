@@ -131,13 +131,26 @@
            (form-popup "/net-eth/advanced" 'name name)
            (form-update-enum "name" (append
                                       (woo-list "/net-eth/avail_ifaces")
-                                      (woo-list "/net-eth/list_vlans")))
            (read-interface name ipv)
            (form-update-value "prev_name" (or (form-value "name") ""))))))
 
 (define (wireless-interface)
   (format #t "wireless-interface:real_name=~S~%" (form-value "real_name"))
   (form-popup "/net-wifi/" 'iface (form-value "real_name")))
+
+(define (vlan-interface)
+  (let ((name (form-value "name"))
+		(ipv (form-value "ipv")))
+    (and (catch/message
+           (lambda()
+             (write-interface name ipv)))
+         (begin
+           (form-popup "/net-eth/vlan" 'name name)
+           (form-update-enum "name" (append
+                                      (woo-list "/net-eth/avail_ifaces")
+                                      (woo-list "/net-eth/list_vlans")))
+           (read-interface name ipv)
+           (form-update-value "prev_name" (or (form-value "name") ""))))))
 
 (define (ui-append-address)
   (and (catch/message (lambda()
@@ -260,8 +273,9 @@
 	(form-bind "ipv" "change" ipv_changed)
 	(form-bind "ipv_enabled" "change" update-ipv-activity)
     (form-bind "configuration" "change" (lambda() (update-configuration-activity (form-value "configuration"))))
-    (form-bind "advanced" "click" advanced-interface)
     (form-bind "wireless" "click" wireless-interface)
+    (form-bind "advanced" "click" advanced-interface)
+    (form-bind "vlan"     "click" vlan-interface)
     (form-bind "btn-del-ip" "click" ui-delete-address)
     (form-bind "btn-add-ip" "click" ui-append-address)
     (or (global 'frame:next)

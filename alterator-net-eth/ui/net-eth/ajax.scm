@@ -125,6 +125,14 @@
   (format #t "wireless-interface:real_name=~S~%" (form-value "real_name"))
   (form-replace "/net-wifi/" 'iface (form-value "real_name")))
 
+(define (vlan-interface)
+  (let ((name (form-value "name"))
+		(ipv (form-value "ipv")))
+    (and (catch/message
+           (lambda()
+             (write-interface name ipv)))
+         (form-replace "/net-eth/vlan" 'iface name))))
+
 (define (commit-interface)
     (begin
         (catch/message
@@ -182,8 +190,9 @@
  (form-bind "ipv" "change" ipv_changed)
  (form-bind "ipv_enabled" "change" update-ipv-activity)
  (form-bind "configuration" "change" (lambda() (update-configuration-activity (form-value "configuration"))))
- (form-bind "advanced" "click" advanced-interface)
  (form-bind "wireless" "click" wireless-interface)
+ (form-bind "advanced" "click" advanced-interface)
+ (form-bind "vlan"     "click" vlan-interface)
  (form-bind "btn-del-ip" "click" ui-delete-address)
  (form-bind "btn-add-ip" "click" ui-append-address)
 
