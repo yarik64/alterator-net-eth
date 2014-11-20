@@ -97,7 +97,10 @@
 	 "/net-eth"
 	 'name name
 	 'ipv ipv
-	 (form-value-list '("language" "ipv_enabled"
+	 ; stanv@: 'form-value-list' skips values for checkboxes == #f (unchecked)
+	 ; put checkboxes separately
+	 'ipv_enabled (form-value "ipv_enabled")
+	 (form-value-list '("language"
 			    "computer_name" "dns" "search"
 			    "default" "configuration"))))
 
@@ -161,7 +164,11 @@
       (form-update-value "prev_name"  "")))))
 
 (define (init-interface)
-  (form-update-enum "ipv" (woo-list "/net-eth/avail_ipv"))
+  (let* ( ; has form as : ("/net-eth/avail_ipv" name "4" label "IPv4")
+          (available-ip-versions (woo-list "/net-eth/avail_ipv"))
+          (only-ipv4-available (= (length available-ip-versions) 1)))
+    (form-update-enum "ipv" available-ip-versions)
+    (form-update-visibility "area-ip-version-select" (not only-ipv4-available)))
   (form-update-value "ipv" "4")
   (cell-set! *prev_ipv* "4")
   (catch/message
