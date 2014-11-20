@@ -10,7 +10,7 @@
 ; FILL VLAN LIST
 (define (refresh-vlan)
   ;(format #t "[net-eth/vlan] item ~S\n" (form-value "list"))
-  (form-update-enum "list" 
+  (form-update-enum "list"
     (woo-list "/net-eth/list_host_vlans2"
       'name (form-value "iface")
       'language (form-value "language")))
@@ -26,12 +26,12 @@
         (form-update-activity "reset" #f))
       (begin
 	(form-update-value "name" (form-value "list"))
-	
+
 	; Read vlan info
 	(form-update-value "vlan_name" (form-value "list"))
 	(form-update-value "vlan_vid"
 	  (woo-get-option
-	    (woo-read-first "/net-eth" 
+	    (woo-read-first "/net-eth"
 		'name (form-value "list")
 		'language (form-value "language"))
 	    'label_vlan_vid))
