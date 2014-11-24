@@ -130,7 +130,7 @@
          (begin
            (form-popup "/net-eth/advanced" 'name name)
            (form-update-enum "name" (append
-                                      (woo-list "/net-eth/avail_ifaces")
+                                      (woo-list "/net-eth/avail_ifaces")))
            (read-interface name ipv)
            (form-update-value "prev_name" (or (form-value "name") ""))))))
 
@@ -251,7 +251,9 @@
 
     ;;
     (button text (_ "Wireless settings...") name "wireless" align "right" visibility #f)
-    (button text (_ "Advanced...") name "advanced" align "right"))
+    (hbox align "right"
+      (button text (_ "Advanced...") name "advanced" align "right")
+      (button text (_ "Vlan...") name "vlan" align "right")))
 
   ;;
   (or (global 'frame:next)
