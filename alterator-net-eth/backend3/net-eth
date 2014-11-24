@@ -67,6 +67,23 @@ name_with_bridge()
     fi
 }
 
+check_altdomain()
+{
+    local domain=
+
+    [ -f "$ALTERATOR_DOMAIN" ] || return 1
+
+    [ "$(shell_config_get /etc/sysconfig/system SERVER_ROLE)" = "master" ] ||
+        return 1
+
+    domain="$(read_computer_domain)"
+    if [ -n "$domain" -a -f "/etc/openldap/slapd-$domain.conf" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 ### cache
 init_cache()
 {
@@ -1174,6 +1191,11 @@ on_message()
         if has_infant_vlans "$name"; then
           write_bool_param "has_infant_vlans" "yes"
         fi
+                if check_altdomain; then
+                    write_bool_param altdomain yes
+                else
+                    write_bool_param altdomain no
+                fi
 
 				write_string_param computer_name "$(read_computer_name)"
 				write_string_param computer_domain "$(read_computer_domain)"

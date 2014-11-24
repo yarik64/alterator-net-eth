@@ -88,6 +88,7 @@
     (form-update-value-list
       '("computer_name" "dns" "search")
       cmd)
+    (form-update-activity "computer_name" (not (woo-get-option cmd 'altdomain)))
     (read-interface-address name)
     (form-update-value-list
       '("adaptor" "add-mask" "default" "configuration")
