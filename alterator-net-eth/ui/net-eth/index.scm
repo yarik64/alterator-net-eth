@@ -53,7 +53,7 @@
    (for-each
      (lambda(lst)
        (form-update-visibility lst (not is-vlan)))
-     '("adaptor" "advanced"))
+     '("adaptor" "advanced" "vlan"))
 
    (form-update-value-list
       '("label_vlan_host" "label_vlan_vid")
