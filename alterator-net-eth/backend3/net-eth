@@ -393,7 +393,7 @@ list_eth_cached()
 
 list_mask()
 {
-	local ipv="$1"
+	local ipv="${1:-4}"
 	if [ "$ipv" = 4 ]; then
 		for i in `seq 32 -1 0`; do
 			write_enum_item "$i" "/$i ($(ipv4addr_prefix_to_mask "$i"))"
@@ -417,7 +417,7 @@ list_controlled()
 
 list_configuration()
 {
-	local ipv="$1"
+	local ipv="${1:-4}"
 	[ "$ipv" = 6 ] && write_enum_item "ra" "`_ "Use RA only"`"
     write_enum_item "dhcp" "`_ "Use DHCP"`"
 	[ "$ipv" = 4 ] && write_enum_item "ipv4ll" "`_ "Use Zeroconf"`"
@@ -462,7 +462,7 @@ read_controlled()
 read_configuration()
 {
 	local bootproto="$(read_iface_option "$1" BOOTPROTO)"
-	local ipv="$2"
+	local ipv="${2:-4}"
 	local config=
 
 	case "$bootproto" in
@@ -538,7 +538,7 @@ get_ifacedir()
 read_iface()
 {
 	local name="$1"; shift
-	local ipv="$1"; shift
+	local ipv="${1:-4}"; shift
 	local ifacedir="$(get_ifacedir "$name")"
 	local bridge=no
 
@@ -761,7 +761,7 @@ write_iface()
 check_ip()
 {
 	local ip="$1"
-	local ipv="$2"
+	local ipv="${2:-4}"
 
 	if [ "$ipv" = 4 ]; then
 		valid_ipv4 "$ip"
@@ -773,7 +773,7 @@ check_ip()
 check_prefix()
 {
 	local prefix="$1"
-	local ipv="$2"
+	local ipv="${2:-4}"
 	local max=
 
 	[ "$ipv" = 4 ] &&
