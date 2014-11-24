@@ -45,6 +45,8 @@
 	   (string=? (woo-get-option cmd 'controlled) "etcnet")
 	   (not is-vlan)))
 
+   (form-update-visibility "vlan" (string-ci=? iface-type "eth"))
+
    (for-each
      (lambda(lst)
 	   (form-update-visibility lst is-vlan))
@@ -53,7 +55,7 @@
    (for-each
      (lambda(lst)
        (form-update-visibility lst (not is-vlan)))
-     '("adaptor" "advanced" "vlan"))
+     '("adaptor" "advanced"))
 
    (form-update-value-list
       '("label_vlan_host" "label_vlan_vid")

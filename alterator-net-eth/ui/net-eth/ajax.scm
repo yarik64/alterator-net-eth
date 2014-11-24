@@ -63,6 +63,8 @@
     (dmsg "read-interface() -- iface-type:" iface-type)
     (dmsg "read-interface() -- is-vlan" is-vlan)
 
+    (form-update-visibility "vlan" (string-ci=? iface-type "eth"))
+
     (for-each
       (lambda(lst)
         (form-update-visibility lst is-vlan))
@@ -71,7 +73,7 @@
     (for-each
       (lambda(lst)
         (form-update-visibility lst (not is-vlan)))
-      '("area-generic" "advanced" "vlan"))
+      '("area-generic" "advanced"))
 
     (form-update-value-list '("label_vlan_host" "label_vlan_vid") cmd)
 
