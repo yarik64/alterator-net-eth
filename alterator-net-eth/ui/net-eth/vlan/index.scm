@@ -22,13 +22,14 @@
 
 ; FILL VLAN LIST
 (define (refresh-vlan)
-  ;(format #t "[net-eth/vlan] item ~S\n" (form-value "list"))
+  (let ((name (form-value "list")))
+  ;(format #t "[net-eth/vlan] item ~S\n" name)
   (form-update-enum "list"
     (woo-list "/net-eth/list_host_vlans2"
       'name (form-value "iface")
       'language (form-value "language")))
   (if
-      (not (form-value "list"))
+      (not name)
       (begin
 	(form-update-value "name" "")
 	(form-update-value "vlan_name" "")
@@ -38,21 +39,21 @@
         (form-update-activity "apply" #f)
         (form-update-activity "reset" #f))
       (begin
-	(form-update-value "name" (form-value "list"))
+	(form-update-value "name" name)
 
 	; Read vlan info
-	(form-update-value "vlan_name" (form-value "list"))
+	(form-update-value "vlan_name" name)
 	(form-update-value "vlan_vid"
 	  (woo-get-option
 	    (woo-read-first "/net-eth"
-		'name (form-value "list")
+		'name name
 		'language (form-value "language"))
 	    'label_vlan_vid))
 
         (form-update-activity "vlan_name" #t)
         (form-update-activity "vlan_vid" #t)
         (form-update-activity "apply" #t)
-        (form-update-activity "reset" #t))))
+        (form-update-activity "reset" #t)))))
 
 
 ; REMOVE SELECTED VLAN INTERFACE
