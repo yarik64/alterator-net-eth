@@ -38,11 +38,12 @@
 (define (read-interface name ipv)
   (let* ((cmd (woo-read-first "/net-eth" 'name name 'ipv ipv))
 	 (iface-type (woo-get-option cmd 'iface_type "eth"))
-	 (is-vlan (if (string-ci=? iface-type "etcnet") #t #f)))
+	 (is-vlan (if (string-ci=? iface-type "vlan") #t #f)))
    (form-update-visibility
       "wireless"
       (and (woo-get-option cmd 'wireless)
-	   (string=? (woo-get-option cmd 'controlled) "etcnet")))
+	   (string=? (woo-get-option cmd 'controlled) "etcnet")
+	   (not is-vlan)))
 
    (for-each
      (lambda(lst)
@@ -52,7 +53,7 @@
    (for-each
      (lambda(lst)
        (form-update-visibility lst (not is-vlan)))
-     '("adaptor" "advanced" "wireless"))
+     '("adaptor" "advanced"))
 
    (form-update-value-list
       '("label_vlan_host" "label_vlan_vid")
