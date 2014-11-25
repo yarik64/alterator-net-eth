@@ -111,9 +111,13 @@
 		(form-update-value "prev_name" (form-value "name"))))))
 
 (define (init-interface)
-      (form-update-enum "ipv" (woo-list "/net-eth/avail_ipv"))
-      (form-update-value "ipv" "4")
-	  (reset-interface))
+  (let* ((available-ip-versions (woo-list "/net-eth/avail_ipv"))
+         (only-ipv4-available (= (length available-ip-versions) 1)))
+    (form-update-enum "ipv" available-ip-versions)
+    (form-update-visibility "area-ip-version-select" (not only-ipv4-available)))
+  (form-update-visibility "area-ip-version-select" #f)
+  (form-update-value "ipv" "4")
+  (reset-interface))
 
 (define (update-interface)
   (or (catch/message
@@ -210,7 +214,7 @@
           (label name "label_vlan_vid"))
 
 	;;
-	(hbox align "left" colspan 2
+	(hbox align "left" colspan 2 name "area-ip-version-select"
 		(label text (_ "Select IP version:"))
 		(combobox name "ipv")
 		(checkbox name "ipv_enabled" text (_ "Enable")))
