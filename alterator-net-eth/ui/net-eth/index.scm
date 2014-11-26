@@ -261,7 +261,7 @@
     (button text (_ "Wireless settings...") name "wireless" align "right" visibility #f)
     (hbox align "right"
       (button text (_ "Advanced...") name "advanced" align "right")
-      (button text (_ "Vlan...") name "vlan" align "right")))
+      (button text (_ "VLAN Configuration...") name "vlan" align "right")))
 
   ;;
   (or (global 'frame:next)
