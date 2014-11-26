@@ -142,7 +142,7 @@ height 500
           )
   ;;
   (hbox align "left"
-	  (button (_ "Add") name "add_vlan")
+	  (button (_ "Add VLAN") name "add_vlan")
       (button (_ "Remove") name "remove_vlan")))
 
 ;;
