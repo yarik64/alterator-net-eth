@@ -4,6 +4,7 @@ cachedir="/var/cache/alterator/net-eth"
 precommit_hooks_dir=/usr/lib/alterator/hooks/net-eth-precommit.d
 postcommit_hooks_dir=/usr/lib/alterator/hooks/net-eth.d
 ALTERATOR_DOMAIN=/usr/lib/alterator/backend3/net-domain
+ALTERATOR_BOND=/usr/lib/alterator/backend3/net-bond
 
 rdelim='[[:space:]]\+'
 wdelim=' '
@@ -34,6 +35,14 @@ is_bridge()
         [ "$ifacedir" != "$iface" ] || ifacedir="/etc/net/ifaces/$iface"
         [ "$(read_iface_option "$ifacedir" TYPE)" = bri ]
     fi
+}
+
+is_bond()
+{
+    local iface="$1"; shift
+	local ifacedir="$(get_ifacedir "$name")"
+
+	[ "$(read_iface_option "$ifacedir" TYPE)" = bond ]
 }
 
 real_iface()
@@ -392,11 +401,33 @@ list_vlans_cached() {
   done
 }
 
+read_iface_slaves_cached()
+{
+	(read_iface_slaves "/etc/net/ifaces/$1";
+	 read_iface_slaves "$cachedir/$1" ) | sort -u
+}
+
+list_bond_cached()
+{
+	(list_bond /etc/net/ifaces;
+	for b in $(list_bond "$cachedir"); do
+		[ -f "$cachedir/$b/REMOVED" ] || echo "$b"; done) | sort -u
+}
 
 # stanv@: awful code ((((
 list_eth_cached()
 {
-  list_eth | while read name; do
+  local filter=cat filter_list= b= s=
+  for b in $(list_bond_cached); do
+	  echo "$b"
+	  for s in $(read_iface_slaves_cached "$b"); do
+		  filter_list="$filter_list${filter_list:+|}$s"
+	  done
+  done
+
+  [ -z "$filter_list" ] || filter="egrep -v ($filter_list)"
+
+  list_eth | $filter | while read name; do
         if [ -d "$cachedir/br$name" ] && [ "$(real_iface "$cachedir/br$name")" = "$name" ]; then
             name="br$name"
         elif [ -d "$cachedir/${name#br}" ]; then
@@ -424,9 +455,11 @@ list_mask()
 
 list_controlled()
 {
+    local name="$1"; shift
     local bridge="$1"; shift
+
     write_enum_item "etcnet" "Etcnet"
-    if [ -f "/usr/sbin/NetworkManager" ] && ! test_bool "$bridge"; then
+    if [ -f "/usr/sbin/NetworkManager" ] && ! test_bool "$host_viface" && ! is_bond "$name"; then
 	write_enum_item "NetworkManager" "NetworkManager"
     fi
     write_enum_item "nothing" "`_ "not under control"`"
@@ -742,7 +775,7 @@ write_iface()
 		real_name="$host"
   elif [ "$(read_iface_option "$ifacedir" TYPE)" == "vlan" ]; then
     real_name="$(real_iface "$ifacedir")"
-	else
+	elif [ "$(read_iface_option "$ifacedir" TYPE)" != "bond" ]; then
 	    write_iface_option "$ifacedir" TYPE eth
 	    shell_config_del "$ifacedir/options" HOST
 		real_name="$name"
@@ -1168,7 +1201,7 @@ on_message()
 				avail_ipv) list_ipv;;
 			    avail_masks) list_mask "$in_ipv";;
 			    avail_configurations) list_configuration "$in_ipv";;
-			    avail_controlled) list_controlled "$in_bridge";;
+			    avail_controlled) list_controlled "$in_name" "$in_bridge" ;;
 			    avail_iface_address) list_iface_addresses "$(name_with_bridge "$in_name")" "$in_ipv";;
           list_host_vlans) list_host_vlans;;
           list_host_vlans_single) list_host_vlans "single_line_on" ;;
@@ -1199,6 +1232,14 @@ on_message()
 
 				write_string_param computer_name "$(read_computer_name)"
 				write_string_param computer_domain "$(read_computer_domain)"
+
+
+				if [ -f "$ALTERATOR_BOND" ]; then
+					write_bool_param bond_module_installed yes
+				else
+					write_bool_param bond_module_installed no
+				fi
+
 				;;
 			    controlled)
 				local controlled="$(read_controlled "$(get_ifacedir "$name")")"

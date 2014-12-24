@@ -58,7 +58,9 @@
 
   (let* ((cmd (woo-read-first "/net-eth" 'name name 'ipv ipv 'language (form-value "language")))
          (iface-type (woo-get-option cmd 'iface_type "eth"))
-         (is-vlan (if (string-ci=? iface-type "vlan") #t #f)))
+         (is-vlan (if (string-ci=? iface-type "vlan") #t #f))
+		 (has-bond-module (woo-get-option cmd 'bond_module_installed))
+         (is-bond (if (string-ci=? iface-type "bond") #t #f)))
 
     (dmsg "read-interface() -- iface-type:" iface-type)
     (dmsg "read-interface() -- is-vlan" is-vlan)
@@ -77,6 +79,16 @@
 
     (form-update-value-list '("label_vlan_host" "label_vlan_vid") cmd)
 
+    (for-each
+      (lambda(lst)
+        (form-update-visibility lst has-bond-module))
+      '("bond_new" "bond_del" "bond_ch"))
+
+	(if has-bond-module
+	  (for-each
+		(lambda(lst)
+		  (form-update-activity lst is-bond))
+		'("bond_del" "bond_ch")))
 
    (form-update-visibility
       "wireless"
@@ -194,6 +206,18 @@
     (read-interface-address (form-value "name"))
 )
 
+(define (bond-new)
+  (form-replace "/net-bond"))
+
+(define (bond-del)
+  (catch/message (lambda()
+     (woo-write "/net-bond/rm_bond" 'bond (form-value "name" 'language (form-value "language")))))
+  (form-update-value "iface" "")
+  (init-interface))
+
+(define (bond-ch)
+  (form-replace "/net-bond" 'iface (form-value "name")))
+
 (define (init)
  (init-interface)
  (form-bind "name" "change" update-interface)
@@ -205,6 +229,10 @@
  (form-bind "vlan"     "click" vlan-interface)
  (form-bind "btn-del-ip" "click" ui-delete-address)
  (form-bind "btn-add-ip" "click" ui-append-address)
+
+ (form-bind "bond_new" "click" bond-new)
+ (form-bind "bond_del" "click" bond-del)
+ (form-bind "bond_ch" "click" bond-ch)
 
  (form-bind "commit" "click" commit-interface)
  (form-bind "reset" "click" reset-interface))

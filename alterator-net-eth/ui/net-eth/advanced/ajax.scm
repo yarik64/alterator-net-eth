@@ -8,7 +8,7 @@
     (lambda()
       (let* ((cmd (woo-read-first "/net-eth" 'name name))
 	     (is_bridge (woo-get-option cmd 'bridge)))
-      (form-update-enum "controlled" (woo-list "/net-eth/avail_controlled" 'bridge is_bridge))
+      (form-update-enum "controlled" (woo-list "/net-eth/avail_controlled" 'bridge is_bridge 'name name))
       (form-update-value "iface" name)
       (form-update-value-list '("name" "controlled" "bridge") cmd)))))
 
