@@ -32,6 +32,8 @@
                      (substring name 2)))
          (cmd (woo-read-first "/net-eth/controlled" 'name name 'bridge is_bridge)))
     (form-update-value "name" new-name)
+    (form-update-activity "bridge" (or (string-ci=? iface-type "eth")
+									   (string-ci=? iface-type "bri")))
     (form-update-enum "controlled" (woo-list "/net-eth/avail_controlled" 'bridge is_bridge))
     (form-update-value "controlled" (woo-get-option cmd 'controlled))))
 

@@ -7,9 +7,12 @@
   (catch/message
     (lambda()
       (let* ((cmd (woo-read-first "/net-eth" 'name name))
-	     (is_bridge (woo-get-option cmd 'bridge)))
+	     (is_bridge (woo-get-option cmd 'bridge))
+		 (iface-type (woo-get-option cmd 'iface_type)))
       (form-update-enum "controlled" (woo-list "/net-eth/avail_controlled" 'bridge is_bridge 'name name))
       (form-update-value "iface" name)
+	  (form-update-activity "bridge" (or (string-ci=? iface-type "eth")
+										 (string-ci=? iface-type "bri")))
       (form-update-value-list '("name" "controlled" "bridge") cmd)))))
 
 
