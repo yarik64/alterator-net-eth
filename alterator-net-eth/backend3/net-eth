@@ -5,6 +5,7 @@ precommit_hooks_dir=/usr/lib/alterator/hooks/net-eth-precommit.d
 postcommit_hooks_dir=/usr/lib/alterator/hooks/net-eth.d
 ALTERATOR_DOMAIN=/usr/lib/alterator/backend3/net-domain
 ALTERATOR_BOND=/usr/lib/alterator/backend3/net-bond
+ALTERATOR_WIFI=/usr/lib/alterator/backend3/net-wifi
 
 rdelim='[[:space:]]\+'
 wdelim=' '
@@ -1256,6 +1257,12 @@ on_message()
 					write_bool_param bond_module_installed yes
 				else
 					write_bool_param bond_module_installed no
+				fi
+
+				if [ -f "$ALTERATOR_WIFI" ]; then
+					write_bool_param wifi_module_installed yes
+				else
+					write_bool_param wifi_module_installed no
 				fi
 
 				;;

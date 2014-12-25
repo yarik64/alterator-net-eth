@@ -60,6 +60,7 @@
          (iface-type (woo-get-option cmd 'iface_type "eth"))
          (is-vlan (if (string-ci=? iface-type "vlan") #t #f))
 		 (has-bond-module (woo-get-option cmd 'bond_module_installed))
+		 (has-wifi-module (woo-get-option cmd 'wifi_module_installed))
          (is-bond (if (string-ci=? iface-type "bond") #t #f)))
 
     (dmsg "read-interface() -- iface-type:" iface-type)
@@ -92,8 +93,10 @@
 
    (form-update-visibility
       "wireless"
-      (and (woo-get-option cmd 'wireless)
-	   (string=? (woo-get-option cmd 'controlled) "etcnet")))
+      (and
+        has-wifi-module
+        (woo-get-option cmd 'wireless)
+        (string=? (woo-get-option cmd 'controlled) "etcnet")))
     (form-update-value-list
       '("name" "real_name" "ipv_enabled")
       cmd)
