@@ -790,9 +790,11 @@ write_iface()
 	[ -n "$in_ipv_enabled" ] &&
 		write_config_ipv "$ifacedir" "$in_ipv" "$in_ipv_enabled"
 
-	is_defined "in_default" &&
-		test_bool "$in_ipv_enabled" &&
-	    write_iface_default_gw "$ifacedir" "$in_default" "$in_ipv"
+	if is_defined "in_default" && [ -n "$in_default" ] && test_bool "$in_ipv_enabled"; then
+		check_ip "$in_default" "$in_ipv" &&
+			write_iface_default_gw "$ifacedir" "$in_default" "$in_ipv" ||
+			write_error "`_ "Invalid default gateway"`"
+	fi
 
 	[ -n "$in_controlled" ] &&
 	    write_controlled "$ifacedir" "$in_controlled"
