@@ -37,7 +37,7 @@
 	 (cmd (woo-read-first "/net-eth/controlled" 'name name 'bridge is_bridge)))
     (form-update-value "name" new-name)
     (form-update-value "iface" new-name)
-    (form-update-enum "controlled" (woo-list "/net-eth/avail_controlled" 'bridge is_bridge))
+    (form-update-enum "controlled" (woo-list "/net-eth/avail_controlled" 'bridge is_bridge 'name name))
     (form-update-value "controlled" (woo-get-option cmd 'controlled))))
 
 (define (init)
