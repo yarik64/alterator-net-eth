@@ -745,11 +745,14 @@ check_dns()
 	local config_ipv6="$(read_config_ipv "$ifacedir" 6)"
 
 	for ns in $ns_list; do
-		if [ "$config_ipv4" = no ] && check_ip "$ns" 4; then
-			return 1
-		elif [ "$config_ipv6" = no ] && check_ip "$ns" 6; then
-			return 1
+		if [ "$config_ipv4" = yes ] && check_ip "$ns" 4; then
+			continue
 		fi
+		if [ "$config_ipv6" = yes ] && check_ip "$ns" 6; then
+			continue
+		fi
+		# ns is not IPv4 and not IPv6 address
+		return 1
 	done
 
 	return 0
