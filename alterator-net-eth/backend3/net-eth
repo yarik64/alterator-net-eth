@@ -173,7 +173,7 @@ commit_cache()
     # first iteration: host-interfaces, that one that have infants
     # second iteration: vlan, bridges, etc...
     local ifaces_all=($(find "$cachedir" -maxdepth 1 -mindepth 1 -type d | sort))
-    local ifaces_have_host=($(find "$cachedir" -maxdepth 2 -mindepth 2 -type f -name "options" -exec grep -l "HOST" '{}' \+ | sed -e 's,/[^/]\+$,,' | sort))
+    local ifaces_have_host=($(find "$cachedir" -maxdepth 2 -mindepth 2 -type f -name "options" -exec grep -l "^HOST=" '{}' \+ | sed -e 's,/[^/]\+$,,' | sort))
 
     local ifaces_not_infants=()
     local skip=
