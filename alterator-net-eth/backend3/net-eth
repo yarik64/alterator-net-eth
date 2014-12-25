@@ -46,6 +46,17 @@ is_bond()
 	[ "$(read_iface_option "$ifacedir" TYPE)" = bond ]
 }
 
+check_bond()
+{
+    local iface="$1"; shift
+
+	if [ -n "$(read_iface_slaves "$cachedir/$iface")" ]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
 real_iface()
 {
     local ifacedir="$1"; shift
@@ -230,6 +241,12 @@ commit_cache()
 
 	    local old_ipv6configuration="$(read_configuration "/etc/net/ifaces/$ifname" 6)"
 	    local new_ipv6configuration="$(read_configuration "$iface" 6)"
+
+        # check bond settings
+        if is_bond "$ifname" && ! check_bond "$ifname"; then
+            write_error "`_ "Bond inteface $ifname confifiguration is invalid"`"
+            continue
+        fi
 
 	    #update configs
 	    rm -rf -- "/etc/net/ifaces/$ifname"
