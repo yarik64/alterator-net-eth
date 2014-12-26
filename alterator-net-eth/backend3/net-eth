@@ -430,9 +430,10 @@ read_iface_slaves_cached()
 
 list_bond_cached()
 {
-	(list_bond /etc/net/ifaces;
-	for b in $(list_bond "$cachedir"); do
-		[ -f "$cachedir/$b/REMOVED" ] || echo "$b"; done) | sort -u
+	local b=
+	for b in $(list_bond /etc/net/ifaces) $(list_bond "$cachedir"); do
+		[ -f "$cachedir/$b/REMOVED" ] || echo "$b"
+	done | sort -u
 }
 
 # stanv@: awful code ((((
