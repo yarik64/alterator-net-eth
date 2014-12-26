@@ -421,8 +421,11 @@ list_vlans_cached() {
 
 read_iface_slaves_cached()
 {
-	(read_iface_slaves "/etc/net/ifaces/$1";
-	 read_iface_slaves "$cachedir/$1" ) | sort -u
+	if [ -f "$cachedir/$1/options" ]; then
+		read_iface_slaves "$cachedir/$1"
+	else
+		read_iface_slaves "/etc/net/ifaces/$1"
+	fi | sort -u
 }
 
 list_bond_cached()
