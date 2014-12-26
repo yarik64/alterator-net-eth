@@ -40,7 +40,7 @@ is_bridge()
 
 is_bond()
 {
-    local iface="$1"; shift
+    local name="$1"; shift
 	local ifacedir="$(get_ifacedir "$name")"
 
 	[ "$(read_iface_option "$ifacedir" TYPE)" = bond ]
