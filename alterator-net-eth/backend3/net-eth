@@ -50,11 +50,17 @@ check_bond()
 {
     local iface="$1"; shift
 
-	if [ -n "$(read_iface_slaves "$cachedir/$iface")" ]; then
-		return 0
-	else
+	if [ -z "$(read_iface_slaves "$cachedir/$iface")" ]; then
+		write_error "`_ "No slaves for bond  $iface"`"
 		return 1
 	fi
+
+	if [ -n "$in_configuration" -a "$in_configuration" != "static" ]; then
+		write_error "`_ "$iface: Only 'static' configuration allowed for bond interface"`"
+		return 1
+	fi
+
+	return 0
 }
 
 real_iface()
@@ -241,12 +247,6 @@ commit_cache()
 
 	    local old_ipv6configuration="$(read_configuration "/etc/net/ifaces/$ifname" 6)"
 	    local new_ipv6configuration="$(read_configuration "$iface" 6)"
-
-        # check bond settings
-        if is_bond "$ifname" && ! check_bond "$ifname"; then
-            write_error "`_ "Bond inteface $ifname confifiguration is invalid"`"
-            continue
-        fi
 
 	    #update configs
 	    rm -rf -- "/etc/net/ifaces/$ifname"
@@ -790,6 +790,12 @@ write_iface()
 	if [ -z "$bridge" ]; then
 	    is_bridge "$ifacedir" && bridge="#t" || bridge="#f"
 	fi
+
+	# check bond settings
+	if is_bond "$name" && ! check_bond "$name"; then
+		return
+	fi
+
 	if test_bool "$bridge"; then
         # During the creation a new bridge HOST not setted yet
         local host="$(real_iface "$ifacedir")"
