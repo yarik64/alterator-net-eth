@@ -1114,7 +1114,7 @@ check_vlan()
 
   [ -n "$name" ] || return 1
 
-  if echo "$name" | grep -qs '^[[:alnum:]]$'; then
+  if echo "$name" | egrep -qs '^[[:alnum:]]+$'; then
       return 0
   fi
 
