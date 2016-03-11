@@ -6,6 +6,7 @@ postcommit_hooks_dir=/usr/lib/alterator/hooks/net-eth.d
 ALTERATOR_DOMAIN=/usr/lib/alterator/backend3/net-domain
 ALTERATOR_BOND=/usr/lib/alterator/backend3/net-bond
 ALTERATOR_WIFI=/usr/lib/alterator/backend3/net-wifi
+ALTERATOR_VLAN=/usr/lib/alterator/backend3/net-vlan
 
 rdelim='[[:space:]]\+'
 wdelim=' '
@@ -44,6 +45,14 @@ is_bond()
 	local ifacedir="$(get_ifacedir "$name")"
 
 	[ "$(read_iface_option "$ifacedir" TYPE)" = bond ]
+}
+
+is_vlan()
+{
+    local name="$1"; shift
+	local ifacedir="$(get_ifacedir "$name")"
+
+	[ "$(read_iface_option "$ifacedir" TYPE)" = vlan ]
 }
 
 check_bond()
@@ -398,9 +407,10 @@ list_ipv()
 # GET LIST OF VLAN INTERFACES CONTROLED BY ETCNET
 list_vlan()
 {
-  local base="${1-$etcnet_iface_dir}"
-  for i in `find "$base" -type d`; do
-    if ! [ "$(read_iface_option "$i" TYPE)" = "vlan" ]; then
+  local ifacesdir="$1"; shift
+
+  for i in `find "$ifacesdir" -maxdepth 1 -mindepth 1 -type d`; do
+    if [ "$(read_iface_option "$i" TYPE)" != "vlan" ]; then
       continue
     fi
     if [ -e "$cachedir/${i##*/}/REMOVED" ]; then
@@ -411,12 +421,15 @@ list_vlan()
 }
 
 
-# LIST CACHED VLANS
-list_vlans_cached() {
-  local vlans=($((list_vlan; list_vlan "$cachedir") | sort | uniq))
-  for vlan in ${vlans[@]}; do
-    echo "$vlan"
-  done
+_list_vlan_cached()
+{
+	list_vlan "$cachedir"
+	list_vlan /etc/net/ifaces
+}
+
+list_vlan_cached()
+{
+	_list_vlan_cached | sort -u
 }
 
 read_iface_slaves_cached()
@@ -459,6 +472,12 @@ list_eth_cached()
         fi
         echo "$name" 2>/dev/null
     done
+}
+
+list_ifaces()
+{
+	list_eth_cached
+	list_vlan_cached
 }
 
 list_mask()
@@ -897,7 +916,7 @@ list_iface_addresses()
 {
     local name="$1"; shift
 	local v="$1"; shift
-    [ -n "$name" ] || name="$(list_eth_cached|head -n1)"
+    [ -n "$name" ] || name="$(list_ifaces|head -n1)"
 
 	local ifacedir="$(get_ifacedir "$name")"
 
@@ -924,316 +943,9 @@ alterator_export_var \
 #    addresses 		ipv4-addrwmask-list \
 
 
-# LIST CHILDREN VLANS FOR SELECTED HOST INTERFACE TO FRONTEND (AS A TABLE)
-list_host_vlans() {
-  local host=
-
-  host="$in_name"
-
-  # signle line, like true enum
-  local single="$1"
-
-  if [ -z "$host" ]; then
-    return
-  fi
-
-  local ifacedir=
-  local vid=
-
-  local ifaces=($((list_vlan; list_vlan "$cachedir") | sort | uniq))
-  for i in ${ifaces[@]}; do
-    ifacedir="$(get_ifacedir "$i")"
-    iface_host="$(read_iface_option "$ifacedir" "HOST")"
-    vid="$(read_iface_option "$ifacedir" "VID")"
-
-    if [ -e "$cachedir/$i/REMOVED" ]; then
-      continue
-    fi
-
-    # Ajax has alterator-listbox multi-select, qt/x11 doesn't
-    if [ "$iface_host" = "$host" ]; then
-      if [ -z "$single" ]; then
-        write_table_item "name" "$i" "list_vlan_name" "$i" "list_vlan_id" "$vid"
-      else
-        write_enum_item "$i" "$i -- $vid"
-      fi
-    fi
-  done
-}
-
-
-# LIST CHILDREN VLANS FOR SELECTED HOST INTERFACE TO FRONTEND (AS A LIST)
-list_host_vlans2() {
-  local host=
-
-  host="$in_name"
-
-  if [ -z "$host" ]; then
-    return
-  fi
-
-  local ifacedir=
-  local vid=
-
-  local ifaces=($((list_vlan; list_vlan "$cachedir") | sort | uniq))
-  for i in ${ifaces[@]}; do
-    ifacedir="$(get_ifacedir "$i")"
-    iface_host="$(read_iface_option "$ifacedir" "HOST")"
-    vid="$(read_iface_option "$ifacedir" "VID")"
-
-    if [ -e "$cachedir/$i/REMOVED" ]; then
-      continue
-    fi
-
-    if [ "$iface_host" = "$host" ]; then
-      echo "$i" | write_enum
-    fi
-  done
-}
-
-
-#CHECK INTERFACE HAS VLAN INFANTS
-has_infant_vlans() {
-  local host=
-
-  host="$1"
-
-  if [ -z "$host" ]; then
-    # FALSE
-    return 1
-  fi
-
-  local ifacedir=
-  local vid=
-
-  local ifaces=($((list_vlan; list_vlan "$cachedir") | sort | uniq))
-  for i in ${ifaces[@]}; do
-    ifacedir="$(get_ifacedir "$i")"
-    iface_host="$(read_iface_option "$ifacedir" "HOST")"
-    vid="$(read_iface_option "$ifacedir" "VID")"
-
-    if [ -e "$cachedir/$i/REMOVED" ]; then
-      continue
-    fi
-
-    if [ "$iface_host" = "$host" ]; then
-      # TRUE
-      return 0
-    fi
-  done
-
-  # FALSE
-  return 1
-}
-
-
-# REMOVE VLAN INFANTS FOR INTERFACE
-vlan_remove_infants() {
-  local IFS=";"
-  for i in $in_infants; do
-    # Ask to remove infant interface $i
-    mkdir -p "$cachedir/$i"
-    touch "$cachedir/$i/REMOVED"
-  done
-}
-
-
-# VLAN: EDIT / RENAME
-vlan_edit() {
-
-  local host=
-  local vid=
-  local new=
-  local old=
-
-  host="$in_name"
-  new="$in_vlan_new_name"
-  vid="$in_vlan_new_vid"
-  old="$in_vlan_old_name"
-
-  echo "edit host: $host, new: $new, vid: $vid, old: $old"
-
-  if [ -z "$host" ]; then
-    return
-  fi
-
-  if [ -z "$new" ]; then
-    return
-  fi
-
-  if [ -z "$vid" ]; then
-    return
-  fi
-
-  if [ -z "$old" ]; then
-    return
-  fi
-
-  if ! ( [ -n "${vid##0*}" -a -n "${vid##*[!0-9]*}" ] && [ "$vid" -gt 0 ] 2>/dev/null ); then
-    write_error "`_ "Bad VLAN ID: $vid"`"
-    return
-  fi
-
-  local ifacedir=
-
-  # If doesn't exist return /etc/net
-  ifacedir="$(get_ifacedir "$new")"
-
-  if ! [ "$old" = "$new" ] && [ -d "$ifacedir" ] && ! [ -e "$ifacedir/REMOVED" ]; then
-    # already exists
-    # can't rename to already existed interface
-    write_error "`_ "Already existed: $new"`"
-    return
-  fi
-
-  if [ -e "$cachedir/$new/REMOVED" ]; then
-    rm -rf -- "$cachedir/$new"
-  fi
-
-  # If doesn't exist return /etc/net
-  ifacedir="/etc/net/ifaces/$old"
-
-  # Create cache for vlan
-  if ! [ -d "$cachedir/$old" ]; then
-    # create cache for $old
-    cp -a "$ifacedir" "$cachedir"
-  fi
-
-  if ! [ "$old" = "$new" ]; then
-    mv -f -- "$cachedir/$old" "$cachedir/$new"
-    mkdir -p -- "$cachedir/$old"
-    touch "$cachedir/$old/REMOVED"
-  fi
-
-  write_iface_option "$cachedir/$new" "VID" "$vid"
-}
-
-check_vlan()
-{
-  local name="$1"; shift
-
-  [ -n "$name" ] || return 1
-
-  if echo "$name" | egrep -qs '^[[:alnum:]]+$'; then
-      return 0
-  fi
-
-  return 1
-}
-
-# ADD NEW VLAN FOR SELECTED INTERFACE
-vlan_add_new() {
-  local host=
-  local vid=
-  local name=
-
-  host="$in_name"
-  name="$in_vlan_new_name"
-  vid="$in_vlan_new_vid"
-
-  if [ -z "$host" ]; then
-    return
-  fi
-
-  if ! check_vlan "$name"; then
-    write_error "`_ "Invalid VLAN name: $name"`"
-    return
-  fi
-
-  if [ -z "$vid" ]; then
-    return
-  fi
-
-  if ! ( [ -n "${vid##0*}" -a -n "${vid##*[!0-9]*}" ] && [ "$vid" -gt 0 ] 2>/dev/null ); then
-    write_error "`_ "Bad VLAN ID: $vid"`"
-    return
-  fi
-
-  local ifacedir=
-
-  # If doesn't exist return /etc/net
-  ifacedir="$(get_ifacedir "$name")"
-
-  if [ -d "$ifacedir" ] && ! [ -e "$ifacedir/REMOVED" ]; then
-    # Can't add already exists
-    write_error "`_ "Already existed: $name"`"
-    return
-  fi
-
-  # Remove removed interface
-  rm -rf -- "$cachedir/$name"
-
-  mkdir -p -- "$cachedir/$name"
-
-  write_iface_option "$cachedir/$name" "TYPE" "vlan"
-  write_iface_option "$cachedir/$name" "HOST" "$host"
-  write_iface_option "$cachedir/$name" "VID" "$vid"
-  write_iface_option "$cachedir/$name" "CONFIG_WIRELESS" "no"
-  write_iface_option "$cachedir/$name" "CONFIG_IPV4" "yes"
-  write_iface_option "$cachedir/$name" "ONBOOT" "yes"
-}
-
-
-# PRINT INFO FOR SELECTED VLAN
-vlan_info() {
-  local name=
-  local vid=
-  local host=
-  local ifacedir=
-
-  name="$in_name"
-  host=
-  vid=
-
-  if [ -z "$name" ]; then
-    return
-  fi
-
-  # If doesn't exist return /etc/net
-  ifacedir="$(get_ifacedir "$name")"
-
-  if [ -e "$ifacedir/REMOVED" ]; then
-    # Removed, do not print anything
-    return
-  fi
-
-  host="$(read_iface_option "$ifacedir" "HOST")"
-  vid="$(read_iface_option "$ifacedir" "VID")"
-
-  if [ -z "$host" ]; then
-    return
-  fi
-
-  if [ -z "$vid" ]; then
-    return
-  fi
-
-  write_string_param "name" "$name"
-  write_string_param "host" "$host"
-  write_string_param "vid" "$vid"
-}
-
-
 on_message()
 {
 	case "$in_action" in
-
-    vlan_remove_infants)
-      vlan_remove_infants
-      ;;
-
-    vlan_add_new)
-      vlan_add_new
-      ;;
-
-    vlan_edit)
-      vlan_edit
-      ;;
-
-    vlan_info)
-      vlan_info
-      ;;
-
 		add_iface_address)
 			init_cache "$in_name" "$in_bridge"
 		    add_iface_address "$in_name" "${in_addip}" "${in_addmask}" "$in_ipv"
@@ -1249,17 +961,13 @@ on_message()
 			    avail_configurations) list_configuration "$in_ipv";;
 			    avail_controlled) list_controlled "$in_name" "$in_bridge" ;;
 			    avail_iface_address) list_iface_addresses "$(name_with_bridge "$in_name")" "$in_ipv";;
-          list_host_vlans) list_host_vlans;;
-          list_host_vlans_single) list_host_vlans "single_line_on" ;;
-          list_host_vlans2) list_host_vlans2;;
-          list_vlans) list_vlans_cached|write_enum;;
           # avail_ifaces
-			    *) list_eth_cached|write_enum;;
+			    *) list_ifaces|write_enum;;
 			esac
 			;;
 		read)
 			local name="${in_name}"
-			[ -n "$name" ] || name="$(list_eth_cached|head -n1)"
+			[ -n "$name" ] || name="$(list_ifaces|head -n1)"
 			name="$(name_with_bridge "$name")"
 			case "$in__objects" in
 			    /)
@@ -1267,9 +975,6 @@ on_message()
 
 				write_string_param name		"$name"
 
-        if has_infant_vlans "$name"; then
-          write_bool_param "has_infant_vlans" "yes"
-        fi
                 if check_altdomain; then
                     write_bool_param altdomain yes
                 else
@@ -1292,6 +997,12 @@ on_message()
 					write_bool_param wifi_module_installed no
 				fi
 
+				if [ -f "$ALTERATOR_VLAN" ]; then
+					write_bool_param vlan_module_installed yes
+				else
+					write_bool_param vlan_module_installed no
+				fi
+
 				;;
 			    controlled)
 				local controlled="$(read_controlled "$(get_ifacedir "$name")")"
@@ -1308,7 +1019,7 @@ on_message()
 			    return
 			fi
 			local name="${in_name}"
-			[ -n "$name" ] || name="$(list_eth_cached|head -n1)"
+			[ -n "$name" ] || name="$(list_ifaces|head -n1)"
 			init_cache "$name" "$in_bridge"
 
 			[ -n "$name" ] && write_iface "$name" "$in_bridge"

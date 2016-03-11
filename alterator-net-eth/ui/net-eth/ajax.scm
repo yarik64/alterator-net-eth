@@ -61,6 +61,7 @@
          (is-vlan (if (string-ci=? iface-type "vlan") #t #f))
 		 (has-bond-module (woo-get-option cmd 'bond_module_installed))
 		 (has-wifi-module (woo-get-option cmd 'wifi_module_installed))
+		 (has-vlan-module (woo-get-option cmd 'vlan_module_installed))
          (is-bond (if (string-ci=? iface-type "bond") #t #f)))
 
     (dmsg "read-interface() -- iface-type:" iface-type)
@@ -70,15 +71,8 @@
 
     (for-each
       (lambda(lst)
-        (form-update-visibility lst is-vlan))
-      '("area-vlan"))
-
-    (for-each
-      (lambda(lst)
         (form-update-visibility lst (not is-vlan)))
       '("area-generic" "advanced"))
-
-    (form-update-value-list '("label_vlan_host" "label_vlan_vid") cmd)
 
     (for-each
       (lambda(lst)
@@ -90,6 +84,13 @@
 		(lambda(lst)
 		  (form-update-activity lst is-bond))
 		'("bond_del" "bond_ch")))
+
+	(form-update-visibility
+	  "vlan"
+	  (and
+		has-vlan-module
+		(not is-vlan)
+		(not is-bond)))
 
    (form-update-visibility
       "wireless"
@@ -152,7 +153,7 @@
     (and (catch/message
            (lambda()
              (write-interface name ipv)))
-         (form-replace "/net-eth/vlan" 'iface name))))
+         (form-replace "/net-vlan" 'iface name))))
 
 (define (commit-interface)
     (begin
@@ -166,10 +167,7 @@
   (form-update-enum "add-mask" (woo-list "/net-eth/avail_masks" 'ipv ipv 'language (form-value "language")))
   (form-update-value "add-mask" (if (string=? ipv "4") "24" "64"))
   (form-update-enum "configuration" (woo-list "/net-eth/avail_configurations" 'ipv ipv 'language (form-value "language")))
-  (form-update-enum "name" (append
-                    (woo-list "/net-eth/avail_ifaces" 'language (form-value "language"))
-                    (woo-list "/net-eth/list_vlans" 'language (form-value "language"))
-                    )))
+  (form-update-enum "name" (woo-list "/net-eth/avail_ifaces" 'language (form-value "language"))))
 
 (define (reset-interface)
   (catch/message

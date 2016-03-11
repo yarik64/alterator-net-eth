@@ -38,28 +38,29 @@
 (define (read-interface name ipv)
   (let* ((cmd (woo-read-first "/net-eth" 'name name 'ipv ipv))
 	 (iface-type (woo-get-option cmd 'iface_type "eth"))
-	 (is-vlan (if (string-ci=? iface-type "vlan") #t #f)))
+	 (is-vlan (if (string-ci=? iface-type "vlan") #t #f))
+	 (has-wifi-module (woo-get-option cmd 'wifi_module_installed))
+	 (has-vlan-module (woo-get-option cmd 'vlan_module_installed))
+	 (is-bond (if (string-ci=? iface-type "bond") #t #f)))
+
+    (form-update-visibility
+	  "vlan"
+	  (and
+		has-vlan-module
+		(not is-vlan)
+		(not is-bond)))
+
    (form-update-visibility
       "wireless"
-      (and (woo-get-option cmd 'wireless)
-	   (string=? (woo-get-option cmd 'controlled) "etcnet")
-	   (not is-vlan)))
-
-   (form-update-visibility "vlan" (string-ci=? iface-type "eth"))
-
-   (for-each
-     (lambda(lst)
-	   (form-update-visibility lst is-vlan))
-     '("box_vlan_caption" "box_vlan_info"))
+      (and
+		has-wifi-module
+		(woo-get-option cmd 'wireless)
+		(string=? (woo-get-option cmd 'controlled) "etcnet")))
 
    (for-each
      (lambda(lst)
        (form-update-visibility lst (not is-vlan)))
      '("adaptor" "advanced"))
-
-   (form-update-value-list
-      '("label_vlan_host" "label_vlan_vid")
-      cmd)
 
     (form-update-value-list
       '("name" "real_name" "ipv_enabled")
@@ -98,8 +99,7 @@
   (form-update-value "add-mask" (if (string=? ipv "4") "24" "64"))
   (form-update-enum "configuration" (woo-list "/net-eth/avail_configurations" 'ipv ipv))
   (form-update-enum "name" (append
-                             (woo-list "/net-eth/avail_ifaces")
-                             (woo-list "/net-eth/list_vlans"))))
+                             (woo-list "/net-eth/avail_ifaces"))))
 
 (define (reset-interface)
   (catch/message
@@ -137,8 +137,7 @@
              (write-interface name ipv)))
          (begin
            (form-popup "/net-eth/advanced" 'name name)
-           (form-update-enum "name" (append
-                                      (woo-list "/net-eth/avail_ifaces")))
+           (form-update-enum "name" (woo-list "/net-eth/avail_ifaces"))
            (read-interface name ipv)
            (form-update-value "prev_name" (or (form-value "name") ""))))))
 
@@ -153,10 +152,8 @@
            (lambda()
              (write-interface name ipv)))
          (begin
-           (form-popup "/net-eth/vlan" 'name name)
-           (form-update-enum "name" (append
-                                      (woo-list "/net-eth/avail_ifaces")
-                                      (woo-list "/net-eth/list_vlans")))
+           (form-popup "/net-vlan" 'name name)
+           (form-update-enum "name" (woo-list "/net-eth/avail_ifaces"))
            (read-interface name ipv)
            (form-update-value "prev_name" (or (form-value "name") ""))))))
 
@@ -202,16 +199,6 @@
 
     ;;
     (textbox colspan 2 name "adaptor" max-height 70 alterability #f)
-
-    ;;
-    (label colspan 2 text (bold (_ "VLAN")) align "center" nameref "box_vlan_caption")
-
-    ;;
-    (hbox colspan 2 align "center" nameref "box_vlan_info"
-          (label text (_ "Host:"))
-          (label name "label_vlan_host")
-          (label text (_ "VID:"))
-          (label name "label_vlan_vid"))
 
 	;;
 	(hbox align "left" colspan 2 name "area-ip-version-select"
