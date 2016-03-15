@@ -72,37 +72,6 @@ check_bond()
 	return 0
 }
 
-real_iface()
-{
-    local ifacedir="$1"; shift
-    local iface="${ifacedir##*/}"
-
-    [ "$ifacedir" != "$iface" ] || ifacedir="/etc/net/ifaces/$iface"
-    if is_bridge "$ifacedir";then
-        if netdev_is_up "$iface"; then
-            netdev_list_brif "$iface"|head -n1
-        else
-            read_iface_option "$ifacedir" HOST | sed -rn "s;^['\"]?([[:alnum:]]+).*;\1;p"
-        fi
-    else
-        echo "$iface"
-    fi
-}
-
-name_with_bridge()
-{
-    local name="$1"; shift
-    local ifacedir=
-
-    if [ -d "$cachedir/br$name" ] && [ "$(real_iface "$cachedir/br$name")" = "$name" ]; then
-        echo "br$name"
-    elif [ -d "$cachedir/${name#br}" ]; then
-        echo "${name#br}"
-    else
-        echo "$name"
-    fi
-}
-
 check_altdomain()
 {
     local domain=
@@ -139,35 +108,12 @@ list_iface_vlans()
 init_cache()
 {
     local name="$1"; shift
-    local bridge="${1-}"
     local ifacedir="/etc/net/ifaces/$name"
     local dstdir="$cachedir/$name"
     local srcname=
 
     if [ ! -d "$dstdir" ] ;then
-        if [ -n "$bridge" ]; then
-            if test_bool "$bridge"; then
-                srcname="${name#br}"
-                if [ -d "$cachedir/$srcname" ]; then
-                    mv -f -- "$cachedir/$srcname" "$dstdir"
-                elif [ -d "$ifacedir" ]; then
-                    cp -a "$ifacedir" "$cachedir"
-                elif [ -d "/etc/net/ifaces/$srcname" ]; then
-                    cp -a "/etc/net/ifaces/$srcname" "$dstdir"
-                fi
-            else
-                srcname="br$name"
-                if [ -d "$cachedir/$srcname" ]; then
-                    mv -f -- "$cachedir/$srcname" "$dstdir"
-                elif [ -d "/etc/net/ifaces/$srcname" ]; then
-                    cp -a "/etc/net/ifaces/$srcname" "$dstdir"
-                elif [ -d "$ifacedir" ]; then
-                    cp -a "$ifacedir" "$cachedir"
-                fi
-            fi
-        else
-            [ -d "$ifacedir" ] && cp -a "$ifacedir" "$cachedir"
-        fi
+		[ -d "$ifacedir" ] && cp -a "$ifacedir" "$cachedir"
         mkdir -p -- "$dstdir"
     fi
 
@@ -250,12 +196,6 @@ commit_cache()
 
 		[ -n "$ifname" ] || continue
 
-        #try to stop and remove old bridge
-        if [ -d "/etc/net/ifaces/br$ifname" ] && is_bridge "/etc/net/ifaces/br$ifname"; then
-            [ -n "$DURING_INSTALL" ] || iface_down "br$ifname"
-            rm -rf -- "/etc/net/ifaces/br$ifname"
-        fi
-
 	    [ -n "$DURING_INSTALL" ] || iface_down "$ifname"
 
 		[ -d "$new_ifacedir" ] || restart_only=1
@@ -288,17 +228,6 @@ commit_cache()
 			fi
 
 			mv -f -- "$new_ifacedir" "$old_ifacedir"
-
-			#add config for bridge members
-			if is_bridge "$ifname";then
-				local real_fname="$(real_iface "$ifname")"
-				if [ -n "$real_fname" ]; then
-					[ -n "$DURING_INSTALL" ] || iface_down "$real_fname"
-					rm -rf -- "/etc/net/ifaces/$real_fname"
-					mkdir -p -- "/etc/net/ifaces/$real_fname"
-					printf 'TYPE=eth\nBOOTPROTO=static\n' >"/etc/net/ifaces/$real_fname/options"
-				fi
-			fi
 		fi
 
 	    #try to restart
@@ -466,13 +395,6 @@ list_eth_cached()
   [ -z "$filter_list" ] || filter="egrep -v ($filter_list)"
 
   list_eth | $filter | while read name; do
-        if [ -d "$cachedir/br$name" ] && [ "$(real_iface "$cachedir/br$name")" = "$name" ]; then
-            name="br$name"
-        elif [ -d "$cachedir/${name#br}" ]; then
-            name="${name#br}"
-        elif [ -d "/etc/net/ifaces/br$name" ] && [ "$(real_iface "br$name")" = "$name" ]; then
-            name="br$name"
-        fi
         echo "$name" 2>/dev/null
     done
 }
@@ -500,7 +422,6 @@ list_mask()
 list_controlled()
 {
     local name="$1"; shift
-    local bridge="$1"; shift
 
     write_enum_item "etcnet" "Etcnet"
     if [ -f "/usr/sbin/NetworkManager" ] && ! test_bool "$host_viface" && ! is_bond "$name"; then
@@ -634,12 +555,8 @@ read_iface()
 	local name="$1"; shift
 	local ipv="${1:-4}"; shift
 	local ifacedir="$(get_ifacedir "$name")"
-	local bridge=no
 
 	#collect general information
-	local real_name="$(real_iface "$ifacedir")"
-	write_string_param real_name "$real_name"
-
   # Print iface type
   local iface_type="$(read_iface_option "$ifacedir" "TYPE")"
   write_string_param "iface_type" "$iface_type"
@@ -654,18 +571,15 @@ read_iface()
   fi
 
 	write_bool_param ipv_enabled "$(read_config_ipv "$ifacedir" "$ipv")"
-	write_string_param adaptor "$(read_info "$real_name")"
+	write_string_param adaptor "$(read_info "$name")"
 	write_string_param configuration "$(read_configuration "$ifacedir" "$ipv")"
 	write_string_param controlled "$(read_controlled "$ifacedir")"
-	write_bool_param wireless "$(netdev_is_wireless "$real_name" && echo "yes" || echo "no")"
+	write_bool_param wireless "$(netdev_is_wireless "$name" && echo "yes" || echo "no")"
 
 	write_string_param dns "$(read_iface_dns "$ifacedir")"
 	write_string_param search "$(read_iface_search "$ifacedir")"
 
 	write_string_param default "$(read_iface_default_gw "$ifacedir" "$ipv")"
-
-	is_bridge "$ifacedir" && bridge=yes
-	write_bool_param bridge "$bridge"
 }
 
 write_controlled()
@@ -805,33 +719,16 @@ check_dns()
 write_iface()
 {
 	local name="$1"; shift
-	local bridge="${1-}"
 	local ifacedir="$cachedir/$name"
-	local real_name= is_wireless=
-
-	if [ -z "$bridge" ]; then
-	    is_bridge "$ifacedir" && bridge="#t" || bridge="#f"
-	fi
+	local is_wireless=
 
 	# check bond settings
 	if is_bond "$name" && ! check_bond "$name"; then
 		return
 	fi
 
-	if test_bool "$bridge"; then
-        # During the creation a new bridge HOST not setted yet
-        local host="$(real_iface "$ifacedir")"
-        [ "$name" != "$host" ] || host="${name#br}"
-	    write_iface_option "$ifacedir" TYPE bri
-	    write_iface_option "$ifacedir" HOST "$host"
-        [ "$in_controlled" != NetworkManager ] || in_controlled=etcnet
-		real_name="$host"
-  elif [ "$(read_iface_option "$ifacedir" TYPE)" == "vlan" ]; then
-    real_name="$(real_iface "$ifacedir")"
-	elif [ "$(read_iface_option "$ifacedir" TYPE)" != "bond" ]; then
-	    write_iface_option "$ifacedir" TYPE eth
-	    shell_config_del "$ifacedir/options" HOST
-		real_name="$name"
+	if [ -z "$(read_iface_option "$ifacedir" TYPE)" ]; then
+		write_iface_option "$ifacedir" TYPE eth
 	fi
 
 	netdev_is_wireless "$real_name" && is_wireless=yes || is_wireless=no
@@ -950,11 +847,11 @@ on_message()
 {
 	case "$in_action" in
 		add_iface_address)
-			init_cache "$in_name" "$in_bridge"
+			init_cache "$in_name"
 		    add_iface_address "$in_name" "${in_addip}" "${in_addmask}" "$in_ipv"
 			;;
 		del_iface_address)
-			init_cache "$in_name" "$in_bridge"
+			init_cache "$in_name"
 		    del_iface_address "$in_name" "$in_addresses" "$in_ipv"
 			;;
 		list)
@@ -962,8 +859,8 @@ on_message()
 				avail_ipv) list_ipv;;
 			    avail_masks) list_mask "$in_ipv";;
 			    avail_configurations) list_configuration "$in_ipv";;
-			    avail_controlled) list_controlled "$in_name" "$in_bridge" ;;
-			    avail_iface_address) list_iface_addresses "$(name_with_bridge "$in_name")" "$in_ipv";;
+			    avail_controlled) list_controlled "$in_name";;
+			    avail_iface_address) list_iface_addresses "$in_name" "$in_ipv";;
           # avail_ifaces
 			    *) list_ifaces|write_enum;;
 			esac
@@ -971,7 +868,6 @@ on_message()
 		read)
 			local name="${in_name}"
 			[ -n "$name" ] || name="$(list_ifaces|head -n1)"
-			name="$(name_with_bridge "$name")"
 			case "$in__objects" in
 			    /)
 				[ -n "$name" ] && read_iface "$name" "$in_ipv"
@@ -1009,9 +905,6 @@ on_message()
 				;;
 			    controlled)
 				local controlled="$(read_controlled "$(get_ifacedir "$name")")"
-				if test_bool "$in_bridge" && [ "$controlled" = 'NetworkManager' ]; then
-				    controlled='etcnet';
-				fi
 				write_string_param controlled "$controlled"
 				;;
 			esac
@@ -1023,9 +916,9 @@ on_message()
 			fi
 			local name="${in_name}"
 			[ -n "$name" ] || name="$(list_ifaces|head -n1)"
-			init_cache "$name" "$in_bridge"
+			init_cache "$name"
 
-			[ -n "$name" ] && write_iface "$name" "$in_bridge"
+			[ -n "$name" ] && write_iface "$name"
 
 			[ -n "$in_computer_name" ] && write_computer_name "$in_computer_name"
 

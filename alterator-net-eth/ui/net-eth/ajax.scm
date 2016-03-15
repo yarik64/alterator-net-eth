@@ -99,7 +99,7 @@
         (woo-get-option cmd 'wireless)
         (string=? (woo-get-option cmd 'controlled) "etcnet")))
     (form-update-value-list
-      '("name" "real_name" "ipv_enabled")
+      '("name" "ipv_enabled")
       cmd)
     (form-update-value-list
       '("computer_name" "dns" "search")
@@ -144,8 +144,8 @@
          (form-replace "/net-eth/advanced" 'iface name))))
 
 (define (wireless-interface)
-  (format #t "wireless-interface:real_name=~S~%" (form-value "real_name"))
-  (form-replace "/net-wifi/" 'iface (form-value "real_name")))
+  (format #t "wireless-interface:name=~S~%" (form-value "name"))
+  (form-replace "/net-wifi/" 'iface (form-value "name")))
 
 (define (vlan-interface)
   (let ((name (form-value "name"))
