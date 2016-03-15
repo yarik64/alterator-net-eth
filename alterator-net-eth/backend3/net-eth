@@ -120,6 +120,21 @@ check_altdomain()
     fi
 }
 
+list_iface_vlans()
+{
+	local name="$1"; shift
+	local ifacesdir="$1"; shift
+	local i=
+
+	for i in $(find "$ifacesdir" -maxdepth 1 -mindepth 1 -type d); do
+		if [ ! -e "$cachedir/${i##*/}/REMOVED" \
+				-a "$(read_iface_option "$i" TYPE)" = "vlan" \
+				-a "$(read_iface_host_var "$i")" = "$name" ]; then
+			echo "${i##*/}" 2>/dev/null
+		fi
+	done
+}
+
 ### cache
 init_cache()
 {
@@ -178,6 +193,38 @@ commit_hostname()
     run-parts /etc/hooks/hostname.d "$old_value" "$new_value"
 }
 
+list_ifaces_for_restart()
+{
+	local ifacedir= ifname=
+	local eth_list= vlan_list= other_list=
+	local nl='
+'
+
+	for ifacedir in $(find "$cachedir" -maxdepth 1 -mindepth 1 -type d); do
+		ifname="${ifacedir##*/}"
+		case "$(read_iface_option "$ifacedir" TYPE)" in
+			eth)
+				eth_list="$eth_list${eth_list:+$nl}$ifname"
+				# VLAN ifaces from /etc/net/ifaces
+				# No need to add VLAN interfaces from cachedir:
+				# they will be added in the proceeding of this cycle itself.
+				vlan_list="$vlan_list${vlan_list:+$nl}$(list_iface_vlans "$ifname" /etc/net/ifaces)"
+				;;
+			vlan)
+				vlan_list="$vlan_list${vlan_list:+$nl}$ifname"
+				;;
+			*)
+				other_list="$other_list${other_list:+$nl}$ifname"
+				;;
+		esac
+	done
+
+	# First restart eth ifaces, then VLANs and others
+	echo "$eth_list" | sort -u
+	echo "$vlan_list" | sort -u
+	echo "$other_list" | sort -u
+}
+
 commit_cache()
 {
     #little run-parts: check configuration before apply it
@@ -196,38 +243,12 @@ commit_cache()
 
     commit_hostname
 
-    # stanv@:
-    # first iteration: host-interfaces, that one that have infants
-    # second iteration: vlan, bridges, etc...
-    local ifaces_all=($(find "$cachedir" -maxdepth 1 -mindepth 1 -type d | sort))
-    local ifaces_have_host=($(find "$cachedir" -maxdepth 2 -mindepth 2 -type f -name "options" -exec grep -l "^HOST=" '{}' \+ | sed -e 's,/[^/]\+$,,' | sort))
+	for ifname in $(list_ifaces_for_restart); do
+	    local new_ifacedir="$cachedir/$ifname"
+	    local old_ifacedir="/etc/net/ifaces/$ifname"
+		local restart_only=
 
-    local ifaces_not_infants=()
-    local skip=
-    for i in "${ifaces_all[@]}"; do
-      for j in "${ifaces_have_host[@]}"; do
-        if [ "$i" = "$j" ]; then
-          skip="yes"
-        fi
-      done
-      if [ -z "$skip" ]; then
-        ifaces_not_infants+=("$i")
-      fi
-      skip=
-    done
-
-    # stanv@:
-    # order to apply changes:
-    # 1. save host-interfaces (changed)
-    # 2. save vlan-interfaces (changed)
-    # 3. hint: unmodified vlan does not appear in cache
-    #    So, down host interface -> down vlan interface
-    #    Conclusion: necessary to up unchaged vlan interface
-    for iface in "${ifaces_not_infants[@]}" "${ifaces_have_host[@]}"; do
-
-	    [ -n "$iface" ] || exit
-
-	    local ifname="${iface##*/}"
+		[ -n "$ifname" ] || continue
 
         #try to stop and remove old bridge
         if [ -d "/etc/net/ifaces/br$ifname" ] && is_bridge "/etc/net/ifaces/br$ifname"; then
@@ -237,91 +258,73 @@ commit_cache()
 
 	    [ -n "$DURING_INSTALL" ] || iface_down "$ifname"
 
-		# IPv4 configuration
-		local old_config_ipv4="$(read_config_ipv "/etc/net/ifaces/$ifname" 4)"
-		local new_config_ipv4="$(read_config_ipv "$iface" 4)"
+		[ -d "$new_ifacedir" ] || restart_only=1
 
-	    local old_ipv4addresses="$(read_iface_addresses "/etc/net/ifaces/$ifname" 4)"
-	    local new_ipv4addresses="$(read_iface_addresses "$iface" 4)"
+		if [ -z "$restart_only" ]; then
+			# IPv4 configuration
+			local old_config_ipv4="$(read_config_ipv "$old_ifacedir" 4)"
+			local new_config_ipv4="$(read_config_ipv "$new_ifacedir" 4)"
 
-	    local old_ipv4configuration="$(read_configuration "/etc/net/ifaces/$ifname" 4)"
-	    local new_ipv4configuration="$(read_configuration "$iface" 4)"
+			local old_ipv4addresses="$(read_iface_addresses "$old_ifacedir" 4)"
+			local new_ipv4addresses="$(read_iface_addresses "$new_ifacedir" 4)"
 
-		# IPv6 configuration
-		local old_config_ipv6="$(read_config_ipv "/etc/net/ifaces/$ifname" 6)"
-		local new_config_ipv6="$(read_config_ipv "$iface" 6)"
+			local old_ipv4configuration="$(read_configuration "$old_ifacedir" 4)"
+			local new_ipv4configuration="$(read_configuration "$new_ifacedir" 4)"
 
-	    local old_ipv6addresses="$(read_iface_addresses "/etc/net/ifaces/$ifname" 6)"
-	    local new_ipv6addresses="$(read_iface_addresses "$iface" 6)"
+			# IPv6 configuration
+			local old_config_ipv6="$(read_config_ipv "$old_ifacedir" 6)"
+			local new_config_ipv6="$(read_config_ipv "$new_ifacedir" 6)"
 
-	    local old_ipv6configuration="$(read_configuration "/etc/net/ifaces/$ifname" 6)"
-	    local new_ipv6configuration="$(read_configuration "$iface" 6)"
+			local old_ipv6addresses="$(read_iface_addresses "$old_ifacedir" 6)"
+			local new_ipv6addresses="$(read_iface_addresses "$new_ifacedir" 6)"
 
-	    #update configs
-	    rm -rf -- "/etc/net/ifaces/$ifname"
-      if [ -e "$cachedir/$ifname/REMOVED" ]; then
-        continue
-      fi
+			local old_ipv6configuration="$(read_configuration "$old_ifacedir" 6)"
+			local new_ipv6configuration="$(read_configuration "$new_ifacedir" 6)"
 
-      mv -f -- "$cachedir/$ifname" "/etc/net/ifaces/$ifname"
+		    #update configs
+		    rm -rf -- "$old_ifacedir"
+			if [ -e "$new_ifacedir/REMOVED" ]; then
+				continue
+			fi
 
-	    #add config for bridge members
-	    if is_bridge "$ifname";then
-            local real_fname="$(real_iface "$ifname")"
-            if [ -n "$real_fname" ]; then
-                [ -n "$DURING_INSTALL" ] || iface_down "$real_fname"
-                rm -rf -- "/etc/net/ifaces/$real_fname"
-                mkdir -p -- "/etc/net/ifaces/$real_fname"
-                printf 'TYPE=eth\nBOOTPROTO=static\n' >"/etc/net/ifaces/$real_fname/options"
-            fi
-	    fi
+			mv -f -- "$new_ifacedir" "$old_ifacedir"
+
+			#add config for bridge members
+			if is_bridge "$ifname";then
+				local real_fname="$(real_iface "$ifname")"
+				if [ -n "$real_fname" ]; then
+					[ -n "$DURING_INSTALL" ] || iface_down "$real_fname"
+					rm -rf -- "/etc/net/ifaces/$real_fname"
+					mkdir -p -- "/etc/net/ifaces/$real_fname"
+					printf 'TYPE=eth\nBOOTPROTO=static\n' >"/etc/net/ifaces/$real_fname/options"
+				fi
+			fi
+		fi
 
 	    #try to restart
 	    [ -n "$DURING_INSTALL" ] && netdev_is_up "$ifname" || iface_up "$ifname"
 
-      # stanv@
-      # Time to UP unmodified-infants-interfaces that are in /etc/net/ifaces.
-      # Unmodified-infants-interfaces were DOWNed.
-      # As they were not modified, they do not exist in /var/cache/alterator/net-eth
-      # At /var/cache/alterator/net-eth must stay only modified-infants-interfaces.
-      # Modified-infants-interfaces will be UPed further.
-      local vlan_all=($(list_vlan))
-      local vlan_dir=
-      local iface_host=
-      for i in ${vlan_all[@]}; do
-        vlan_dir="/etc/net/ifaces/$i"
-        iface_host="$(read_iface_option "$vlan_dir" "HOST")"
+		if [ -z "$restart_only" ]; then
+			if [ "$old_config_ipv4" != "$new_config_ipv4" -o \
+				 "$old_ipv4addresses" != "$new_ipv4addresses" -o \
+				 "$old_ipv4configuration" != "$new_ipv4configuration" -o \
+				 "$old_config_ipv6" != "$new_config_ipv6" -o \
+				 "$old_ipv6addresses" != "$new_ipv6addresses" -o \
+				 "$old_ipv6configuration" != "$new_ipv6configuration" ];then
+				# Deprecated. For backward compatibility only.
+				local old_addresses="$old_ipv4addresses"
+				local new_addresses="$new_ipv4addresses"
+				local old_configuration="$old_ipv4configuration"
+				local new_configuration="$new_ipv4configuration"
+				export old_addresses new_addresses old_configuration new_configuration
+				###
+				export old_config_ipv4 new_config_ipv4 old_ipv4addresses new_ipv4addresses \
+					old_ipv4configuration new_ipv4configuration \
+					old_config_ipv6 new_config_ipv6 old_ipv6addresses new_ipv6addresses \
+					old_ipv6configuration new_ipv6configuration
 
-        # Skip, will be processed as a part of $cachedir
-        if [ -e "$cachedir/$i" ]; then
-          continue
-        fi
-
-        if [ "$iface_host" = "$ifname" ]; then
-          # up child $i
-          [ -n "$DURING_INSTALL" ] && netdev_is_up "$i" || iface_up "$i"
-        fi
-      done
-
-		if [ "$old_config_ipv4" != "$new_config_ipv4" -o \
-			 "$old_ipv4addresses" != "$new_ipv4addresses" -o \
-			 "$old_ipv4configuration" != "$new_ipv4configuration" -o \
-			 "$old_config_ipv6" != "$new_config_ipv6" -o \
-			 "$old_ipv6addresses" != "$new_ipv6addresses" -o \
-			 "$old_ipv6configuration" != "$new_ipv6configuration" ];then
-			# Deprecated. For backward compatibility only.
-			local old_addresses="$old_ipv4addresses"
-			local new_addresses="$new_ipv4addresses"
-			local old_configuration="$old_ipv4configuration"
-			local new_configuration="$new_ipv4configuration"
-			export old_addresses new_addresses old_configuration new_configuration
-			###
-			export old_config_ipv4 new_config_ipv4 old_ipv4addresses new_ipv4addresses \
-				old_ipv4configuration new_ipv4configuration \
-				old_config_ipv6 new_config_ipv6 old_ipv6addresses new_ipv6addresses \
-				old_ipv6configuration new_ipv6configuration
-
-			run-parts  "$postcommit_hooks_dir"  "$ifname"
+				run-parts  "$postcommit_hooks_dir"  "$ifname"
+			fi
 		fi
 	done
 
