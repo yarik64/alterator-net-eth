@@ -429,7 +429,7 @@ _list_vlan_cached()
 
 list_vlan_cached()
 {
-	_list_vlan_cached | sort -u
+	_list_vlan_cached | sort -uV
 }
 
 read_iface_slaves_cached()
