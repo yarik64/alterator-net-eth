@@ -5,18 +5,6 @@
     :use-module (alterator woo)
     :export (init))
 
-; DEBUG STRING (PASTE IN FOR YOUR NEEDS).
-; (format #t "XXX: ~S\n" rdp_profile_name)
-; (format #t "[ajax, module] action info\n")
-
-; TO DEBUG DO:
-; 1) define *debug* to #t
-; 2) start ahttpd -l -d
-(define *debug* #f)
-(define (dmsg msg . args)
-  (if *debug*
-    (format #t "[ajax, net-eth]: ~S ~S\n" msg args)))
-
 ;;; low level
 
 (define *prev_ipv* (make-cell ""))
@@ -54,8 +42,6 @@
            (woo-list "/net-eth/avail_iface_address" 'name name 'ipv (form-value "ipv"))))))
 
 (define (read-interface name ipv)
-    (dmsg "read-interface() -- enter")
-
   (let* ((cmd (woo-read-first "/net-eth" 'name name 'ipv ipv 'language (form-value "language")))
          (iface-type (woo-get-option cmd 'iface_type "eth"))
          (is-vlan (if (string-ci=? iface-type "vlan") #t #f))
@@ -63,9 +49,6 @@
 		 (has-wifi-module (woo-get-option cmd 'wifi_module_installed))
 		 (has-vlan-module (woo-get-option cmd 'vlan_module_installed))
          (is-bond (if (string-ci=? iface-type "bond") #t #f)))
-
-    (dmsg "read-interface() -- iface-type:" iface-type)
-    (dmsg "read-interface() -- is-vlan" is-vlan)
 
     (form-update-visibility "vlan" (string-ci=? iface-type "eth"))
 
