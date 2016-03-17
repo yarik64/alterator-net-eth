@@ -42,7 +42,7 @@ is_bridge()
 is_bond()
 {
     local name="$1"; shift
-	local ifacedir="$(get_ifacedir "$name")"
+	local ifacedir="$(ifacedir_with_cache "$cachedir" "$name")"
 
 	[ "$(read_iface_option "$ifacedir" TYPE)" = bond ]
 }
@@ -50,7 +50,7 @@ is_bond()
 is_vlan()
 {
     local name="$1"; shift
-	local ifacedir="$(get_ifacedir "$name")"
+	local ifacedir="$(ifacedir_with_cache "$cachedir" "$name")"
 
 	[ "$(read_iface_option "$ifacedir" TYPE)" = vlan ]
 }
@@ -87,21 +87,6 @@ check_altdomain()
     else
         return 1
     fi
-}
-
-list_iface_vlans()
-{
-	local name="$1"; shift
-	local ifacesdir="$1"; shift
-	local i=
-
-	for i in $(find "$ifacesdir" -maxdepth 1 -mindepth 1 -type d); do
-		if [ ! -e "$cachedir/${i##*/}/REMOVED" \
-				-a "$(read_iface_option "$i" TYPE)" = "vlan" \
-				-a "$(read_iface_host_var "$i")" = "$name" ]; then
-			echo "${i##*/}" 2>/dev/null
-		fi
-	done
 }
 
 ### cache
@@ -154,7 +139,7 @@ list_ifaces_for_restart()
 				# VLAN ifaces from /etc/net/ifaces
 				# No need to add VLAN interfaces from cachedir:
 				# they will be added in the proceeding of this cycle itself.
-				vlan_list="$vlan_list${vlan_list:+$nl}$(list_iface_vlans "$ifname" /etc/net/ifaces)"
+				vlan_list="$vlan_list${vlan_list:+$nl}$(list_vlans_for_iface "$ifname" /etc/net/ifaces)"
 				;;
 			vlan)
 				vlan_list="$vlan_list${vlan_list:+$nl}$ifname"
@@ -223,7 +208,7 @@ commit_cache()
 
 		    #update configs
 		    rm -rf -- "$old_ifacedir"
-			if [ -e "$new_ifacedir/REMOVED" ]; then
+			if iface_will_removed "$cachedir" "$ifname"; then
 				continue
 			fi
 
@@ -335,35 +320,6 @@ list_ipv()
 	fi
 }
 
-
-# GET LIST OF VLAN INTERFACES CONTROLED BY ETCNET
-list_vlan()
-{
-  local ifacesdir="$1"; shift
-
-  for i in `find "$ifacesdir" -maxdepth 1 -mindepth 1 -type d`; do
-    if [ "$(read_iface_option "$i" TYPE)" != "vlan" ]; then
-      continue
-    fi
-    if [ -e "$cachedir/${i##*/}/REMOVED" ]; then
-      continue
-    fi
-    echo "${i##*/}" 2>/dev/null
-  done
-}
-
-
-_list_vlan_cached()
-{
-	list_vlan "$cachedir"
-	list_vlan /etc/net/ifaces
-}
-
-list_vlan_cached()
-{
-	_list_vlan_cached | sort -uV
-}
-
 read_iface_slaves_cached()
 {
 	if [ -f "$cachedir/$1/options" ]; then
@@ -373,19 +329,11 @@ read_iface_slaves_cached()
 	fi | sort -u
 }
 
-list_bond_cached()
-{
-	local b=
-	for b in $(list_bond /etc/net/ifaces) $(list_bond "$cachedir"); do
-		[ -f "$cachedir/$b/REMOVED" ] || echo "$b"
-	done | sort -u
-}
-
 # stanv@: awful code ((((
 list_eth_cached()
 {
   local filter=cat filter_list= b= s=
-  for b in $(list_bond_cached); do
+  for b in $(list_bond_with_cache "$cachedir"); do
 	  echo "$b"
 	  for s in $(read_iface_slaves_cached "$b"); do
 		  filter_list="$filter_list${filter_list:+|}$s"
@@ -402,7 +350,7 @@ list_eth_cached()
 list_ifaces()
 {
 	list_eth_cached
-	list_vlan_cached
+	list_vlan_with_cache "$cachedir"
 }
 
 list_mask()
@@ -539,22 +487,11 @@ read_config_ipv()
 	esac
 }
 
-get_ifacedir()
-{
-	local name="$1"; shift
-
-	if [ -d "$cachedir/$name" ];then
-	    echo "$cachedir/$name"
-	else
-	    echo "/etc/net/ifaces/$name"
-	fi
-}
-
 read_iface()
 {
 	local name="$1"; shift
 	local ipv="${1:-4}"; shift
-	local ifacedir="$(get_ifacedir "$name")"
+	local ifacedir="$(ifacedir_with_cache "$cachedir" "$name")"
 
 	#collect general information
   # Print iface type
@@ -818,7 +755,7 @@ list_iface_addresses()
 	local v="$1"; shift
     [ -n "$name" ] || name="$(list_ifaces|head -n1)"
 
-	local ifacedir="$(get_ifacedir "$name")"
+	local ifacedir="$(ifacedir_with_cache "$cachedir" "$name")"
 
     [ -s "$ifacedir/ipv${v}address" ] && cat "$ifacedir/ipv${v}address" | write_enum
 }
@@ -904,7 +841,7 @@ on_message()
 
 				;;
 			    controlled)
-				local controlled="$(read_controlled "$(get_ifacedir "$name")")"
+				local controlled="$(read_controlled "$(ifacedir_with_cache "$cachedir" "$name")")"
 				write_string_param controlled "$controlled"
 				;;
 			esac
