@@ -59,8 +59,8 @@ check_bond()
 {
     local iface="$1"; shift
 
-	if [ -z "$(read_iface_slaves "$cachedir/$iface")" ]; then
-		write_error "`_ "No slaves for bond  $iface"`"
+	if [ -z "$(read_iface_host_var "$cachedir/$iface")" ]; then
+		write_error "`_ "No members for bond  $iface"`"
 		return 1
 	fi
 
@@ -320,12 +320,12 @@ list_ipv()
 	fi
 }
 
-read_iface_slaves_cached()
+read_iface_host_var_cached()
 {
 	if [ -f "$cachedir/$1/options" ]; then
-		read_iface_slaves "$cachedir/$1"
+		read_iface_host_var "$cachedir/$1"
 	else
-		read_iface_slaves "/etc/net/ifaces/$1"
+		read_iface_host_var "/etc/net/ifaces/$1"
 	fi | sort -u
 }
 
@@ -335,7 +335,7 @@ list_eth_cached()
   local filter=cat filter_list= b= s=
   for b in $(list_bond_with_cache "$cachedir"); do
 	  echo "$b"
-	  for s in $(read_iface_slaves_cached "$b"); do
+	  for s in $(read_iface_host_var_cached "$b"); do
 		  filter_list="$filter_list${filter_list:+|}$s"
 	  done
   done
