@@ -329,7 +329,6 @@ read_iface_host_var_cached()
 	fi | sort -u
 }
 
-# stanv@: awful code ((((
 list_eth_cached()
 {
   local filter=cat filter_list= b= s=
