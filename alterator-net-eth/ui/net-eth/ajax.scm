@@ -48,7 +48,9 @@
 		 (has-bond-module (woo-get-option cmd 'bond_module_installed))
 		 (has-wifi-module (woo-get-option cmd 'wifi_module_installed))
 		 (has-vlan-module (woo-get-option cmd 'vlan_module_installed))
-         (is-bond (if (string-ci=? iface-type "bond") #t #f)))
+		 (has-bridge-module (woo-get-option cmd 'bridge_module_installed))
+		 (is-bond (if (string-ci=? iface-type "bond") #t #f))
+		 (is-bridge (if (string-ci=? iface-type "bri") #t #f)))
 
     (form-update-visibility "vlan" (string-ci=? iface-type "eth"))
 
@@ -67,6 +69,17 @@
 		(lambda(lst)
 		  (form-update-activity lst is-bond))
 		'("bond_del" "bond_ch")))
+
+    (for-each
+      (lambda(lst)
+        (form-update-visibility lst has-bridge-module))
+      '("bridge_new" "bridge_del" "bridge_ch"))
+
+	(if has-bridge-module
+	  (for-each
+		(lambda(lst)
+		  (form-update-activity lst is-bridge))
+		'("bridge_del" "bridge_ch")))
 
 	(form-update-visibility
 	  "vlan"
@@ -202,6 +215,18 @@
 (define (bond-ch)
   (form-replace "/net-bond" 'iface (form-value "name")))
 
+(define (bridge-new)
+  (form-replace "/net-bridge"))
+
+(define (bridge-del)
+  (catch/message (lambda()
+     (woo-write "/net-bridge/rm_bridge" 'bridge (form-value "name" 'language (form-value "language")))))
+  (form-update-value "iface" "")
+  (init-interface))
+
+(define (bridge-ch)
+  (form-replace "/net-bridge" 'iface (form-value "name")))
+
 (define (init)
  (init-interface)
  (form-bind "name" "change" update-interface)
@@ -217,6 +242,10 @@
  (form-bind "bond_new" "click" bond-new)
  (form-bind "bond_del" "click" bond-del)
  (form-bind "bond_ch" "click" bond-ch)
+
+ (form-bind "bridge_new" "click" bridge-new)
+ (form-bind "bridge_del" "click" bridge-del)
+ (form-bind "bridge_ch" "click" bridge-ch)
 
  (form-bind "commit" "click" commit-interface)
  (form-bind "reset" "click" reset-interface))

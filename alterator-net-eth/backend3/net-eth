@@ -7,6 +7,7 @@ ALTERATOR_DOMAIN=/usr/lib/alterator/backend3/net-domain
 ALTERATOR_BOND=/usr/lib/alterator/backend3/net-bond
 ALTERATOR_WIFI=/usr/lib/alterator/backend3/net-wifi
 ALTERATOR_VLAN=/usr/lib/alterator/backend3/net-vlan
+ALTERATOR_BRIDGE=/usr/lib/alterator/backend3/net-bridge
 
 rdelim='[[:space:]]\+'
 wdelim=' '
@@ -28,13 +29,12 @@ is_defined()
 
 is_bridge()
 {
-    local ifacedir="$1"; shift
-    local iface="${ifacedir##*/}"
+    local name="$1"; shift
+	local ifacedir="$(ifacedir_with_cache "$cachedir" "$name")"
 
-    if netdev_is_up "$iface"; then
-        netdev_is_bridge "$iface"
+    if netdev_is_up "$name"; then
+        netdev_is_bridge "$name"
     else
-        [ "$ifacedir" != "$iface" ] || ifacedir="/etc/net/ifaces/$iface"
         [ "$(read_iface_option "$ifacedir" TYPE)" = bri ]
     fi
 }
@@ -66,6 +66,18 @@ check_bond()
 
 	if [ -n "$in_configuration" -a "$in_configuration" != "static" ]; then
 		write_error "`_ "$iface: Only 'static' configuration allowed for bond interface"`"
+		return 1
+	fi
+
+	return 0
+}
+
+check_bridge()
+{
+    local iface="$1"; shift
+
+	if [ -z "$(read_iface_host_var "$cachedir/$iface")" ]; then
+		write_error "`_ "No members for bridge  $iface"`"
 		return 1
 	fi
 
@@ -332,8 +344,8 @@ read_iface_host_var_cached()
 list_eth_cached()
 {
   local filter=cat filter_list= b= s=
-  for b in $(list_bond_with_cache "$cachedir"); do
-	  echo "$b"
+  for b in $(list_bond_with_cache "$cachedir") $(list_bridge_with_cache "$cachedir"); do
+	  echo "$b" 2>/dev/null
 	  for s in $(read_iface_host_var_cached "$b"); do
 		  filter_list="$filter_list${filter_list:+|}$s"
 	  done
@@ -371,7 +383,7 @@ list_controlled()
     local name="$1"; shift
 
     write_enum_item "etcnet" "Etcnet"
-    if [ -f "/usr/sbin/NetworkManager" ] && ! test_bool "$host_viface" && ! is_bond "$name"; then
+    if [ -f "/usr/sbin/NetworkManager" ] && ! test_bool "$host_viface" && ! is_bond "$name" && ! is_bridge "$name"; then
 	write_enum_item "NetworkManager" "NetworkManager"
     fi
     write_enum_item "nothing" "`_ "not under control"`"
@@ -663,6 +675,10 @@ write_iface()
 		return
 	fi
 
+	if is_bridge "$name" && ! check_bridge "$name"; then
+		return
+	fi
+
 	if [ -z "$(read_iface_option "$ifacedir" TYPE)" ]; then
 		write_iface_option "$ifacedir" TYPE eth
 	fi
@@ -838,6 +854,11 @@ on_message()
 					write_bool_param vlan_module_installed no
 				fi
 
+				if [ -f "$ALTERATOR_BRIDGE" ]; then
+					write_bool_param bridge_module_installed yes
+				else
+					write_bool_param bridge_module_installed no
+				fi
 				;;
 			    controlled)
 				local controlled="$(read_controlled "$(ifacedir_with_cache "$cachedir" "$name")")"
