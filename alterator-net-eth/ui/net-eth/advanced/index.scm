@@ -8,7 +8,7 @@
 	(lambda()
 	  (let ((cmd (woo-read-first "/net-eth" 'name  *name*))
 			(form-update-enum "controlled" (woo-list "/net-eth/avail_controlled" 'name *name*))
-			(form-update-value-list '("name" "controlled") cmd))))))
+			(form-update-value-list '("name" "controlled" "onboot") cmd))))))
 
 (define (ui-exit)
   (document:end))
@@ -18,7 +18,8 @@
     (lambda()
       (woo-write "/net-eth"
 		 'name (form-value "name")
-		 'controlled (form-value "controlled"))
+		 'controlled (form-value "controlled")
+		 'onboot (form-value "onboot"))
       (ui-exit))))
 
 ;;; UI
@@ -38,6 +39,8 @@ height 300
   (label text (_ "Network subsystem:") align "right" name "controlled")
   (combobox name "controlled")
   ;;
+  (label text (_ "Startup this interface at boot") align "right")
+  (checkbox name "onboot")
   (label colspan 2)
 
   ;;

@@ -9,7 +9,7 @@
 	  (let ((cmd (woo-read-first "/net-eth" 'name name)))
 		(form-update-enum "controlled" (woo-list "/net-eth/avail_controlled" 'name name))
 		(form-update-value "iface" name)
-		(form-update-value-list '("name" "controlled") cmd)))))
+		(form-update-value-list '("name" "controlled" "onboot") cmd)))))
 
 (define (ui-exit)
   (form-replace (format #f "/net-eth?iface=~A" (form-value "name"))))
@@ -19,7 +19,8 @@
     (lambda()
       (woo-write "/net-eth"
 		 'name (form-value "name")
-		 'controlled (form-value "controlled"))
+		 'controlled (form-value "controlled")
+		 'onboot (form-value "onboot"))
       (ui-exit))))
 
 (define (init)

@@ -539,6 +539,7 @@ read_iface()
 	write_string_param iface_info "$(read_info "$name" "$iface_type")"
 	write_string_param configuration "$(read_configuration "$ifacedir" "$ipv")"
 	write_string_param controlled "$(read_controlled "$ifacedir")"
+	write_bool_param onboot "$(read_iface_option "$ifacedir" ONBOOT)"
 	write_bool_param wireless "$(netdev_is_wireless "$name" && echo "yes" || echo "no")"
 
 	write_string_param dns "$(read_iface_dns "$ifacedir")"
@@ -714,6 +715,13 @@ write_iface()
 
 	[ -n "$in_controlled" ] &&
 	    write_controlled "$ifacedir" "$in_controlled"
+
+	if [ -n "$in_onboot" ]; then
+		local onboot=
+
+		test_bool "$in_onboot" && onboot=yes || onboot=no
+		write_iface_option "$ifacedir" ONBOOT "$onboot"
+	fi
 
 	[ -n "$in_configuration" ] &&
 		test_bool "$in_ipv_enabled" &&
