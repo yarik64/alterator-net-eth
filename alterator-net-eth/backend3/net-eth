@@ -9,6 +9,9 @@ ALTERATOR_WIFI=/usr/lib/alterator/backend3/net-wifi
 ALTERATOR_VLAN=/usr/lib/alterator/backend3/net-vlan
 ALTERATOR_BRIDGE=/usr/lib/alterator/backend3/net-bridge
 
+NETWORKMANAGER=/usr/sbin/NetworkManager
+NMCLI=/usr/bin/nmcli
+
 rdelim='[[:space:]]\+'
 wdelim=' '
 
@@ -170,6 +173,8 @@ list_ifaces_for_restart()
 
 commit_cache()
 {
+	local need_reload_nm=
+
     #little run-parts: check configuration before apply it
     set_locale
     local answer=
@@ -196,6 +201,12 @@ commit_cache()
 	    [ -n "$DURING_INSTALL" ] || iface_down "$ifname"
 
 		[ -d "$new_ifacedir" ] || restart_only=1
+
+		if [ -f "$NMCLI" -a -z "$DURING_INSTALL" ] && \
+			[ "$(read_controlled "$new_ifacedir")" = "NetworkManager" -o \
+			  "$(read_controlled "$old_ifacedir")" = "NetworkManager" ]; then
+			need_reload_nm=1
+		fi
 
 		if [ -z "$restart_only" ]; then
 			# IPv4 configuration
@@ -253,6 +264,10 @@ commit_cache()
 			fi
 		fi
 	done
+
+	if [ -n "$need_reload_nm" ]; then
+		"$NMCLI" connection reload 2>/dev/null ||:
+	fi
 
     clear_cache
     /sbin/update_chrooted conf >&2 || :
@@ -383,7 +398,7 @@ list_controlled()
     local name="$1"; shift
 
     write_enum_item "etcnet" "Etcnet"
-    if [ -f "/usr/sbin/NetworkManager" ] && ! is_bond "$name" && ! is_bridge "$name" && ! is_vlan "$name"; then
+    if [ -f "$NETWORKMANAGER" ] && ! is_bond "$name" && ! is_bridge "$name" && ! is_vlan "$name"; then
 	write_enum_item "NetworkManager" "NetworkManager"
     fi
     write_enum_item "nothing" "`_ "not under control"`"
