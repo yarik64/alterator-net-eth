@@ -401,22 +401,39 @@ list_configuration()
 read_info()
 {
     local name="$1";shift
+    local iftype="${1:-eth}"
+	local info=
+
     [ -n "$name" ] || return 0
 
-    local info="`_ "Network adaptor:"`"
-    info="$info
+	case "$iftype" in
+		eth)
+			info="`_ "Network adaptor:"`"
+			info="$info
 $(netdev_read_info "$name")"
 
-    if ! netdev_is_wireless "$name"; then
-	if netdev_is_plugged "$name";then
-	    info="$info
+			if ! netdev_is_wireless "$name"; then
+				if netdev_is_plugged "$name";then
+					info="$info
 `_ "plugged"`"
-	else
-	    info="$info
+				else
+				info="$info
 `_ "unplugged"`"
-	fi
-    fi
-    echo "$info"
+				fi
+		    fi
+			;;
+		vlan)
+			info="`_ "VLAN: "`$(read_iface_host_var_cached "$name") VID $(read_iface_option "$ifacedir" "VID")"
+			;;
+		bond)
+			info="`_ "Bonding: "`$(read_iface_host_var_cached "$name")"
+			;;
+		bri)
+			info="`_ "Bridge: "`$(read_iface_host_var_cached "$name")"
+			;;
+	esac
+
+	echo "$info"
 }
 
 read_controlled()
@@ -519,7 +536,7 @@ read_iface()
   fi
 
 	write_bool_param ipv_enabled "$(read_config_ipv "$ifacedir" "$ipv")"
-	write_string_param adaptor "$(read_info "$name")"
+	write_string_param iface_info "$(read_info "$name" "$iface_type")"
 	write_string_param configuration "$(read_configuration "$ifacedir" "$ipv")"
 	write_string_param controlled "$(read_controlled "$ifacedir")"
 	write_bool_param wireless "$(netdev_is_wireless "$name" && echo "yes" || echo "no")"

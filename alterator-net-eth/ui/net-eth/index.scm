@@ -60,7 +60,7 @@
    (for-each
      (lambda(lst)
        (form-update-visibility lst (not is-vlan)))
-     '("adaptor" "advanced"))
+     '("iface_info" "advanced"))
 
     (form-update-value-list
       '("name" "real_name" "ipv_enabled")
@@ -70,7 +70,7 @@
       cmd)
 	(form-update-activity "computer_name" (not (woo-get-option cmd 'altdomain)))
     (form-update-value-list
-      '("add-mask" "adaptor" "default" "configuration")
+      '("add-mask" "iface_info" "default" "configuration")
       cmd)
     (read-interface-address name)
     (form-update-value-list
@@ -198,7 +198,7 @@
     columns "0;100"
 
     ;;
-    (textbox colspan 2 name "adaptor" max-height 70 alterability #f)
+    (textbox colspan 2 name "iface_info" max-height 70 alterability #f)
 
 	;;
 	(hbox align "left" colspan 2 name "area-ip-version-select"

@@ -56,11 +56,6 @@
 
     (for-each
       (lambda(lst)
-        (form-update-visibility lst (not is-vlan)))
-      '("area-generic" "advanced"))
-
-    (for-each
-      (lambda(lst)
         (form-update-visibility lst has-bond-module))
       '("bond_new" "bond_del" "bond_ch"))
 
@@ -103,7 +98,7 @@
     (form-update-activity "computer_name" (not (woo-get-option cmd 'altdomain)))
     (read-interface-address name)
     (form-update-value-list
-      '("adaptor" "add-mask" "default" "configuration")
+      '("iface_info" "add-mask" "default" "configuration")
       cmd)
 	(update-ipv-activity)))
 
