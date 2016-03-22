@@ -400,26 +400,23 @@ list_configuration()
 
 read_info()
 {
-    local name="$1";shift
-    local iftype="${1:-eth}"
+	local name="$1";shift
+	local iftype="${1:-eth}"
 	local info=
+	local tmp=
+	local nl='
+'
 
     [ -n "$name" ] || return 0
 
 	case "$iftype" in
 		eth)
 			info="`_ "Network adaptor:"`"
-			info="$info
-$(netdev_read_info "$name")"
+			info="$info $(netdev_read_info "$name")"
 
 			if ! netdev_is_wireless "$name"; then
-				if netdev_is_plugged "$name";then
-					info="$info
-`_ "plugged"`"
-				else
-				info="$info
-`_ "unplugged"`"
-				fi
+				netdev_is_plugged "$name" && tmp="`_ "plugged"`" || tmp="`_ "unplugged"`"
+				info="$info$nl$tmp"
 		    fi
 			;;
 		vlan)
@@ -432,6 +429,18 @@ $(netdev_read_info "$name")"
 			info="`_ "Bridge: "`$(read_iface_host_var_cached "$name")"
 			;;
 	esac
+
+	# MAC
+	tmp="$(netdev_read_mac "$name")"
+	if [ -n "$tmp" ]; then
+		info="$info$nl`_ "MAC:"` $tmp"
+	fi
+
+	# Status
+	netdev_is_up "$name" && tmp="`_ "UP"`" || tmp="`_ "DOWN"`"
+	if [ -n "$tmp" ]; then
+		info="$info$nl`_ "Interface is "`$tmp"
+	fi
 
 	echo "$info"
 }
