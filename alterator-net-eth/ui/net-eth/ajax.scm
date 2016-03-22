@@ -41,6 +41,11 @@
        (form-update-enum "addresses"
            (woo-list "/net-eth/avail_iface_address" 'name name 'ipv (form-value "ipv"))))))
 
+(define (read-interface-current-address name)
+    (catch/message (lambda()
+       (form-update-enum "addresses"
+           (woo-list "/net-eth/list_current_iface_address" 'name name 'ipv (form-value "ipv"))))))
+
 (define (read-interface name ipv)
   (let* ((cmd (woo-read-first "/net-eth" 'name name 'ipv ipv 'language (form-value "language")))
          (iface-type (woo-get-option cmd 'iface_type "eth"))
@@ -96,7 +101,11 @@
       '("computer_name" "dns" "search")
       cmd)
     (form-update-activity "computer_name" (not (woo-get-option cmd 'altdomain)))
-    (read-interface-address name)
+
+	(if (string=? (woo-get-option cmd 'configuration) "static")
+	  (read-interface-address name)
+	  (read-interface-current-address name))
+
     (form-update-value-list
       '("iface_info" "add-mask" "default" "configuration")
       cmd)

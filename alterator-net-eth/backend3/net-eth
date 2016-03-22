@@ -529,6 +529,7 @@ read_iface()
 	local name="$1"; shift
 	local ipv="${1:-4}"; shift
 	local ifacedir="$(ifacedir_with_cache "$cachedir" "$name")"
+	local conf=
 
 	#collect general information
   # Print iface type
@@ -546,15 +547,23 @@ read_iface()
 
 	write_bool_param ipv_enabled "$(read_config_ipv "$ifacedir" "$ipv")"
 	write_string_param iface_info "$(read_info "$name" "$iface_type")"
-	write_string_param configuration "$(read_configuration "$ifacedir" "$ipv")"
+	conf="$(read_configuration "$ifacedir" "$ipv")"
+	write_string_param configuration "$conf"
 	write_string_param controlled "$(read_controlled "$ifacedir")"
 	write_bool_param onboot "$(read_iface_option "$ifacedir" ONBOOT)"
 	write_bool_param wireless "$(netdev_is_wireless "$name" && echo "yes" || echo "no")"
 
-	write_string_param dns "$(read_iface_dns "$ifacedir")"
-	write_string_param search "$(read_iface_search "$ifacedir")"
+	if [ "$conf" = static ]; then
+		write_string_param dns "$(read_iface_dns "$ifacedir")"
+		write_string_param search "$(read_iface_search "$ifacedir")"
 
-	write_string_param default "$(read_iface_default_gw "$ifacedir" "$ipv")"
+		write_string_param default "$(read_iface_default_gw "$ifacedir" "$ipv")"
+	else
+		write_string_param dns "$(read_current_dns)"
+		write_string_param search "$(read_current_search)"
+
+		write_string_param default "$(read_iface_current_default_gw "$name" "$ipv")"
+	fi
 }
 
 write_controlled()
@@ -649,7 +658,10 @@ write_configuration()
 		if [ "$ipv" = 6 -a "$ipv6config" = ra ]; then
 			# Actually RA-only it is static without configuration.
 			# So remove ipv6* config files.
-			rm -f "$ifacedir/ipv6address" "$ifacedir/ipv6route"
+			rm -f -- "$ifacedir/ipv6address" "$ifacedir/ipv6route"
+		fi
+		if [ "$bootproto" != "static" ]; then
+			rm -f -- "$ifacedir/ipv${ipv}address" "$ifacedir/ipv${ipv}route" "$ifacedir/resolv.conf"
 		fi
 	else
 		write_error "`_ "IPv4 and IPv6 configurations are incompatible:"` $ipv4config and $ipv6config"
@@ -713,15 +725,6 @@ write_iface()
 	netdev_is_wireless "$real_name" && is_wireless=yes || is_wireless=no
 	write_iface_option "$ifacedir" CONFIG_WIRELESS "$is_wireless"
 
-	[ -n "$in_ipv_enabled" ] &&
-		write_config_ipv "$ifacedir" "$in_ipv" "$in_ipv_enabled"
-
-	if is_defined "in_default" && [ -n "$in_default" ] && test_bool "$in_ipv_enabled"; then
-		check_ip "$in_default" "$in_ipv" &&
-			write_iface_default_gw "$ifacedir" "$in_default" "$in_ipv" ||
-			write_error "`_ "Invalid default gateway"`"
-	fi
-
 	[ -n "$in_controlled" ] &&
 	    write_controlled "$ifacedir" "$in_controlled"
 
@@ -736,14 +739,25 @@ write_iface()
 		test_bool "$in_ipv_enabled" &&
 	    write_configuration "$ifacedir" "$in_configuration" "$in_ipv"
 
-	if is_defined "in_dns"; then
-		check_dns "$ifacedir" "$in_dns" &&
-			write_iface_dns "$ifacedir" "$in_dns" ||
-			write_error "`_ "Invalid DNS list"`"
-	fi
+	[ -n "$in_ipv_enabled" ] &&
+		write_config_ipv "$ifacedir" "$in_ipv" "$in_ipv_enabled"
 
-	is_defined "in_search" &&
-	    write_iface_search "$ifacedir" "$in_search"
+	if [ "$in_configuration" = "static" ]; then
+		if is_defined "in_default" && [ -n "$in_default" ] && test_bool "$in_ipv_enabled"; then
+			check_ip "$in_default" "$in_ipv" &&
+				write_iface_default_gw "$ifacedir" "$in_default" "$in_ipv" ||
+				write_error "`_ "Invalid default gateway"`"
+		fi
+
+		if is_defined "in_dns"; then
+			check_dns "$ifacedir" "$in_dns" &&
+				write_iface_dns "$ifacedir" "$in_dns" ||
+				write_error "`_ "Invalid DNS list"`"
+		fi
+
+		is_defined "in_search" &&
+			write_iface_search "$ifacedir" "$in_search"
+	fi
 }
 
 check_ip()
@@ -809,6 +823,16 @@ list_iface_addresses()
     [ -s "$ifacedir/ipv${v}address" ] && cat "$ifacedir/ipv${v}address" | write_enum
 }
 
+list_current_iface_addresses()
+{
+    local name="$1"; shift
+	local v="${1:-4}"
+
+    [ -n "$name" ] || return
+
+	read_iface_current_addresses "$name" "$v" | write_enum
+}
+
 #initial actions
 iface_up lo
 clear_cache
@@ -847,6 +871,7 @@ on_message()
 			    avail_configurations) list_configuration "$in_ipv";;
 			    avail_controlled) list_controlled "$in_name";;
 			    avail_iface_address) list_iface_addresses "$in_name" "$in_ipv";;
+			    list_current_iface_address) list_current_iface_addresses "$in_name" "$in_ipv";;
           # avail_ifaces
 			    *) list_ifaces|write_enum;;
 			esac
