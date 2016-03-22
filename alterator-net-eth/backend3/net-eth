@@ -369,7 +369,7 @@ list_mask()
 	local ipv="${1:-4}"
 	if [ "$ipv" = 4 ]; then
 		for i in `seq 32 -1 0`; do
-			write_enum_item "$i" "/$i ($(ipv4addr_prefix_to_mask "$i"))"
+			write_enum_item "$i" "/$i ($(ipv4_prefix2mask "$i"))"
 		done
 	else
 		for i in `seq 128 -1 0`; do
