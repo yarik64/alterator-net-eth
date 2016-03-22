@@ -383,7 +383,7 @@ list_controlled()
     local name="$1"; shift
 
     write_enum_item "etcnet" "Etcnet"
-    if [ -f "/usr/sbin/NetworkManager" ] && ! test_bool "$host_viface" && ! is_bond "$name" && ! is_bridge "$name"; then
+    if [ -f "/usr/sbin/NetworkManager" ] && ! is_bond "$name" && ! is_bridge "$name" && ! is_vlan "$name"; then
 	write_enum_item "NetworkManager" "NetworkManager"
     fi
     write_enum_item "nothing" "`_ "not under control"`"
