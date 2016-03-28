@@ -6,9 +6,9 @@
 (define (ui-read)
   (catch/message
 	(lambda()
-	  (let ((cmd (woo-read-first "/net-eth" 'name  *name*))
-			(form-update-enum "controlled" (woo-list "/net-eth/avail_controlled" 'name *name*))
-			(form-update-value-list '("name" "controlled" "onboot") cmd))))))
+	  (let ((cmd (woo-read-first "/net-eth" 'name  *name*)))
+		(form-update-enum "controlled" (woo-list "/net-eth/avail_controlled" 'name *name*))
+		(form-update-value-list '("name" "controlled" "onboot") cmd)))))
 
 (define (ui-exit)
   (document:end))
