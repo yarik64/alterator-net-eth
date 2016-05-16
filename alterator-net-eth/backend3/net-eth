@@ -737,7 +737,7 @@ write_iface()
 		write_iface_option "$ifacedir" TYPE eth
 	fi
 
-	netdev_is_wireless "$real_name" && is_wireless=yes || is_wireless=no
+	netdev_is_wireless "$name" && is_wireless=yes || is_wireless=no
 	write_iface_option "$ifacedir" CONFIG_WIRELESS "$is_wireless"
 
 	[ -n "$in_controlled" ] &&
