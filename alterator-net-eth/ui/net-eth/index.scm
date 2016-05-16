@@ -68,7 +68,7 @@
      '("iface_info" "advanced"))
 
     (form-update-value-list
-      '("name" "real_name" "ipv_enabled")
+      '("name" "ipv_enabled")
       cmd)
     (form-update-value-list
       '("computer_name" "dns" "search")
@@ -151,8 +151,8 @@
            (form-update-value "prev_name" (or (form-value "name") ""))))))
 
 (define (wireless-interface)
-  (format #t "wireless-interface:real_name=~S~%" (form-value "real_name"))
-  (form-popup "/net-wifi/" 'iface (form-value "real_name")))
+  (format #t "wireless-interface:name=~S~%" (form-value "name"))
+  (form-popup "/net-wifi/" 'iface (form-value "name")))
 
 (define (vlan-interface)
   (let ((name (form-value "name"))
@@ -183,7 +183,6 @@
 ;;; UI
 
 (edit name "prev_name" text "" visibility #f)
-(edit name "real_name" text "" visibility #f)
 (gridbox
   columns "0;100"
   margin 10
