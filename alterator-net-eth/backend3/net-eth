@@ -12,9 +12,6 @@ ALTERATOR_BRIDGE=/usr/lib/alterator/backend3/net-bridge
 NETWORKMANAGER=/usr/sbin/NetworkManager
 NMCLI=/usr/bin/nmcli
 
-rdelim='[[:space:]]\+'
-wdelim=' '
-
 max_hostname_length=64
 
 alterator_api_version=1
@@ -110,7 +107,6 @@ init_cache()
     local name="$1"; shift
     local ifacedir="/etc/net/ifaces/$name"
     local dstdir="$cachedir/$name"
-    local srcname=
 
     if [ ! -d "$dstdir" ] ;then
 		[ -d "$ifacedir" ] && cp -a "$ifacedir" "$cachedir"
