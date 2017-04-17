@@ -57,8 +57,6 @@
 		 (is-bond (if (string-ci=? iface-type "bond") #t #f))
 		 (is-bridge (if (string-ci=? iface-type "bri") #t #f)))
 
-    (form-update-visibility "vlan" (string-ci=? iface-type "eth"))
-
     (for-each
       (lambda(lst)
         (form-update-visibility lst has-bond-module))
