@@ -44,9 +44,34 @@
   (let* ((cmd (woo-read-first "/net-eth" 'name name 'ipv ipv))
 	 (iface-type (woo-get-option cmd 'iface_type "eth"))
 	 (is-vlan (if (string-ci=? iface-type "vlan") #t #f))
+	 (has-bond-module (woo-get-option cmd 'bond_module_installed))
 	 (has-wifi-module (woo-get-option cmd 'wifi_module_installed))
 	 (has-vlan-module (woo-get-option cmd 'vlan_module_installed))
-	 (is-bond (if (string-ci=? iface-type "bond") #t #f)))
+	 (has-bridge-module (woo-get-option cmd 'bridge_module_installed))
+	 (is-bond (if (string-ci=? iface-type "bond") #t #f))
+	 (is-bridge (if (string-ci=? iface-type "bri") #t #f)))
+
+    (for-each
+      (lambda(lst)
+        (form-update-visibility lst has-bond-module))
+      '("bond_new" "bond_del" "bond_ch"))
+
+	(if has-bond-module
+	  (for-each
+		(lambda(lst)
+		  (form-update-activity lst is-bond))
+		'("bond_del" "bond_ch")))
+
+    (for-each
+      (lambda(lst)
+        (form-update-visibility lst has-bridge-module))
+      '("bridge_new" "bridge_del" "bridge_ch"))
+
+	(if has-bridge-module
+	  (for-each
+		(lambda(lst)
+		  (form-update-activity lst is-bridge))
+		'("bridge_del" "bridge_ch")))
 
     (form-update-visibility
 	  "vlan"
@@ -126,7 +151,12 @@
     (form-update-visibility "area-ip-version-select" (not only-ipv4-available)))
   (form-update-visibility "area-ip-version-select" #f)
   (form-update-value "ipv" "4")
-  (reset-interface))
+  (cell-set! *prev_ipv* "4")
+  (catch/message
+	(lambda()
+	  (reset-enums "4")
+	  (read-interface (or (form-value "iface") "") "4")
+	  (form-update-value "prev_name" (or (form-value "iface") "")))))
 
 (define (update-interface)
   (or (catch/message
@@ -179,6 +209,36 @@
 	    (form-value-list '("language" "ipv" "name" "addresses")))))
     (read-interface-address (form-value "name"))
 )
+
+(define (bond-new)
+  (form-popup "/net-bond" 'name "")
+  (form-update-value "iface" "")
+  (init-interface))
+
+(define (bond-del)
+  (catch/message (lambda()
+     (woo-write "/net-bond/rm_bond" 'bond (form-value "name") 'language (form-value "language"))))
+  (form-update-value "iface" "")
+  (init-interface))
+
+(define (bond-ch)
+  (form-popup "/net-bond" 'name (form-value "name"))
+  (init-interface))
+
+(define (bridge-new)
+  (form-popup "/net-bridge" 'name "")
+  (form-update-value "iface" "")
+  (init-interface))
+
+(define (bridge-del)
+  (catch/message (lambda()
+     (woo-write "/net-bridge/rm_bridge" 'bond (form-value "name") 'language (form-value "language"))))
+  (form-update-value "iface" "")
+  (init-interface))
+
+(define (bridge-ch)
+  (form-popup "/net-bridge" 'name (form-value "name"))
+  (init-interface))
 
 ;;; UI
 
@@ -253,10 +313,21 @@
     (spacer)(label name "search_comment" text (small (_ "(multiple values should be space separated)")))
 
     ;;
-    (button text (_ "Wireless settings...") name "wireless" align "right" visibility #f)
-    (hbox align "right"
+    (spacer)(hbox align "right"
+      (button text (_ "Wireless settings...") name "wireless" align "right" visibility #f)
       (button text (_ "Advanced...") name "advanced" align "right")
-      (button text (_ "VLAN Configuration...") name "vlan" align "right")))
+      (button text (_ "VLAN Configuration...") name "vlan" align "right"))
+    ;;
+    (spacer)(hbox align "right"
+      (button text (_ "Create bond...") name "bond_new" align "right")
+      (button text (_ "Delete bond...") name "bond_del" align "right")
+      (button text (_ "Configure bond...") name "bond_ch" align "right"))
+    ;;
+    (spacer)(hbox align "right"
+      (button text (_ "Create bridge...") name "bridge_new" align "right")
+      (button text (_ "Delete bridge...") name "bridge_del" align "right")
+      (button text (_ "Configure bridge...") name "bridge_ch" align "right"))
+)
 
   ;;
   (or (global 'frame:next)
@@ -283,6 +354,15 @@
     (form-bind "vlan"     "click" vlan-interface)
     (form-bind "btn-del-ip" "click" ui-delete-address)
     (form-bind "btn-add-ip" "click" ui-append-address)
+
+	(form-bind "bond_new" "click" bond-new)
+	(form-bind "bond_del" "click" bond-del)
+	(form-bind "bond_ch" "click" bond-ch)
+
+	(form-bind "bridge_new" "click" bridge-new)
+	(form-bind "bridge_del" "click" bridge-del)
+	(form-bind "bridge_ch" "click" bridge-ch)
+
     (or (global 'frame:next)
       (begin (form-bind "apply" "click" commit-interface)
 	     (form-bind "reset" "click" reset-interface)))))
