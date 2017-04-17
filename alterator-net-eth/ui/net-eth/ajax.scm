@@ -210,7 +210,7 @@
 
 (define (bond-del)
   (catch/message (lambda()
-     (woo-write "/net-bond/rm_bond" 'bond (form-value "name" 'language (form-value "language")))))
+     (woo-write "/net-bond/rm_bond" 'bond (form-value "name") 'language (form-value "language"))))
   (form-update-value "iface" "")
   (init-interface))
 
@@ -222,7 +222,7 @@
 
 (define (bridge-del)
   (catch/message (lambda()
-     (woo-write "/net-bridge/rm_bridge" 'bridge (form-value "name" 'language (form-value "language")))))
+     (woo-write "/net-bridge/rm_bridge" 'bridge (form-value "name") 'language (form-value "language"))))
   (form-update-value "iface" "")
   (init-interface))
 
