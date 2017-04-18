@@ -51,10 +51,7 @@
 	 (is-bond (if (string-ci=? iface-type "bond") #t #f))
 	 (is-bridge (if (string-ci=? iface-type "bri") #t #f)))
 
-    (for-each
-      (lambda(lst)
-        (form-update-visibility lst has-bond-module))
-      '("bond_new" "bond_del" "bond_ch"))
+	(form-update-visibility "bond_btns" has-bond-module)
 
 	(if has-bond-module
 	  (for-each
@@ -62,10 +59,7 @@
 		  (form-update-activity lst is-bond))
 		'("bond_del" "bond_ch")))
 
-    (for-each
-      (lambda(lst)
-        (form-update-visibility lst has-bridge-module))
-      '("bridge_new" "bridge_del" "bridge_ch"))
+	(form-update-visibility "bridge_btns" has-bridge-module)
 
 	(if has-bridge-module
 	  (for-each
@@ -318,12 +312,12 @@
       (button text (_ "Advanced...") name "advanced" align "right")
       (button text (_ "VLAN Configuration...") name "vlan" align "right"))
     ;;
-    (spacer)(hbox align "right"
+    (spacer)(hbox align "right" name "bond_btns"
       (button text (_ "Create bond...") name "bond_new" align "right")
       (button text (_ "Delete bond...") name "bond_del" align "right")
       (button text (_ "Configure bond...") name "bond_ch" align "right"))
     ;;
-    (spacer)(hbox align "right"
+    (spacer)(hbox align "right" name "bridge_btns"
       (button text (_ "Create bridge...") name "bridge_new" align "right")
       (button text (_ "Delete bridge...") name "bridge_del" align "right")
       (button text (_ "Configure bridge...") name "bridge_ch" align "right"))
