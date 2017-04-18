@@ -7,7 +7,7 @@ Source:%name-%version.tar
 Summary: alterator module for tcp/ip connections configuration
 License: GPL
 Group: System/Configuration/Other
-Requires: alterator >= 4.24 libshell >= 0.1.3
+Requires: alterator >= 5.0 libshell >= 0.1.3
 Requires: alterator-l10n >= 2.1-alt9
 Requires: alterator-sh-functions >= 0.12-alt1
 Requires: alterator-hw-functions >= 0.7-alt2
@@ -22,12 +22,11 @@ Conflicts: alterator-browser-qt < 2.9.76-alt1
 Conflicts: filesystem < 2.3.4-alt1
 Conflicts: ifrename < 29-alt8
 
-
 %add_findreq_skiplist %_datadir/install2/preinstall.d/*
 
-BuildPreReq: alterator >= 4.7-alt3
-
-BuildArch: noarch
+BuildPreReq: alterator >= 5.0
+BuildRequires: alterator-fbi
+BuildRequires: guile22-devel
 
 #old names
 Provides: alterator-network = %version
@@ -42,9 +41,6 @@ Obsoletes: alterator-backend-simple_etcnet
 Provides: alterator-net-general = %version
 Obsoletes: alterator-net-general
 
-# Automatically added by buildreq on Mon Jul 11 2005 (-bi)
-BuildRequires: alterator
-
 %description
 alterator module for tcp/ip connections configuration
 
@@ -52,6 +48,7 @@ alterator module for tcp/ip connections configuration
 Summary: /etc/hooks/hostname.d hook for use with alterator-net-eth
 Group: System/Configuration/Other
 Requires: %name = %version-%release
+BuildArch: noarch
 
 %description -n hostname-hook-hosts
 This package contains the hook for /etc/hooks/hostname.d which provides
@@ -70,6 +67,7 @@ mapping current hostname to 127.0.0.1 in /etc/hosts.
 %_alterator_datadir/applications/*
 %_alterator_datadir/ui/*/
 %_alterator_backend3dir/*
+%_alterator_libdir/ui/*
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth.d
 %attr(700,root,root) %dir %_libexecdir/alterator/hooks/net-eth-precommit.d
 
