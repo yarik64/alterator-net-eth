@@ -71,8 +71,7 @@
 	  "vlan"
 	  (and
 		has-vlan-module
-		(not is-vlan)
-		(not is-bond)))
+		(not is-vlan)))
 
    (form-update-visibility
       "wireless"
