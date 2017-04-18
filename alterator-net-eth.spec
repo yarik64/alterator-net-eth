@@ -1,5 +1,5 @@
 Name: alterator-net-eth
-Version: 5.0.3
+Version: 5.0.4
 Release: alt1
 
 Source:%name-%version.tar
@@ -41,6 +41,8 @@ Obsoletes: alterator-backend-simple_etcnet
 Provides: alterator-net-general = %version
 Obsoletes: alterator-net-general
 
+%define _unpackaged_files_terminate_build 1
+
 %description
 alterator module for tcp/ip connections configuration
 
@@ -75,6 +77,15 @@ mapping current hostname to 127.0.0.1 in /etc/hosts.
 %_sysconfdir/hooks/hostname.d/*
 
 %changelog
+* Tue Apr 18 2017 Mikhail Efremov <sem@altlinux.org> 5.0.4-alt1
+- Change for guile22.
+- Allow vlan on bonding.
+- Qt UI: Show/hide the whole bridge/bonding hbox.
+- Qt UI: Add net-bridge and net-bond modules support.
+- ajax.scm: Fix bonding/bridge delete button.
+- ajax.scm: Drop vlan page leftover.
+- backend: Drop unused variables.
+
 * Tue Jun 21 2016 Mikhail Efremov <sem@altlinux.org> 5.0.3-alt1
 - check_ip: Use valid_ipv4addr().
 
