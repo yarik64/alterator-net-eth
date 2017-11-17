@@ -114,6 +114,7 @@ init_cache()
     fi
 
     [ ! -f /etc/sysconfig/network -o -f "$cachedir/network" ] || cp -p /etc/sysconfig/network "$cachedir/network"
+    [ ! -f /etc/hostname -o -f "$cachedir/hostname" ] || cp -p /etc/hostname "$cachedir/hostname"
 }
 
 clear_cache()
@@ -131,6 +132,10 @@ commit_hostname()
     local new_value="$(shell_config_get "$cachedir/network"    HOSTNAME)"
 
     mv -f "$cachedir/network" /etc/sysconfig/network
+    if [ -f "$cachedir/hostname" ]; then
+        mv -f "$cachedir/hostname" /etc/hostname
+    fi
+
     hostname "$new_value"
     run-parts /etc/hooks/hostname.d "$old_value" "$new_value"
 }
@@ -286,9 +291,17 @@ check_hostname()
 read_hostname()
 {
 	local netconfig="/etc/sysconfig/network"
+	local hostname_file="/etc/hostname"
+	local value=
+
 	[ -f "$cachedir/network" ] && netconfig="$cachedir/network"
-	
-	local value="$(shell_config_get "$netconfig" HOSTNAME)"
+	[ -f "$cachedir/hostname" ] && hostname_file="$cachedir/hostname"
+
+	if [ -f "$hostname_file" ]; then
+		value="$(cat "$hostname_file" | head -1)"
+	else
+		value="$(shell_config_get "$netconfig" HOSTNAME)"
+	fi
 
 	[ -n "$value" ] || value="localhost.localdomain"
 	if [ $(expr index "$value" .) -eq 0 ]; then
@@ -306,6 +319,10 @@ write_hostname()
 	check_hostname "$1" || return
 	shell_config_set "$netconfig" HOSTNAME "$1"
 	shell_config_del "$netconfig" DOMAINNAME
+
+	if [ -f "$cachedir/hostname" ]; then
+		echo "$1" >"$cachedir/hostname"
+	fi
 }
 
 ### computer name
@@ -313,7 +330,7 @@ write_hostname()
 read_computer_name()
 {
 	local value="$(read_hostname)"
-	if [ -f "$ALTERATOR_DOMAIN" ];then 
+	if [ -f "$ALTERATOR_DOMAIN" ] && [ -z "$DURING_INSTALL" ]; then
 	    echo "${value%%.*}"
 	else
 	    echo "$value"
