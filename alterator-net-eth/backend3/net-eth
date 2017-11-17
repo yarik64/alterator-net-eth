@@ -113,7 +113,7 @@ init_cache()
         mkdir -p -- "$dstdir"
     fi
 
-    [ ! -f /etc/sysconfig/network -o -f "$cachedir/network" ] || cp /etc/sysconfig/network "$cachedir/network"
+    [ ! -f /etc/sysconfig/network -o -f "$cachedir/network" ] || cp -p /etc/sysconfig/network "$cachedir/network"
 }
 
 clear_cache()
