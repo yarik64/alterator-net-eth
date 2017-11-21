@@ -11,6 +11,7 @@ ALTERATOR_BRIDGE=/usr/lib/alterator/backend3/net-bridge
 
 NETWORKMANAGER=/usr/sbin/NetworkManager
 NMCLI=/usr/bin/nmcli
+IPA_CONFIGURED=/usr/sbin/ipa_configured
 
 max_hostname_length=64
 
@@ -89,6 +90,11 @@ check_altdomain()
     local domain=
 
     [ -f "$ALTERATOR_DOMAIN" ] || return 1
+
+    # Check for configured FreeIPA domain
+    if [ -x "$IPA_CONFIGURED" ] && $IPA_CONFIGURED; then
+        return 0
+    fi
 
     [ "$(shell_config_get /etc/sysconfig/system SERVER_ROLE)" = "master" ] ||
         return 1
