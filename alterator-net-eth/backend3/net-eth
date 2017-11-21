@@ -867,7 +867,7 @@ clear_cache
 
 
 # do not setup domain name if alterator-net-domain installed to current system
-if [ -f "$ALTERATOR_DOMAIN" ];then
+if [ -f "$ALTERATOR_DOMAIN" ] && [ -z "$DURING_INSTALL" ];then
     NAME_CHECK=system-computer-name
 else
     NAME_CHECK=hostname
@@ -913,7 +913,7 @@ on_message()
 
 				write_string_param name		"$name"
 
-                if check_altdomain; then
+                if [ -z "$DURING_INSTALL" ] && check_altdomain; then
                     write_bool_param altdomain yes
                 else
                     write_bool_param altdomain no
