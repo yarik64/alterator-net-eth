@@ -225,7 +225,7 @@
 
 (define (bridge-del)
   (catch/message (lambda()
-     (woo-write "/net-bridge/rm_bridge" 'bond (form-value "name") 'language (form-value "language"))))
+     (woo-write "/net-bridge/rm_bridge" 'bridge (form-value "name") 'language (form-value "language"))))
   (form-update-value "iface" "")
   (init-interface))
 
