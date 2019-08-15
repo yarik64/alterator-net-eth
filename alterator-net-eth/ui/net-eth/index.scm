@@ -357,7 +357,8 @@
 	(form-bind "bridge_ch" "click" bridge-ch)
 
     (or (global 'frame:next)
-      (begin (form-bind "apply" "click" commit-interface)
+      (begin (form-bind "apply" "click" (lambda() (begin (commit-interface)
+                                                         (read-interface (form-value "name") (form-value "ipv")))))
 	     (form-bind "reset" "click" reset-interface)))))
 
 (frame:on-back (lambda() (or (commit-interface) 'cancel)))

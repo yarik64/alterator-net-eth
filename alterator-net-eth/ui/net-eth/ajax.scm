@@ -248,7 +248,8 @@
  (form-bind "bridge_del" "click" bridge-del)
  (form-bind "bridge_ch" "click" bridge-ch)
 
- (form-bind "commit" "click" commit-interface)
+ (form-bind "commit" "click" (lambda() (begin (commit-interface)
+                                       (read-interface (form-value "name") (form-value "ipv")))))
  (form-bind "reset" "click" reset-interface))
 
 ; vim: ft=lisp expandtab
