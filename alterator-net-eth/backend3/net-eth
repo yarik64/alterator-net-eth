@@ -354,7 +354,7 @@ read_computer_domain()
 
 write_computer_name()
 {
-    write_hostname "${1%%.*}.$(read_computer_domain $1)"
+    write_hostname "$1"
 }
 
 ### interface work
