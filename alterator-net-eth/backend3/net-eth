@@ -30,14 +30,18 @@ is_defined()
 
 is_bridge()
 {
-    local name="$1"; shift
+	local name="$1"; shift
 	local ifacedir="$(ifacedir_with_cache "$cachedir" "$name")"
 
-    if netdev_is_up "$name"; then
-        netdev_is_bridge "$name"
-    else
-        [ "$(read_iface_option "$ifacedir" TYPE)" = bri ]
-    fi
+	if list_bridge_types | grep -qF "$(read_iface_option "$ifacedir" TYPE)"; then
+		true
+	else
+		if netdev_is_up "$name"; then
+			netdev_is_bridge "$name"
+		else
+			false
+		fi
+	fi
 }
 
 is_bond()
@@ -454,8 +458,10 @@ read_info()
 		bond)
 			info="`_ "Bonding: "`$(read_iface_host_var_cached "$name")"
 			;;
-		bri)
-			info="`_ "Bridge: "`$(read_iface_host_var_cached "$name")"
+		*)
+			if is_bridge "$name"; then
+				info="`_ "Bridge: "`$(read_iface_host_var_cached "$name")"
+			fi
 			;;
 	esac
 
