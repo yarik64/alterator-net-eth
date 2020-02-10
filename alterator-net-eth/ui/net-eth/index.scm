@@ -49,7 +49,8 @@
 	 (has-vlan-module (woo-get-option cmd 'vlan_module_installed))
 	 (has-bridge-module (woo-get-option cmd 'bridge_module_installed))
 	 (is-bond (if (string-ci=? iface-type "bond") #t #f))
-	 (is-bridge (if (string-ci=? iface-type "bri") #t #f)))
+	 (bridge-types (woo-list/name "/net-bridge/avail_bridge_types"))
+	 (is-bridge (if (member iface-type bridge-types) #t #f)))
 
 	(form-update-visibility "bond_btns" has-bond-module)
 
