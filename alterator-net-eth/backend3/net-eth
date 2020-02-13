@@ -64,11 +64,6 @@ check_bond()
 {
     local iface="$1"; shift
 
-	if [ -z "$(read_iface_host_var "$cachedir/$iface")" ]; then
-		write_error "`_ "No members for bond  $iface"`"
-		return 1
-	fi
-
 	if [ -n "$in_configuration" -a "$in_configuration" != "static" ]; then
 		write_error "`_ "$iface: Only 'static' configuration allowed for bond interface"`"
 		return 1
