@@ -79,13 +79,6 @@ check_bond()
 
 check_bridge()
 {
-    local iface="$1"; shift
-
-	if [ -z "$(read_iface_host_var "$cachedir/$iface")" ]; then
-		write_error "`_ "No members for bridge  $iface"`"
-		return 1
-	fi
-
 	return 0
 }
 
