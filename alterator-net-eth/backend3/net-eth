@@ -32,8 +32,9 @@ is_bridge()
 {
 	local name="$1"; shift
 	local ifacedir="$(ifacedir_with_cache "$cachedir" "$name")"
+	local iftype="$(read_iface_option "$ifacedir" TYPE)"
 
-	if list_bridge_types | grep -qF "$(read_iface_option "$ifacedir" TYPE)"; then
+	if [ -n "$iftype" ] && list_bridge_types | grep -qF "$iftype"; then
 		true
 	else
 		if netdev_is_up "$name"; then
