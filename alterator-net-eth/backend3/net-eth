@@ -446,10 +446,8 @@ read_info()
 		bond)
 			info="`_ "Bonding: "`$(read_iface_host_var_cached "$name")"
 			;;
-		*)
-			if is_bridge "$name"; then
-				info="`_ "Bridge: "`$(read_iface_host_var_cached "$name")"
-			fi
+		bri)
+			info="`_ "Bridge: "`$(read_iface_host_var_cached "$name")"
 			;;
 	esac
 
@@ -553,10 +551,15 @@ read_iface()
 	local ipv="${1:-4}"; shift
 	local ifacedir="$(ifacedir_with_cache "$cachedir" "$name")"
 	local conf=
+	local iface_type=
 
 	#collect general information
-  # Print iface type
-  local iface_type="$(read_iface_option "$ifacedir" "TYPE")"
+  # We just need to know is it a bridge of any type
+  if is_bridge "$name"; then
+    iface_type="bri"
+  else
+    iface_type="$(read_iface_option "$ifacedir" "TYPE")"
+  fi
   write_string_param "iface_type" "$iface_type"
 
   local vlan_vid=
