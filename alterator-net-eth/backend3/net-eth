@@ -194,6 +194,8 @@ commit_cache()
 	for ifname in $(list_ifaces_for_restart); do
 	    local new_ifacedir="$cachedir/$ifname"
 	    local old_ifacedir="/etc/net/ifaces/$ifname"
+	    local new_controlled="$(read_controlled "$new_ifacedir")"
+	    local old_controlled="$(read_controlled "$old_ifacedir")"
 		local restart_only=
 
 		[ -n "$ifname" ] || continue
@@ -203,8 +205,10 @@ commit_cache()
 		[ -d "$new_ifacedir" ] || restart_only=1
 
 		if [ -f "$NMCLI" -a -z "$DURING_INSTALL" ] && \
-			[ "$(read_controlled "$new_ifacedir")" = "NetworkManager" -o \
-			  "$(read_controlled "$old_ifacedir")" = "NetworkManager" ]; then
+			[ "$new_controlled" = "NetworkManager" -o \
+			  "$old_controlled" = "NetworkManager" -o \
+			  "$new_controlled" = "NetworkManagerNative" -o \
+			  "$old_controlled" = "NetworkManagerNative" ]; then
 			need_reload_nm=1
 		fi
 
@@ -240,6 +244,12 @@ commit_cache()
 
 	    #try to restart
 	    [ -n "$DURING_INSTALL" ] && netdev_is_up "$ifname" || iface_up "$ifname"
+
+		if [ "$new_controlled" = "NetworkManagerNative" -a "$old_controlled" != "NetworkManagerNative" ]; then
+			"$NMCLI" connection add type ethernet ifname "$ifname" con-name "Native $ifname" 2>/dev/null ||:
+		elif [ "$new_controlled" != "NetworkManagerNative" -a "$old_controlled" = "NetworkManagerNative" ]; then
+			"$NMCLI" connection delete "Native $ifname" 2>/dev/null ||:
+		fi
 
 		if [ -z "$restart_only" ]; then
 			if [ "$old_config_ipv4" != "$new_config_ipv4" -o \
@@ -406,7 +416,8 @@ list_controlled()
 
     write_enum_item "etcnet" "Etcnet"
     if [ -f "$NETWORKMANAGER" ] && ! is_bond "$name" && ! is_bridge "$name" && ! is_vlan "$name"; then
-	write_enum_item "NetworkManager" "NetworkManager"
+	write_enum_item "NetworkManager" "NetworkManager (etcnet)"
+	write_enum_item "NetworkManagerNative" "NetworkManager (native)"
     fi
     write_enum_item "nothing" "`_ "not under control"`"
 }
@@ -471,9 +482,14 @@ read_controlled()
 {
 	local nm_controlled="$(read_iface_option "$1" NM_CONTROLLED)"
 	local disabled="$(read_iface_option "$1" DISABLED)"
+	local bootproto="$(read_iface_option "$1" BOOTPROTO)"
 
 	if [ $(write_bool "$nm_controlled") = "#t" ];then
-		echo 'NetworkManager'
+		if [ "$bootproto" = "static" -a ! -e "$1/ipv4address" ];then
+			echo 'NetworkManagerNative'
+		else
+			echo 'NetworkManager'
+		fi
 	elif [ $(write_bool "$disabled") = "#f" ];then
 		echo 'etcnet'
 	else
@@ -599,9 +615,16 @@ write_controlled()
 	local controlled="$1";shift
 
 	case "$controlled" in
+	    NetworkManagerNative)
+		write_iface_option "$ifacedir" DISABLED yes
+		write_iface_option "$ifacedir" NM_CONTROLLED yes
+		write_iface_option "$ifacedir" BOOTPROTO "static"
+		rm -f -- "$ifacedir/ipv4address"
+		;;
 	    NetworkManager)
 		write_iface_option "$ifacedir" DISABLED yes
 		write_iface_option "$ifacedir" NM_CONTROLLED yes
+		touch "$ifacedir/ipv4address"
 		;;
 	    etcnet)
 		write_iface_option "$ifacedir" DISABLED no
