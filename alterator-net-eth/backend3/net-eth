@@ -903,8 +903,27 @@ alterator_export_var \
 #    addresses 		ipv4-addrwmask-list \
 
 
+oem_wifi_first_start()
+{
+	[ -n "$in_name" ] || return
+	name="$in_name"
+	if [[ "$name" == wlan* &&  $(rpm -q alterator-setup-kworkstation) ]]; then
+		local ifacedir="$(ifacedir_with_cache "$cachedir" "$name")"
+		[ -f "$ifacedir/options" ] && return
+		[ -d "$ifacedir" ] || mkdir -p "$ifacedir"
+		touch "$ifacedir/options"
+		write_iface_option "$ifacedir" DISABLED yes
+		write_iface_option "$ifacedir" NM_CONTROLLED yes
+		write_iface_option "$ifacedir" BOOTPROTO "static"
+		write_iface_option "$ifacedir" CONFIG_WIRELESS yes
+	fi
+}
+
+
 on_message()
 {
+	oem_wifi_first_start
+
 	case "$in_action" in
 		add_iface_address)
 			init_cache "$in_name"

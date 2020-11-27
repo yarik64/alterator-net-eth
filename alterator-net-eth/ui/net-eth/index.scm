@@ -77,8 +77,9 @@
       "wireless"
       (and
 		has-wifi-module
-		(woo-get-option cmd 'wireless)
-		(string=? (woo-get-option cmd 'controlled) "etcnet")))
+    (or (string=? (woo-get-option cmd 'controlled) "etcnet")
+        (string=? (woo-get-option cmd 'controlled) "NetworkManagerNative"))
+		(woo-get-option cmd 'wireless)))
 
    (for-each
      (lambda(lst)
@@ -175,7 +176,10 @@
 
 (define (wireless-interface)
   (format #t "wireless-interface:name=~S~%" (form-value "name"))
-  (form-popup "/net-wifi/" 'iface (form-value "name")))
+  (if (string=? (woo-get-option (woo-read-first "/net-eth" 'name  (form-value "name")) 'controlled) "NetworkManagerNative")
+  (form-popup "/net-wifi-nm/" 'iface (form-value "name"))
+  (form-popup "/net-wifi/" 'iface (form-value "name"))
+  ))
 
 (define (vlan-interface)
   (let ((name (form-value "name"))
