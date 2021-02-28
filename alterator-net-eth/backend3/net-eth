@@ -775,9 +775,6 @@ write_iface()
 	netdev_is_wireless "$name" && is_wireless=yes || is_wireless=no
 	write_iface_option "$ifacedir" CONFIG_WIRELESS "$is_wireless"
 
-	[ -n "$in_controlled" ] &&
-	    write_controlled "$ifacedir" "$in_controlled"
-
 	if [ -n "$in_onboot" ]; then
 		local onboot=
 
@@ -808,6 +805,9 @@ write_iface()
 		is_defined "in_search" &&
 			write_iface_search "$ifacedir" "$in_search"
 	fi
+
+	[ -n "$in_controlled" ] &&
+	    write_controlled "$ifacedir" "$in_controlled"
 }
 
 check_ip()

@@ -9,15 +9,15 @@
 
 (define *prev_ipv* (make-cell ""))
 
-(define (update-configuration-activity configuration)
+(define (update-configuration-activity configuration controlled)
     (form-update-activity
       '("addresses" "ip" "add-mask" "add-ip" "default" "btn-add-ip" "btn-del-ip" "ipl_label"
 		"search_comment" "dns" "search")
-      (and (form-value "ipv_enabled") (string=? configuration "static"))))
+      (and (form-value "ipv_enabled") (string=? configuration "static") (not (string=? controlled "NetworkManagerNative")))))
 
 (define (update-ipv-activity)
    (form-update-activity "configuration" (form-value "ipv_enabled"))
-   (update-configuration-activity (form-value "configuration")))
+   (update-configuration-activity (form-value "configuration") (form-value "controlled")))
 
 (define (ipv_changed)
   (let ((name (form-value "name"))
@@ -104,7 +104,7 @@
 	  (read-interface-current-address name))
 
     (form-update-value-list
-      '("iface_info" "add-mask" "default" "configuration")
+      '("iface_info" "add-mask" "default" "configuration" "controlled")
       cmd)
 	(update-ipv-activity)))
 
@@ -118,7 +118,7 @@
 	 'ipv_enabled (form-value "ipv_enabled")
 	 (form-value-list '("language"
 			    "computer_name" "dns" "search"
-			    "default" "configuration"))))
+			    "default" "configuration" "controlled"))))
 
 ;;; high level
 
@@ -233,7 +233,7 @@
  (form-bind "name" "change" update-interface)
  (form-bind "ipv" "change" ipv_changed)
  (form-bind "ipv_enabled" "change" update-ipv-activity)
- (form-bind "configuration" "change" (lambda() (update-configuration-activity (form-value "configuration"))))
+ (form-bind "configuration" "change" (lambda() (update-configuration-activity (form-value "configuration") (form-value "controlled"))))
  (form-bind "wireless" "click" wireless-interface)
  (form-bind "advanced" "click" advanced-interface)
  (form-bind "vlan"     "click" vlan-interface)

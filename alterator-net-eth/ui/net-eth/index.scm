@@ -113,7 +113,7 @@
 	 "/net-eth"
 	 'name name
 	 'ipv ipv
-	 (form-value-list '("ipv_enabled" "computer_name" "dns" "search" "default" "configuration"))
+	 (form-value-list '("ipv_enabled" "computer_name" "dns" "search" "default" "configuration" "controlled"))
     ))
 
 (define (commit-interface)
