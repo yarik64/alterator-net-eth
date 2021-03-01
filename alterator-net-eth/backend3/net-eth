@@ -907,7 +907,7 @@ oem_wifi_first_start()
 {
 	[ -n "$in_name" ] || return
 	name="$in_name"
-	if [[ "$name" == wlan* &&  $(rpm -q alterator-setup-kworkstation) ]]; then
+	if [[ "$name" == wlan* && -f /usr/lib/alterator/backend3/setup-kworkstation ]]; then
 		local ifacedir="$(ifacedir_with_cache "$cachedir" "$name")"
 		[ -f "$ifacedir/options" ] && return
 		[ -d "$ifacedir" ] || mkdir -p "$ifacedir"
