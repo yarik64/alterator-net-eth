@@ -24,9 +24,6 @@
 
 ;;; UI
 
-width 600
-height 300
-
 (gridbox
   columns "0;100"
   margin "10"
