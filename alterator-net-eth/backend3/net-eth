@@ -484,6 +484,12 @@ read_controlled()
 	local disabled="$(read_iface_option "$1" DISABLED)"
 	local bootproto="$(read_iface_option "$1" BOOTPROTO)"
 
+	# Set NetworkManager Native as default if NetworkManager exists
+	if [ -f "$NETWORKMANAGER" -a ! -d "$1" ]; then
+		nm_controlled="yes"
+		bootproto="static"
+	fi
+
 	if [ $(write_bool "$nm_controlled") = "#t" ];then
 		if [ "$bootproto" = "static" -a ! -e "$1/ipv4address" ];then
 			echo 'NetworkManagerNative'
