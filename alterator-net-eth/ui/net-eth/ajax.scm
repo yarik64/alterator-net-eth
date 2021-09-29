@@ -13,7 +13,8 @@
     (form-update-activity
       '("addresses" "ip" "add-mask" "add-ip" "default" "btn-add-ip" "btn-del-ip" "ipl_label"
 		"search_comment" "dns" "search")
-      (and (form-value "ipv_enabled") (string=? configuration "static") (not (string=? controlled "NetworkManagerNative")))))
+      (and (form-value "ipv_enabled") (string=? configuration "static") (not (string=? controlled "NetworkManagerNative"))))
+			(form-update-activity "configuration" (not (string=? controlled "NetworkManagerNative"))))
 
 (define (update-ipv-activity)
    (form-update-activity "configuration" (form-value "ipv_enabled"))

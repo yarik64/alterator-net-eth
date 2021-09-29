@@ -7,7 +7,8 @@
 (define (update-configuration-activity configuration controlled)
     (form-update-activity
       '("addresses" "default" "btn-del-ip" "ipl_label" "dns" "search" "search_comment")
-      (and (form-value "ipv_enabled") (string=? configuration "static") (not (string=? controlled "NetworkManagerNative")))))
+      (and (form-value "ipv_enabled") (string=? configuration "static") (not (string=? controlled "NetworkManagerNative"))))
+		(form-update-activity "configuration" (not (string=? controlled "NetworkManagerNative"))))
 
 (define (update-ipv-activity)
    (form-update-activity "configuration" (form-value "ipv_enabled"))

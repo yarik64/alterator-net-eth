@@ -1,6 +1,6 @@
 Name: alterator-net-eth
 Version: 5.1.12
-Release: alt2
+Release: alt3
 
 Source:%name-%version.tar
 
@@ -77,6 +77,9 @@ mapping current hostname to 127.0.0.1 in /etc/hosts.
 %_sysconfdir/hooks/hostname.d/*
 
 %changelog
+* Wed Sep 29 2021 Yaroslav Karpov <hellkar@altlinux.org> 5.1.12-alt3
+- Fixed 'configuration' selector's activity
+
 * Fri Jun 11 2021 Alexey Shabalin <shaba@altlinux.org> 5.1.12-alt2
 - Drop Requires: startup
 
